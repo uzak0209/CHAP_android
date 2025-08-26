@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- この権限は常に含める -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- アプリが正確な位置情報アクセスから利益を得る場合のみ含める -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- マップやネットワーク要求に必須 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +21,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CHAP"
         tools:targetApi="31">
+        <!-- Mapbox アクセストークン（公開用） -->
+        <meta-data
+            android:name="MAPBOX_ACCESS_TOKEN"
+            android:value="@string/mapbox_access_token" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
