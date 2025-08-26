@@ -1,5 +1,6 @@
 package com.example.chap
 
+import LoginViewModel
 import Logo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -41,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.components.TextInput
 import com.example.chap.ui.theme.CHAPTheme
 
@@ -66,6 +68,7 @@ fun LoginScreen() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(LoginTab.Login) }
+    var displayName by remember { mutableStateOf("") }
 
     MainBody(
         email = email,
@@ -73,7 +76,9 @@ fun LoginScreen() {
         onEmailChange = { email = it },
         onPasswordChange = { password = it },
         selectedTab = selectedTab,
-        onTabChange = { selectedTab = it }
+        onTabChange = { selectedTab = it },
+        displayName = displayName,
+        onDisplayNameChange = { displayName = it }
     )
 }
 
@@ -86,11 +91,14 @@ fun MainBody(
     selectedTab: LoginTab,
     email: String,
     password: String,
+    displayName: String,
+    onDisplayNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onTabChange: (LoginTab) -> Unit
-) {
+    onTabChange: (LoginTab) -> Unit,
 
+    ) {
+    val loginViewModel: LoginViewModel = viewModel()
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,7 +119,16 @@ fun MainBody(
 
             // 🔹 タブバー部分を別Composableに
             LoginTabBar(selectedTab = selectedTab, onTabChange = onTabChange)
-            Spacer(modifier = Modifier.height(12.dp))
+            if (selectedTab == LoginTab.SignUp) {
+                Spacer(modifier = Modifier.height(24.dp))
+                TextInput(
+                    title = "表示名",
+                    value = displayName,
+                    onChange = onDisplayNameChange,
+                    placeholder = "表示名を入力してください"
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
             TextInput(
                 title = "メールアドレス",
                 value = email,
@@ -125,9 +142,18 @@ fun MainBody(
                 onChange = onPasswordChange,
                 placeholder = "パスワードを入力してください"
             )
-            Spacer(modifier = Modifier.height(60.dp))
+            if (selectedTab == LoginTab.Login) {
+                Spacer(modifier = Modifier.height(60.dp))
+            } else {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
             Button(
-                onClick = { /* Handle login */ },
+                onClick = {
+                    when (selectedTab) {
+                        LoginTab.Login -> loginViewModel.login(email, password)
+                        LoginTab.SignUp -> loginViewModel.register(email, password,displayName)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -140,9 +166,11 @@ fun MainBody(
                 }
                 Text(text, color = Color.White, fontSize = 16.sp)
             }
-
-            Spacer(modifier = Modifier.height(40.dp))
-
+            if (selectedTab == LoginTab.Login) {
+                Spacer(modifier = Modifier.height(40.dp))
+            } else {
+                Spacer(modifier = Modifier.height(12.dp))
+            }
             AgreementSection()
         }
     }

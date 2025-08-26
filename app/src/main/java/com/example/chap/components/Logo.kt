@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,38 +19,38 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun Logo(){
+fun Logo() {
     Spacer(modifier = Modifier.height(40.dp))
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF4A4AFF)),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF4A4AFF)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "C",
-                    color = Color.White,
-                    fontSize = 60.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "CHAP",
-                fontSize = 50.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF4A4AFF)
-            )
-            Text(
-                text = "地域密着型SNSプラットフォーム",
-                fontSize = 20.sp,
-                color = Color.Gray
+                text = "C",
+                color = Color.White,
+                fontSize = 60.sp,
+                fontWeight = FontWeight.Bold
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "CHAP",
+            fontSize = 50.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF4A4AFF)
+        )
+        Text(
+            text = "地域密着型SNSプラットフォーム",
+            fontSize = 20.sp,
+            color = Color.Gray
+        )
     }
+}
