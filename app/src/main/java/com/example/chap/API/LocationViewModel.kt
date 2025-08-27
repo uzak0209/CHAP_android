@@ -1,8 +1,7 @@
 package com.example.chap.API
-import androidx.lifecycle.ViewModel
 import com.example.chap.Models.Coordinate
 
-class LocationViewModel: ViewModel() {
+object LocationViewModel {
     private var _location: Coordinate? = null
     val location: Coordinate?
         get() = _location

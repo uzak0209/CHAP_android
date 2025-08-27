@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 // ViewModel で API 呼び出し処理をまとめる
-class LoginViewModel : ViewModel() {
+object LoginViewModel : ViewModel() {
     fun login(email: String, password: String) {
         viewModelScope.launch {
             try {
@@ -40,5 +40,4 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    companion object
 }

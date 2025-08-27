@@ -8,10 +8,10 @@ import androidx.core.content.ContextCompat
 import com.example.chap.API.LocationViewModel
 import com.example.chap.Models.Coordinate
 import com.google.android.gms.location.LocationServices
+
 val LOCATION_PERMISSION_REQUEST_CODE = 1000
 fun GetLocation(
     context: ComponentActivity,
-    viewModel: LocationViewModel,
     requestCode: Int
 ) {
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -27,8 +27,8 @@ fun GetLocation(
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 val coordinate =
-                    Coordinate(location.latitude.toFloat(), location.longitude.toFloat())
-                viewModel.updateLocation(coordinate)
+                    Coordinate(location.latitude, location.longitude)
+                LocationViewModel.updateLocation(coordinate)
             }
         }
     }

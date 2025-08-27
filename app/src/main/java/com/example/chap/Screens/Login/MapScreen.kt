@@ -1,0 +1,108 @@
+package com.example.chap.Screens.Login
+
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.example.chap.API.LocationViewModel
+import com.example.chap.GetLocation
+import com.example.chap.LOCATION_PERMISSION_REQUEST_CODE
+import com.example.chap.components.ToggleDimension
+import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.compose.MapEffect
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.plugin.locationcomponent.location
+
+@Composable
+fun MapScreen() {
+    // Compose で ViewModel の位置情報を監視
+    var is3D by remember { mutableStateOf(false) }
+    val lastLocation by remember { derivedStateOf { LocationViewModel.location } }
+    var styleLoaded by remember { mutableStateOf(false) }
+
+    // 位置情報を取得（既存の GetLocation を利用）
+    LaunchedEffect(Unit) {
+        if (this is ComponentActivity) {
+            GetLocation(this,  LOCATION_PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    // Mapbox カメラ状態
+    val viewportState = rememberMapViewportState {
+        setCameraOptions {
+            zoom(2.0)
+            center(
+                Point.fromLngLat(
+                    lastLocation?.lng ?: 0.0,
+                    lastLocation?.lat ?: 0.0
+                )
+            )
+            pitch(0.0)
+            bearing(0.0)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize().background(Color(0xFFEEEEEE))) {
+        MapboxMap(
+            modifier = Modifier.fillMaxSize(),
+            mapViewportState = viewportState,
+            style = { Style.STANDARD }
+        ) {
+            // スタイルロード完了管理
+            MapEffect(Unit) { mapView ->
+                if (mapView.getMapboxMap().style == null && !styleLoaded) {
+                    mapView.getMapboxMap().loadStyleUri(Style.STANDARD) { _ ->
+                        styleLoaded = true
+                    }
+                } else if (mapView.getMapboxMap().style != null) {
+                    styleLoaded = true
+                }
+            }
+
+            // 位置情報プラグイン設定
+            MapEffect(lastLocation) { mapView ->
+                val plugin = mapView.location
+                plugin.updateSettings {
+                    enabled = true
+                    pulsingEnabled = true
+                }
+            }
+        }
+        FloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(12.dp),
+            onClick = {
+                is3D = !is3D
+                ToggleDimension(viewportState,is3D)
+            }
+        ) {
+            Text(text = if (is3D) "2D" else "3D")
+        }
+        // スタイル未読込時の表示
+        if (!styleLoaded) {
+            Box(
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("地図スタイル読み込み中…", color = Color.DarkGray)
+            }
+        }
+    }
+}

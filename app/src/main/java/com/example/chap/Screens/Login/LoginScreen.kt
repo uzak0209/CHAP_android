@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.LoginViewModel
 import com.example.chap.components.TextInput
 
@@ -45,7 +44,7 @@ private val PrimaryColor = Color(0xFF4A4AFF)
 private val BackgroundGray = Color(0xFFF8F8F8)
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onLoginSuccess: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(LoginTab.Login) }
@@ -59,7 +58,8 @@ fun LoginScreen() {
         selectedTab = selectedTab,
         onTabChange = { selectedTab = it },
         displayName = displayName,
-        onDisplayNameChange = { displayName = it }
+        onDisplayNameChange = { displayName = it },
+        onLoginSuccess = onLoginSuccess
     )
 }
 
@@ -77,9 +77,10 @@ fun MainBody(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onTabChange: (LoginTab) -> Unit,
+    onLoginSuccess: () -> Unit
 
-    ) {
-    val loginViewModel: LoginViewModel = viewModel()
+) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,8 +132,15 @@ fun MainBody(
             Button(
                 onClick = {
                     when (selectedTab) {
-                        LoginTab.Login -> loginViewModel.login(email, password)
-                        LoginTab.SignUp -> loginViewModel.register(email, password,displayName)
+                        LoginTab.Login -> {
+                            LoginViewModel.login(email, password)
+                            onLoginSuccess()
+                        }
+
+                        LoginTab.SignUp -> {
+                            LoginViewModel.register(email, password, displayName)
+                            onLoginSuccess()
+                        }
                     }
                 },
                 modifier = Modifier

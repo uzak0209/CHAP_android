@@ -3,8 +3,8 @@ package com.example.chap.Models
 
 // 緯度経度
 data class Coordinate(
-    val lat: Float,
-    val lng: Float
+    val lat: Double,
+    val lng: Double
 )
 
 // ユーザー
