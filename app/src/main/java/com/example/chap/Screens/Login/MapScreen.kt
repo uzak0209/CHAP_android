@@ -46,7 +46,7 @@ fun MapScreen() {
     // Mapbox カメラ状態
     val viewportState = rememberMapViewportState {
         setCameraOptions {
-            zoom(2.0)
+            zoom(16.5)
             center(
                 Point.fromLngLat(
                     lastLocation?.lng ?: 0.0,

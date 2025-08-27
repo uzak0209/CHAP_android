@@ -1,7 +1,6 @@
 package com.example.chap
 
 import android.Manifest
-import android.R.attr.onClick
 import android.content.pm.PackageManager
 import android.location.Location
 import android.util.Log
@@ -12,7 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
+// import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+// import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -131,14 +130,19 @@ fun UserLocationMap() {
         }
     }
 
+    // 初期ズーム（起動直後位置未確定時）※値を調整すると初期表示の拡大度合いを変更可能
+    val initialZoom = 30.0
     val viewportState = rememberMapViewportState {
         setCameraOptions {
-            zoom(2.0)
-            center(Point.fromLngLat(-98.0, 39.5))
+            zoom(initialZoom)
+            center(Point.fromLngLat(-98.0, 39.5)) // 初期中心（後で位置取得後に更新）
             pitch(0.0)
             bearing(0.0)
         }
     }
+
+    // スタイル読み込み後に一度だけ初期カメラ(またはユーザー位置)へズームするためのフラグ
+    var cameraInitialized by remember { mutableStateOf(false) }
 
     LaunchedEffect(lastLocation) {
         if (lastLocation != null) {
@@ -147,7 +151,9 @@ fun UserLocationMap() {
             if (!isEmuDefault) {
                 viewportState.setCameraOptions {
                     center(Point.fromLngLat(loc.longitude, loc.latitude))
-                    zoom(15.0)
+                    lastLocation?.let {
+                        zoom(16.5)
+                    }
                 }
             } else if (freshAttempts < maxFreshAttempts) {
                 Log.d(TAG, "Still emulator default -> fresh request (#$freshAttempts)")
@@ -176,6 +182,22 @@ fun UserLocationMap() {
                     }
                 }
             }
+        }
+    }
+
+    // スタイル読み込み完了後 & カメラ未初期化の場合に一度だけズームを適用
+    LaunchedEffect(styleLoaded, lastLocation, cameraInitialized) {
+        if (styleLoaded && !cameraInitialized) {
+            viewportState.setCameraOptions {
+                if (lastLocation != null) {
+                    center(Point.fromLngLat(lastLocation!!.longitude, lastLocation!!.latitude))
+                    zoom(16.5)
+                } else {
+                    zoom(initialZoom) // 位置未取得なら初期ズーム反映
+                }
+            }
+            cameraInitialized = true
+            Log.d(TAG, "Initial camera applied (styleLoaded)")
         }
     }
 
@@ -209,13 +231,14 @@ fun UserLocationMap() {
                 if (lastLocation == null) {
                     Log.d(TAG, "Location plugin enabled but lastLocation is null yet")
                 }
+
             }
         }
         FloatingActionButton(
             modifier = Modifier.align(Alignment.TopEnd).padding(12.dp),
             onClick = {
                 is3D = !is3D
-                ToggleDimension(viewportState, is3D, lastLocation)
+                toggleDimension(viewportState, is3D, lastLocation)
             }
         ) {
             Text(if (is3D) "2D" else "3D")
@@ -227,7 +250,7 @@ fun UserLocationMap() {
         }
     }
 }
-private fun ToggleDimension(
+private fun toggleDimension(
     viewportState: com.mapbox.maps.extension.compose.animation.viewport.MapViewportState,
     is3D: Boolean,
     lastLocation: Location?
