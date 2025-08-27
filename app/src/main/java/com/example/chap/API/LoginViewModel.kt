@@ -1,10 +1,9 @@
+package com.example.chap.API
+
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chap.API.ApiClient
-import com.example.chap.API.ApiEndpoints
 import kotlinx.coroutines.launch
-
 
 // ViewModel で API 呼び出し処理をまとめる
 class LoginViewModel : ViewModel() {
