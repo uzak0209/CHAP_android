@@ -1,4 +1,4 @@
-package com.example.chap.Screens.Login
+package com.example.chap.Screens.Map
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background

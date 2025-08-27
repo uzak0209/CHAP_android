@@ -18,10 +18,8 @@ object PostViewModel: ViewModel() {
                     method = "POST",
                     body = mapOf("lat" to LocationViewModel.location?.lat.toString(), "lng" to LocationViewModel.location?.lng.toString())
                 )
-                // TODO: 成功したら画面遷移や保存処理
                 println("ログイン成功: $response")
             } catch (e: Exception) {
-
                 println("エラー: ${e.message}")
             }
         }

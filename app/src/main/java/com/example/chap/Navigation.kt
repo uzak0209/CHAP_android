@@ -3,7 +3,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chap.Screens.Login.LoginScreen
-import com.example.chap.Screens.Login.MapScreen
+import com.example.chap.Screens.Map.MapScreen
 
 @Composable
 fun Navigation() {
@@ -17,7 +17,6 @@ fun Navigation() {
             LoginScreen(
                 onLoginSuccess = {
                     navController.navigate("map") {
-                        println("?????")
                         popUpTo("login") { inclusive = true } // ログイン画面を履歴から削除
                     }
                 }
