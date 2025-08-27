@@ -28,7 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.chap.API.LocationViewModel
 import com.example.chap.GetLocation
 import com.example.chap.LOCATION_PERMISSION_REQUEST_CODE
@@ -161,6 +163,16 @@ fun MapScreen() {
                 ) {
                     Text(text = if (is3D) "2D" else "3D")
                 }
+                FloatingActionButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(12.dp),
+                    onClick = {/*TODO*/}
+                ){
+                    Text( text = "+",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold )
+                }
                 // スタイル未読込時の表示
                 if (!styleLoaded) {
                     Box(
@@ -171,7 +183,6 @@ fun MapScreen() {
                     }
                 }
             }
-
         }
     }
 }
