@@ -64,7 +64,7 @@ object ApiClient {
     suspend fun request(
         url: String,
         method: String = "GET",
-        body: Map<String, String>? = null
+        body: Map<String, Any>? = null
     ): String? = withContext(Dispatchers.IO) {
         val builder = Request.Builder()
             .url(url)
