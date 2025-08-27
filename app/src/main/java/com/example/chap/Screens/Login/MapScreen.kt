@@ -35,6 +35,7 @@ import com.example.chap.API.LocationViewModel
 import com.example.chap.GetLocation
 import com.example.chap.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.R
+import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.ToggleDimension
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
@@ -50,6 +51,7 @@ fun MapScreen() {
     var is3D by remember { mutableStateOf(false) }
     val lastLocation by remember { derivedStateOf { LocationViewModel.location } }
     var styleLoaded by remember { mutableStateOf(false) }
+    var showPopup by remember { mutableStateOf(false) }
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
@@ -167,12 +169,16 @@ fun MapScreen() {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(12.dp),
-                    onClick = {/*TODO*/}
+                    onClick = { showPopup = true}
                 ){
                     Text( text = "+",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold )
                 }
+                SelectPopupOverlay(
+                    visible = showPopup,
+                    onDismiss = { showPopup = false }
+                )
                 // スタイル未読込時の表示
                 if (!styleLoaded) {
                     Box(
