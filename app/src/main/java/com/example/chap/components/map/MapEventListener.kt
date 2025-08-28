@@ -83,22 +83,6 @@ data class User(
   val name: String
 )
 
-// ---- Like Relations -------------------------------------------------------
-
-data class PostLike(
-  val userId: String,
-  val postId: Long
-)
-
-data class ThreadLike(
-  val userId: String,
-  val threadId: Long
-)
-
-data class EventLike(
-  val userId: String,
-  val eventId: Long
-)
 
 // ---- Permission / Status --------------------------------------------------
 

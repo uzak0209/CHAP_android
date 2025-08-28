@@ -26,10 +26,15 @@ import com.example.chap.components.map.PostCategory
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.MapEventListener
+import com.example.chap.store.postSlice
+
+
+
 import kotlinx.coroutines.launch
 import java.time.Instant
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePostDialog(
     isOpen: Boolean,
