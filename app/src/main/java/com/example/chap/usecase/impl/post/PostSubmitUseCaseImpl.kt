@@ -1,29 +1,57 @@
 package com.example.chap.usecase.impl.post
 
+import android.accounts.AuthenticatorException
+import com.example.chap.Models.Coordinate
+import com.example.chap.Models.User
+import com.example.chap.domain.model.PostId
 import com.example.chap.domain.repository.PostRepository
+import com.example.chap.usecase.post.PostSubmitUseCase
+import com.example.chap.usecase.post.PostSubmitUseCaseResult
 
-class PostYweetUseCaseImpl(
+class PostSubmitUseCaseImpl(
     private val PostRepository: PostRepository
-) : PostYweetUseCase {
+) : PostSubmitUseCase {
     override suspend fun execute(
+        id: PostId,
+        type: String,
+        created_at: String,
+        updated_at: String,
+        deleted_at: String?,
+        user_id: String,
+        username: String,
+        user: User,
+        coordinate: Coordinate,
         content: String,
-        attachmentList: List<File>
-    ): PostYweetUseCaseResult {
-        if (content == "" && attachmentList.isEmpty()) {
-            return PostYweetUseCaseResult.Failure.EmptyContent
-        }
+        category: String,
+        valid: Boolean,
+        like: Int,
+        tags: List<String>
+    ): PostSubmitUseCaseResult {
 
         return try {
             PostRepository.create(
+                id = id,
+                type =  type,
+                created_at =  created_at,
+                updated_at =  updated_at,
+                deleted_at =  deleted_at,
+                user_id =  user_id,
+                username = username,
+                user = user,
+                coordinate = coordinate,
                 content = content,
-                attachmentList = emptyList()
+                category = category,
+                valid = valid,
+                like = like,
+                tags = tags,
+
             )
 
-            PostYweetUseCaseResult.Success
+            PostSubmitUseCaseResult.Success
         } catch (e: AuthenticatorException) {
-            PostYweetUseCaseResult.Failure.NotLoggedIn
+            PostSubmitUseCaseResult.Failure.NotLoggedIn
         } catch (e: Exception) {
-            PostYweetUseCaseResult.Failure.OtherError(e)
+            PostSubmitUseCaseResult.Failure.OtherError(e)
         }
     }
 }

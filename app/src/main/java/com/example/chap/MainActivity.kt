@@ -25,16 +25,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.chap.API.PostViewModel
+import androidx.activity.viewModels
 import com.example.chap.ui.theme.CHAPTheme
 
 
 class MainActivity : ComponentActivity() {
+    private val postViewModel: PostViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         GetLocation(this,  LOCATION_PERMISSION_REQUEST_CODE)
         enableEdgeToEdge()
-        PostViewModel.getAllPosts()
+    postViewModel.getAllPosts()
         setContent {
             CHAPTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
