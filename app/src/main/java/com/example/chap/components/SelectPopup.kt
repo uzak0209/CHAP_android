@@ -119,13 +119,13 @@ fun SelectPopupOverlay(
     onDismiss: () -> Unit,
     locationState: LocationState = LocationState(0.0, 0.0, LoadStatus.IDLE),
     onReloadEvents: (lat: Double, lng: Double) -> Unit = { _, _ -> },
+    onRequestCreatePost: () -> Unit = {}, // 新規: CreatePostDialog を開くためのコールバック
     onPostCreated: () -> Unit = {},
     onThreadCreated: () -> Unit = {},
     onEventCreated: () -> Unit = {}
 ) {
     if (!visible) return
 
-    var showPost by remember { mutableStateOf(false) }
     var showThread by remember { mutableStateOf(false) }
     var showEvent by remember { mutableStateOf(false) }
 
@@ -134,7 +134,7 @@ fun SelectPopupOverlay(
             label = "投稿作成",
             iconRes = R.drawable.outline_imagesmode_24,
             containerColor = Color(0xFF16A34A)
-        ) { onDismiss(); showPost = true },
+        ) { onDismiss(); onRequestCreatePost() },
         FabAction(
             label = "スレッド作成",
             iconRes = R.drawable.outline_comment_24,
@@ -172,11 +172,6 @@ fun SelectPopupOverlay(
         }
     }
 
-    if (showPost) SimpleModal(
-        title = "投稿作成",
-        onDismiss = { showPost = false },
-        onConfirm = { onPostCreated(); showPost = false }
-    )
     if (showThread) SimpleModal(
         title = "スレッド作成",
         onDismiss = { showThread = false },

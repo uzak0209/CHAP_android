@@ -26,13 +26,9 @@ import com.example.chap.components.map.PostCategory
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.MapEventListener
-// import 修正: ファイル全体を指す誤った import を削除し必要シンボルを個別 import
 import com.example.chap.store.PostCreateRequest
 import com.example.chap.store.Coordinate
 import com.example.chap.store.PostsViewModel
-
-
-
 import kotlinx.coroutines.launch
 import java.time.Instant
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み

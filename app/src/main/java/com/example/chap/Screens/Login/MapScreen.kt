@@ -36,6 +36,17 @@ import com.example.chap.GetLocation
 import com.example.chap.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.R
 import com.example.chap.components.SelectPopupOverlay
+import com.example.chap.components.CreatePostDialog
+import com.example.chap.components.map.LocationState as MapLocationState
+import com.example.chap.components.map.LoadStatus as MapLoadStatus
+import com.example.chap.components.map.LatLng as MapLatLng
+import com.example.chap.components.map.PostCategory
+import com.example.chap.store.PostsViewModel
+import com.example.chap.store.PostsRepository
+import com.example.chap.store.PostCreateRequest
+import com.example.chap.store.Post
+import com.example.chap.store.AroundRequest
+import com.example.chap.store.Coordinate
 import com.example.chap.components.ToggleDimension
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
@@ -52,6 +63,28 @@ fun MapScreen() {
     val lastLocation by remember { derivedStateOf { LocationViewModel.location } }
     var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
+    var showCreatePost by remember { mutableStateOf(false) }
+
+    // 簡易 Repository (本番は差し替え)
+    val postsRepo = remember {
+        object : PostsRepository {
+            private var id = 1
+            private val items = mutableListOf<Post>()
+            override suspend fun fetchPosts(): List<Post> = items.toList()
+            override suspend fun fetchAround(req: AroundRequest): List<Post> = items.toList()
+            override suspend fun create(post: PostCreateRequest): Post {
+                val p = Post(
+                    id = id++, userId = 0, content = post.content, category = post.category,
+                    tags = post.tags, coordinate = post.coordinate, like = 0,
+                    createdTime = null, updatedAt = null, visible = post.visible, valid = post.valid
+                ); items.add(0, p); return p
+            }
+            override suspend fun fetchPost(id: Int): Post = items.first { it.id == id }
+            override suspend fun update(id: Int, patch: Map<String, Any?>): Post { return fetchPost(id) }
+            override suspend fun delete(id: Int) { items.removeAll { it.id == id } }
+        }
+    }
+    val postsViewModel = remember { PostsViewModel(postsRepo) }
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
@@ -177,8 +210,21 @@ fun MapScreen() {
                 }
                 SelectPopupOverlay(
                     visible = showPopup,
-                    onDismiss = { showPopup = false }
+                    onDismiss = { showPopup = false },
+                    onRequestCreatePost = { showCreatePost = true }
                 )
+                if (showCreatePost) {
+                    CreatePostDialog(
+                        isOpen = showCreatePost,
+                        onClose = { showCreatePost = false },
+                        locationState = MapLocationState(
+                            status = if (lastLocation != null) MapLoadStatus.LOADED else MapLoadStatus.IDLE,
+                            location = MapLatLng(lastLocation?.lat ?: 0.0, lastLocation?.lng ?: 0.0)
+                        ),
+                        selectedCategoryFilter = null,
+                        viewModel = postsViewModel
+                    )
+                }
                 // スタイル未読込時の表示
                 if (!styleLoaded) {
                     Box(
