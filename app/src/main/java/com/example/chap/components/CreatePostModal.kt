@@ -26,7 +26,10 @@ import com.example.chap.components.map.PostCategory
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.MapEventListener
-import com.example.chap.store.postSlice
+// import 修正: ファイル全体を指す誤った import を削除し必要シンボルを個別 import
+import com.example.chap.store.PostCreateRequest
+import com.example.chap.store.Coordinate
+import com.example.chap.store.PostsViewModel
 
 
 
@@ -40,8 +43,8 @@ fun CreatePostDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
     locationState: LocationState,
-    selectedCategoryFilter: PostCategory?, // TSのselectedCategory相当
-    postActions: PostActions
+    selectedCategoryFilter: PostCategory?,
+    viewModel: PostsViewModel
 ) {
     if (!isOpen) return
 
@@ -129,7 +132,7 @@ fun CreatePostDialog(
                     onExpandedChange = { categoryMenuExpanded = !categoryMenuExpanded }
                 ) {
                     OutlinedTextField(
-                        value = category?.label ?: "",
+                        value = category?.name ?: "",
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("カテゴリ") },
@@ -144,9 +147,9 @@ fun CreatePostDialog(
                         expanded = categoryMenuExpanded,
                         onDismissRequest = { categoryMenuExpanded = false }
                     ) {
-                        PostCategory.values().forEach {
+            PostCategory.values().forEach {
                             DropdownMenuItem(
-                                text = { Text(it.label) },
+                text = { Text(it.name) },
                                 onClick = {
                                     category = it
                                     categoryMenuExpanded = false
@@ -198,8 +201,8 @@ fun CreatePostDialog(
                 if (tags.isNotEmpty()) {
                     Spacer(Modifier.height(8.dp))
                     FlowRow(
-                        mainAxisSpacing = 8.dp,
-                        crossAxisSpacing = 8.dp,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         tags.forEach { t ->
@@ -267,16 +270,19 @@ fun CreatePostDialog(
                                 scope.launch {
                                     loading = true
                                     try {
-                                        val req = CreatePostRequest(
+                                        val req = PostCreateRequest(
                                             content = content.trim(),
-                                            category = category!!,
+                                            category = category!!.name, // enum を文字列で送る既存 PostCreateRequest 仕様に合わせる
                                             tags = tags,
-                                            lat = locationState.location.lat,
-                                            lng = locationState.location.lng,
-                                            visible = (selectedCategoryFilter == null || selectedCategoryFilter == category)
+                                            coordinate = Coordinate(
+                                                lat = locationState.location.lat,
+                                                lng = locationState.location.lng
+                                            ),
+                                            visible = (selectedCategoryFilter == null || selectedCategoryFilter == category),
+                                            valid = true
                                         )
-                                        postActions.createPost(req)
-                                        postActions.fetchAroundPosts(req.lat, req.lng)
+                                        viewModel.createPost(req)
+                                        viewModel.fetchAround(locationState.location.lat, locationState.location.lng)
                                         reset()
                                         onClose()
                                     } finally {
