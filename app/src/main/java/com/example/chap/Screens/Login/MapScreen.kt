@@ -192,3 +192,15 @@ fun MapScreen() {
         }
     }
 }
+@Composable
+fun CreatePostForm(){
+
+}
+@Composable
+fun CreateThreadForm(){
+
+}
+@Composable
+fun CreateEventForm(){
+
+}
