@@ -28,11 +28,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.chap.API.LocationViewModel
 import com.example.chap.GetLocation
 import com.example.chap.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.R
+import com.example.chap.components.SelectPopupOverlay
+import com.example.chap.components.CreatePostDialog
+import com.example.chap.components.map.LocationState as MapLocationState
+import com.example.chap.components.map.LoadStatus as MapLoadStatus
+import com.example.chap.components.map.LatLng as MapLatLng
+import com.example.chap.components.map.PostCategory
+import com.example.chap.store.PostsViewModel
+import com.example.chap.store.PostsRepository
+import com.example.chap.store.PostCreateRequest
+import com.example.chap.store.Post
+import com.example.chap.store.AroundRequest
+import com.example.chap.store.Coordinate
 import com.example.chap.components.ToggleDimension
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
@@ -48,6 +62,29 @@ fun MapScreen() {
     var is3D by remember { mutableStateOf(false) }
     val lastLocation by remember { derivedStateOf { LocationViewModel.location } }
     var styleLoaded by remember { mutableStateOf(false) }
+    var showPopup by remember { mutableStateOf(false) }
+    var showCreatePost by remember { mutableStateOf(false) }
+
+    // 簡易 Repository (本番は差し替え)
+    val postsRepo = remember {
+        object : PostsRepository {
+            private var id = 1
+            private val items = mutableListOf<Post>()
+            override suspend fun fetchPosts(): List<Post> = items.toList()
+            override suspend fun fetchAround(req: AroundRequest): List<Post> = items.toList()
+            override suspend fun create(post: PostCreateRequest): Post {
+                val p = Post(
+                    id = id++, userId = 0, content = post.content, category = post.category,
+                    tags = post.tags, coordinate = post.coordinate, like = 0,
+                    createdTime = null, updatedAt = null, visible = post.visible, valid = post.valid
+                ); items.add(0, p); return p
+            }
+            override suspend fun fetchPost(id: Int): Post = items.first { it.id == id }
+            override suspend fun update(id: Int, patch: Map<String, Any?>): Post { return fetchPost(id) }
+            override suspend fun delete(id: Int) { items.removeAll { it.id == id } }
+        }
+    }
+    val postsViewModel = remember { PostsViewModel(postsRepo) }
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
@@ -161,6 +198,33 @@ fun MapScreen() {
                 ) {
                     Text(text = if (is3D) "2D" else "3D")
                 }
+                FloatingActionButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(12.dp),
+                    onClick = { showPopup = true}
+                ){
+                    Text( text = "+",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold )
+                }
+                SelectPopupOverlay(
+                    visible = showPopup,
+                    onDismiss = { showPopup = false },
+                    onRequestCreatePost = { showCreatePost = true }
+                )
+                if (showCreatePost) {
+                    CreatePostDialog(
+                        isOpen = showCreatePost,
+                        onClose = { showCreatePost = false },
+                        locationState = MapLocationState(
+                            status = if (lastLocation != null) MapLoadStatus.LOADED else MapLoadStatus.IDLE,
+                            location = MapLatLng(lastLocation?.lat ?: 0.0, lastLocation?.lng ?: 0.0)
+                        ),
+                        selectedCategoryFilter = null,
+                        viewModel = postsViewModel
+                    )
+                }
                 // スタイル未読込時の表示
                 if (!styleLoaded) {
                     Box(
@@ -171,7 +235,18 @@ fun MapScreen() {
                     }
                 }
             }
-
         }
     }
+}
+@Composable
+fun CreatePostForm(){
+
+}
+@Composable
+fun CreateThreadForm(){
+
+}
+@Composable
+fun CreateEventForm(){
+
 }
