@@ -178,7 +178,7 @@ fun MapScreen() {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(12.dp),
-                    onClick = { showCreatePost = true }
+                    onClick = { showPopup = true }
                 ) {
                     Text(
                         text = "+",
@@ -189,6 +189,7 @@ fun MapScreen() {
                 SelectPopupOverlay(
                     visible = showPopup,
                     onDismiss = { showPopup = false },
+                    onPostCreated = {showCreatePost = true}
                 )
                 // 投稿作成ダイアログ（onClick 内で直接呼ばず、Composable ツリー上に配置し state で表示制御）
                 CreatePostDialog(
