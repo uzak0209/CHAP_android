@@ -32,6 +32,7 @@ fun GetLocation(
                     Coordinate(location.latitude, location.longitude)
                 println("location: $coordinate")
                 LocationViewModel.updateLocation(LocationState(coordinate, Status.LOADED))
+                println("newLocation ${LocationViewModel.locationState.location}")
             }
         }
     }

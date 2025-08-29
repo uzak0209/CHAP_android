@@ -3,11 +3,10 @@ import com.example.chap.Models.Coordinate
 enum class Status{
     LOADING,LOADED,ERROR
 }
-class LocationState(coordinate: Coordinate?, loaded: Status) {
-    var location: Coordinate? = null
-    var status: Status = Status.LOADING
-}
-
+data class LocationState(
+    var location: Coordinate?,
+    var status: Status
+)
 object LocationViewModel {
 
     private var _locationState: LocationState = LocationState(null, Status.LOADED)
@@ -16,6 +15,6 @@ object LocationViewModel {
 
     fun updateLocation(newLocationState: LocationState) {
         _locationState = newLocationState
-        println("Location updated: $newLocationState")
+        println("Location updated: ${newLocationState.location}")
     }
 }
