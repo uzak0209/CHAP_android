@@ -78,10 +78,12 @@ object ApiClient {
             .apply { token?.let { addHeader("Authorization", "Bearer $it") } }
 
         val requestBody = body?.let { gson.toJson(it).toRequestBody("application/json".toMediaType()) }
-        print(token)
+        println(token)
         builder.method(method, if (method.uppercase() == "GET") null else requestBody)
-
+        println(requestBody.toString())
         val response = client.newCall(builder.build()).execute()
+
         response.body?.string()
+
     }
 }
