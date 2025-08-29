@@ -1,6 +1,5 @@
-package com.example.chap.Screens.Login
+package com.example.chap.Screens.Map
 
-import Navigation
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,16 +31,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.API.LocationViewModel
-import com.example.chap.GetLocation
-import com.example.chap.LOCATION_PERMISSION_REQUEST_CODE
+import com.example.chap.Models.Post
+import com.example.chap.libs.GetLocation
+import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.R
 import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.CreatePostDialog
+<<<<<<< HEAD:app/src/main/java/com/example/chap/Screens/Login/MapScreen.kt
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.PostCategory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.PostViewModel
+=======
+import com.example.chap.components.map.LocationState as MapLocationState
+import com.example.chap.components.map.LoadStatus as MapLoadStatus
+import com.example.chap.components.map.LatLng as MapLatLng
+import com.example.chap.store.PostsViewModel
+import com.example.chap.store.PostsRepository
+import com.example.chap.store.PostCreateRequest
+import com.example.chap.store.Post
+import com.example.chap.store.AroundRequest
+>>>>>>> master:app/src/main/java/com/example/chap/Screens/Map/MapScreen.kt
 import com.example.chap.components.ToggleDimension
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style

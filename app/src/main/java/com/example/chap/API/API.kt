@@ -64,7 +64,7 @@ object ApiClient {
     suspend fun request(
         url: String,
         method: String = "GET",
-        body: Map<String, String>? = null
+        body: Map<String, Any>? = null
     ): String? = withContext(Dispatchers.IO) {
         val builder = Request.Builder()
             .url(url)
@@ -72,6 +72,7 @@ object ApiClient {
             .apply { token?.let { addHeader("Authorization", "Bearer $it") } }
 
         val requestBody = body?.let { gson.toJson(it).toRequestBody("application/json".toMediaType()) }
+        print(token)
         builder.method(method, if (method.uppercase() == "GET") null else requestBody)
 
         val response = client.newCall(builder.build()).execute()

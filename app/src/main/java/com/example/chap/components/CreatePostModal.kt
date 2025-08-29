@@ -22,7 +22,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+<<<<<<< HEAD
 import androidx.lifecycle.viewmodel.compose.viewModel
+=======
+import androidx.lifecycle.ViewModel
+>>>>>>> master
 import com.example.chap.components.map.PostCategory
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.LocationState
@@ -44,7 +48,11 @@ fun CreatePostDialog(
     onClose: () -> Unit,
     locationState: LocationState,
     selectedCategoryFilter: PostCategory?,
+<<<<<<< HEAD
     postViewModel: com.example.chap.API.PostViewModel
+=======
+    viewModel: ViewModel
+>>>>>>> master
 ) {
     if (!isOpen) return
 
@@ -270,6 +278,7 @@ fun CreatePostDialog(
                                 scope.launch {
                                     loading = true
                                     try {
+<<<<<<< HEAD
                                         val post = Post(
                                             id = 0L,
                                             type = "post",
@@ -296,6 +305,9 @@ fun CreatePostDialog(
                                         postViewModel.fetchAround(locationState.location.lat, locationState.location.lng)
                                         reset()
                                         onClose()
+=======
+
+>>>>>>> master
                                     } finally {
                                         loading = false
                                     }
