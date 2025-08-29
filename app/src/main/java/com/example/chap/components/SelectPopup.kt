@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.example.chap.API.LocationViewModel
 import com.example.chap.API.LocationViewModel.locationState
 import com.example.chap.API.Status
+import androidx.compose.ui.util.packFloats
 import com.example.chap.R
 
 // 状態種別
@@ -144,7 +145,7 @@ fun SelectPopupOverlay(
             label = "投稿作成",
             iconRes = R.drawable.outline_imagesmode_24,
             containerColor = Color(0xFF16A34A)
-        ) { onDismiss(); onRequestCreatePost() },
+        ) { onDismiss(); onPostCreated() },
         FabAction(
             label = "スレッド作成",
             iconRes = R.drawable.outline_comment_24,
@@ -181,6 +182,8 @@ fun SelectPopupOverlay(
             }
         }
     }
+
+    // 投稿は CreatePostDialog を上位で制御するのでここではモーダルを表示しない
 
     if (showThread) SimpleModal(
         title = "スレッド作成",
