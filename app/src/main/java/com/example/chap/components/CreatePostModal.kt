@@ -22,13 +22,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModel
 import com.example.chap.components.map.PostCategory
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.MapEventListener
-import com.example.chap.store.PostCreateRequest
-import com.example.chap.store.Coordinate
-import com.example.chap.store.PostsViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
@@ -40,7 +38,7 @@ fun CreatePostDialog(
     onClose: () -> Unit,
     locationState: LocationState,
     selectedCategoryFilter: PostCategory?,
-    viewModel: PostsViewModel
+    viewModel: ViewModel
 ) {
     if (!isOpen) return
 
@@ -266,21 +264,7 @@ fun CreatePostDialog(
                                 scope.launch {
                                     loading = true
                                     try {
-                                        val req = PostCreateRequest(
-                                            content = content.trim(),
-                                            category = category!!.name, // enum を文字列で送る既存 PostCreateRequest 仕様に合わせる
-                                            tags = tags,
-                                            coordinate = Coordinate(
-                                                lat = locationState.location.lat,
-                                                lng = locationState.location.lng
-                                            ),
-                                            visible = (selectedCategoryFilter == null || selectedCategoryFilter == category),
-                                            valid = true
-                                        )
-                                        viewModel.createPost(req)
-                                        viewModel.fetchAround(locationState.location.lat, locationState.location.lng)
-                                        reset()
-                                        onClose()
+
                                     } finally {
                                         loading = false
                                     }
