@@ -102,8 +102,8 @@ class PostRepositoryImpl : PostRepository {
     override suspend fun create(request: PostCreateRequest): Result<String> {
         return try {
             val coordinateMap = mapOf(
-                "lat" to request.coordinate.lat.toString(),
-                "lng" to request.coordinate.lng.toString()
+                "lat" to request.coordinate.lat,
+                "lng" to request.coordinate.lng
             )
             val formatted = getCurrentTimeISO()
             val requestBody = mapOf(
@@ -111,11 +111,12 @@ class PostRepositoryImpl : PostRepository {
                 "content" to request.content,
                 "coordinate" to coordinateMap,
                 "created_at" to formatted,
-                "like" to "0",
+                "like" to 0,
                 "tags" to request.tags,
                 "type" to "post",
-                "valid" to request.valid.toString()
+                "valid" to true
             )
+            println(requestBody)
             val response = ApiClient.request(
                 url = ApiEndpoints.Posts.CREATE,
                 method = "POST",

@@ -8,9 +8,9 @@ package com.example.chap.components.map
 
 // ---- Category Enums -------------------------------------------------------
 
-enum class PostCategory { ENTERTAINMENT, COMMUNITY, INFORMATION, DISASTER }
+enum class PostCategory { entertainment, community, disaster }
 
-enum class EventCategory { ENTERTAINMENT, COMMUNITY, INFORMATION, DISASTER, FOOD, EVENT }
+enum class EventCategory { entertainment, community, disaster, food, event }
 
 // ---- Primitive Value Objects ---------------------------------------------
 

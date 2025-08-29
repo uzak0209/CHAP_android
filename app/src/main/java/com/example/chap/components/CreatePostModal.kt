@@ -1,5 +1,7 @@
 package com.example.chap.components
 
+// TS由来の未変換要素を Kotlin モデルへ差し替え済み
+
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -49,17 +51,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.LocationViewModel.locationState
+import com.example.chap.API.PostViewModelFactory
 import com.example.chap.API.Status
 import com.example.chap.Models.PostCreateRequest
 import com.example.chap.components.map.PostCategory
-import kotlinx.coroutines.launch
-
-// TS由来の未変換要素を Kotlin モデルへ差し替え済み
-
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chap.API.PostViewModelFactory
 import com.example.chap.domain.repository.PostRepositoryImpl
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -298,8 +297,6 @@ fun CreatePostDialog(
                                     loading = true
                                     try {
                                         val post = PostCreateRequest(
-
-
                                             coordinate = locationState.location!!,
                                             content = content.trim(),
                                             category = category!!.name,
