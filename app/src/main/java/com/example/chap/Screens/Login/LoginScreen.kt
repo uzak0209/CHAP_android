@@ -1,6 +1,7 @@
 package com.example.chap.Screens.Login
 
 import Logo
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -129,16 +130,17 @@ fun MainBody(
             } else {
                 Spacer(modifier = Modifier.height(24.dp))
             }
+            val context = LocalContext.current
             Button(
                 onClick = {
                     when (selectedTab) {
                         LoginTab.Login -> {
-                            LoginViewModel.login(email, password)
+                            LoginViewModel.login(email, password, context)
                             onLoginSuccess()
                         }
 
                         LoginTab.SignUp -> {
-                            LoginViewModel.register(email, password, displayName)
+                            LoginViewModel.register(email, password, displayName, context)
                             onLoginSuccess()
                         }
                     }

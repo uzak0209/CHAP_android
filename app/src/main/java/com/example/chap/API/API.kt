@@ -1,5 +1,8 @@
 package com.example.chap.API
 
+import android.annotation.SuppressLint
+import com.example.chap.AppContextHolder
+import com.example.chap.Auth.TokenManager
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -59,13 +62,16 @@ object ApiClient {
     private val client = OkHttpClient()
     var token: String? = null
     private val gson = Gson()
-
+    @SuppressLint("StaticFieldLeak")
+    private val tokenManager= TokenManager(AppContextHolder.appContext)
 
     suspend fun request(
         url: String,
         method: String = "GET",
         body: Map<String, Any>? = null
     ): String? = withContext(Dispatchers.IO) {
+
+        token=tokenManager.getToken()
         val builder = Request.Builder()
             .url(url)
             .addHeader("Content-Type", "application/json")

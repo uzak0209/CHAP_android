@@ -14,7 +14,7 @@ fun ToggleDimension(
         bearing(if (is3D) 45.0 else 0.0)
 
         // 位置が取れている場合はそこへフォーカス (未取得なら現状維持)
-        LocationViewModel.location?.let { loc ->
+        LocationViewModel.locationState.location?.let { loc ->
             center(Point.fromLngLat(loc.lng,loc.lat))
 
             if (is3D) {

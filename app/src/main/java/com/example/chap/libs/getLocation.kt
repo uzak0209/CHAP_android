@@ -5,7 +5,9 @@ import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.chap.API.LocationState
 import com.example.chap.API.LocationViewModel
+import com.example.chap.API.Status
 import com.example.chap.Models.Coordinate
 import com.google.android.gms.location.LocationServices
 
@@ -28,7 +30,8 @@ fun GetLocation(
             if (location != null) {
                 val coordinate =
                     Coordinate(location.latitude, location.longitude)
-                LocationViewModel.updateLocation(coordinate)
+                println("location: $coordinate")
+                LocationViewModel.updateLocation(LocationState(coordinate, Status.LOADED))
             }
         }
     }
