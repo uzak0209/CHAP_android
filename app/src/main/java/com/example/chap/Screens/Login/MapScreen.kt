@@ -39,11 +39,11 @@ import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.LoadStatus
-import com.example.chap.components.map.PostCategory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.PostViewModel
 import com.example.chap.components.CreatePostDialog
 import com.example.chap.components.ToggleDimension
+import com.example.chap.components.map.SubmitCategory
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
@@ -143,13 +143,14 @@ fun MapScreen() {
                     isOpen = showCreatePost,
                     onClose = { showCreatePost = false },
                     locationState = locationState,
-                    selectedCategoryFilter = null,
-                    postViewModel = postViewModel
+                    selectedCategoryFilter = SubmitCategory.ENTERTAINMENT,
                 )
                 SelectPopupOverlay(
                     visible = showPopup,
                     onDismiss = { showPopup = false },
-                    onRequestCreatePost = { showCreatePost = true }
+                    onRequestCreatePost = { showCreatePost = true },
+                    onEventCreated = {showCreatePost=true},
+                    onThreadCreated = {showCreatePost=true},
                 )
                 if (!styleLoaded) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

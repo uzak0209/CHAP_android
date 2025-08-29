@@ -8,9 +8,7 @@ package com.example.chap.components.map
 
 // ---- Category Enums -------------------------------------------------------
 
-enum class PostCategory { ENTERTAINMENT, COMMUNITY, INFORMATION, DISASTER }
-
-enum class EventCategory { ENTERTAINMENT, COMMUNITY, INFORMATION, DISASTER, FOOD, EVENT }
+enum class SubmitCategory { ENTERTAINMENT, COMMUNITY, DISASTER }
 
 // ---- Primitive Value Objects ---------------------------------------------
 
@@ -22,7 +20,6 @@ data class Coordinate(
 typealias LatLng = Coordinate
 
 // ---- Core Entities --------------------------------------------------------
-
 data class Post(
   val id: Long,
   val userId: String,
@@ -31,7 +28,7 @@ data class Post(
   val deletedAt: String? = null,
   val updatedAt: String? = null,
   val content: String,
-  val category: PostCategory,
+  val category: SubmitCategory,
   val valid: Boolean,
   val like: Int,
   val tags: List<String> = emptyList(),
@@ -46,7 +43,7 @@ data class Thread(
   val deletedAt: String? = null,
   val updatedAt: String? = null,
   val content: String,
-  val category: PostCategory, // Thread も Post と同一カテゴリ扱い
+  val category: SubmitCategory, // Thread も Post と同一カテゴリ扱い
   val valid: Boolean,
   val like: Int,
   val tags: List<String> = emptyList(),
@@ -61,7 +58,7 @@ data class Event(
   val deletedAt: String? = null,
   val updatedAt: String? = null,
   val content: String,
-  val category: EventCategory,
+  val category: SubmitCategory,
   val valid: Boolean,
   val like: Int,
   val tags: List<String> = emptyList(),
@@ -97,6 +94,8 @@ data class LocationState(
   val location: LatLng,
   val error: String? = null
 )
+
+enum class SubmitType {Post, Thread, Event}
 
 // ---- Listener Interface ---------------------------------------------------
 

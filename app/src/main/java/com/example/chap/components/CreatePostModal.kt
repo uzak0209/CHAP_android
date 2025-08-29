@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chap.components.map.PostCategory
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.MapEventListener
@@ -34,7 +33,10 @@ import com.example.chap.Models.Coordinate
 import com.example.chap.Models.PostCreateRequest
 import com.example.chap.Models.Post
 import com.example.chap.Models.User
+import com.example.chap.components.map.SubmitCategory
+import com.example.chap.components.map.SubmitType
 import java.time.Instant
+import com.example.chap.components.map.SubmitCategory.ENTERTAINMENT
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,14 +45,15 @@ fun CreatePostDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
     locationState: LocationState,
-    selectedCategoryFilter: PostCategory?,
-    postViewModel: com.example.chap.API.PostViewModel
+    selectedCategoryFilter: SubmitCategory,
 ) {
     if (!isOpen) return
 
     val scope = rememberCoroutineScope()
+    // 未定義だった ViewModel をローカルで取得
+    val postViewModel: PostViewModel = viewModel()
     var content by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf<PostCategory?>(null) }
+    var category by remember { mutableStateOf<SubmitCategory>(ENTERTAINMENT) }
     var tags by remember { mutableStateOf(listOf<String>()) }
     var tagInput by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
@@ -60,7 +63,7 @@ fun CreatePostDialog(
 
     fun reset() {
         content = ""
-        category = null
+        category = ENTERTAINMENT
         tags = emptyList()
         tagInput = ""
     }
@@ -147,7 +150,7 @@ fun CreatePostDialog(
                         expanded = categoryMenuExpanded,
                         onDismissRequest = { categoryMenuExpanded = false }
                     ) {
-            PostCategory.values().forEach {
+            SubmitCategory.values().forEach {
                             DropdownMenuItem(
                 text = { Text(it.name) },
                                 onClick = {
@@ -266,7 +269,7 @@ fun CreatePostDialog(
                     }
                     Button(
                         onClick = {
-                            if (category != null && locationState.status == LoadStatus.LOADED) {
+                            if (locationState.status == LoadStatus.LOADED) {
                                 scope.launch {
                                     loading = true
                                     try {
@@ -304,7 +307,6 @@ fun CreatePostDialog(
                         },
                         modifier = Modifier.weight(1f),
                         enabled = content.isNotBlank() &&
-                                category != null &&
                                 !loading &&
                                 locationState.status == LoadStatus.LOADED
                     ) {

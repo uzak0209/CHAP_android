@@ -140,12 +140,12 @@ fun SelectPopupOverlay(
             label = "スレッド作成",
             iconRes = R.drawable.outline_comment_24,
             containerColor = Color(0xFF7E22CE)
-        ) { onDismiss(); showThread = true },
+        ) { onDismiss(); onThreadCreated() },
         FabAction(
             label = "イベント作成",
             iconRes = R.drawable.outline_calendar_today_24,
             containerColor = Color(0xFFF97316)
-        ) { onDismiss(); showEvent = true }
+        ) { onDismiss(); onEventCreated() }
     )
 
     Box(
@@ -174,20 +174,20 @@ fun SelectPopupOverlay(
     }
 
     // 投稿は CreatePostDialog を上位で制御するのでここではモーダルを表示しない
-    // 投稿作成は上位のダイアログ表示に委譲
-    if (showThread) SimpleModal(
-        title = "スレッド作成",
-        onDismiss = { showThread = false },
-        onConfirm = { onThreadCreated(); showThread = false }
-    )
-    if (showEvent) SimpleModal(
-        title = "イベント作成",
-        onDismiss = { showEvent = false },
-        onConfirm = {
-            onEventCreated(); showEvent = false
-            if (locationState.status == LoadStatus.LOADED) {
-                onReloadEvents(locationState.lat, locationState.lng)
-            }
-        }
-    )
+//    // 投稿作成は上位のダイアログ表示に委譲
+//    if (showThread) SimpleModal(
+//        title = "スレッド作成",
+//        onDismiss = { showThread = false },
+//        onConfirm = { onThreadCreated(); showThread = false }
+//    )
+//    if (showEvent) SimpleModal(
+//        title = "イベント作成",
+//        onDismiss = { showEvent = false },
+//        onConfirm = {
+//            onEventCreated(); showEvent = false
+//            if (locationState.status == LoadStatus.LOADED) {
+//                onReloadEvents(locationState.lat, locationState.lng)
+//            }
+//        }
+//    )
 }
