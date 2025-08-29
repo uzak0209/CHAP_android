@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.LocationViewModel
-import com.example.chap.API.PostViewModel
 import com.example.chap.API.PostViewModelFactory
 import com.example.chap.R
 import com.example.chap.components.CreatePostDialog
@@ -123,7 +122,7 @@ fun MapScreen() {
                             styleLoaded = true
                         }
                     }
-                    MapEffect(lastLocation) { mapView ->
+                    MapEffect(LocationViewModel.locationState.location) { mapView ->
                         val plugin = mapView.location
                         plugin.updateSettings { enabled = true; pulsingEnabled = true }
                     }
@@ -147,7 +146,6 @@ fun MapScreen() {
                     isOpen = showCreatePost,
                     onClose = { showCreatePost = false },
                     selectedCategoryFilter = null,
-                    postViewModel = postViewModel
                 )
                 SelectPopupOverlay(
                     visible = showPopup,
