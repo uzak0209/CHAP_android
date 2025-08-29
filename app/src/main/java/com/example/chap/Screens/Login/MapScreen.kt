@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,12 +35,14 @@ import com.example.chap.GetLocation
 import com.example.chap.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.R
 import com.example.chap.components.SelectPopupOverlay
-import com.example.chap.components.CreatePostDialog
+import com.example.chap.components.ui.AppBottomBar
+import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.LoadStatus
 import com.example.chap.components.map.PostCategory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.PostViewModel
+import com.example.chap.components.CreatePostDialog
 import com.example.chap.components.ToggleDimension
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
@@ -86,64 +87,28 @@ fun MapScreen() {
 
     Scaffold(
         bottomBar = {
-            BottomAppBar(
-                actions = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.CenterVertically)
-                            .padding(horizontal = 55.dp),
-
-                        ) {
-                        IconButton(onClick = { /* TODO */ }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.outline_home_24),
-                                contentDescription = "Home",
-                                modifier = Modifier.size(64.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(32.dp))
-
-                        IconButton(onClick = { /* TODO */ }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.outline_map_24),
-                                contentDescription = "Map",
-                                modifier = Modifier.size(64.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(32.dp))
-                        IconButton(onClick = { /* TODO */ }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.outline_flag_24),
-                                contentDescription = "Event",
-                                modifier = Modifier.size(64.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(32.dp))
-                        IconButton(onClick = { /* TODO */ }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.outline_mode_comment_24),
-                                contentDescription = "Thread",
-                                modifier = Modifier.size(64.dp)
-                            )
-                        }
-                    }
+            AppBottomBar { dest ->
+                when(dest){
+                    BottomDestination.Home -> { /* TODO navigate home */ }
+                    BottomDestination.Map -> { /* current */ }
+                    BottomDestination.Event -> { /* TODO */ }
+                    BottomDestination.Thread -> { /* TODO */ }
                 }
-            )
+            }
         }
     ) { innerPadding ->
         // innerPadding を適用して画面本体を表示
-        Surface(modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize())
-        {
+        Surface(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
             Box(modifier = Modifier.fillMaxSize().background(Color(0xFFEEEEEE))) {
                 MapboxMap(
                     modifier = Modifier.fillMaxSize(),
                     mapViewportState = viewportState,
                     style = { Style.STANDARD }
                 ) {
-                    // スタイルロード完了管理
                     MapEffect(Unit) { mapView ->
                         if (mapView.getMapboxMap().style == null && !styleLoaded) {
                             mapView.getMapboxMap().loadStyleUri(Style.STANDARD) { _ ->
@@ -153,14 +118,9 @@ fun MapScreen() {
                             styleLoaded = true
                         }
                     }
-
-                    // 位置情報プラグイン設定
                     MapEffect(lastLocation) { mapView ->
                         val plugin = mapView.location
-                        plugin.updateSettings {
-                            enabled = true
-                            pulsingEnabled = true
-                        }
+                        plugin.updateSettings { enabled = true; pulsingEnabled = true }
                     }
                 }
                 FloatingActionButton(
@@ -169,29 +129,15 @@ fun MapScreen() {
                         .padding(12.dp),
                     onClick = {
                         is3D = !is3D
-                        ToggleDimension(viewportState,is3D)
+                        ToggleDimension(viewportState, is3D)
                     }
-                ) {
-                    Text(text = if (is3D) "2D" else "3D")
-                }
+                ) { Text(text = if (is3D) "2D" else "3D") }
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(12.dp),
                     onClick = { showPopup = true }
-                ) {
-                    Text(
-                        text = "+",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                SelectPopupOverlay(
-                    visible = showPopup,
-                    onDismiss = { showPopup = false },
-                    onPostCreated = {showCreatePost = true}
-                )
-                // 投稿作成ダイアログ（onClick 内で直接呼ばず、Composable ツリー上に配置し state で表示制御）
+                ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
                 CreatePostDialog(
                     isOpen = showCreatePost,
                     onClose = { showCreatePost = false },
@@ -199,12 +145,13 @@ fun MapScreen() {
                     selectedCategoryFilter = null,
                     postViewModel = postViewModel
                 )
-                // スタイル未読込時の表示
+                SelectPopupOverlay(
+                    visible = showPopup,
+                    onDismiss = { showPopup = false },
+                    onPostCreated = {showCreatePost = true}
+                )
                 if (!styleLoaded) {
-                    Box(
-                        Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("地図スタイル読み込み中…", color = Color.DarkGray)
                     }
                 }
