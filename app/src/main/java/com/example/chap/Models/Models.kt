@@ -5,6 +5,16 @@ data class Coordinate(
     val lng: Double
 )
 
+// 投稿作成リクエスト DTO (UI -> API)
+data class PostCreateRequest(
+    val content: String,
+    val category: String,
+    val tags: List<String>,
+    val coordinate: Coordinate,
+    val visible: Boolean,
+    val valid: Boolean
+)
+
 // ユーザー
 data class User(
     val id: String,

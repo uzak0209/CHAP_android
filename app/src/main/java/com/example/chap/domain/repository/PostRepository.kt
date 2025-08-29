@@ -9,7 +9,7 @@ interface PostRepository {
     suspend fun findAllPublic(): List<Post>
     suspend fun findAllHome(): List<Post>
     suspend fun create(
-        id: Long,
+        id: PostId,
         type: String,
         created_at: String,
         updated_at: String,
