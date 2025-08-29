@@ -1,6 +1,8 @@
 package com.example.chap.Screens.Map
 
+import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,7 +20,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,30 +31,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.LocationViewModel
-import com.example.chap.Models.Post
+import com.example.chap.API.PostViewModel
+import com.example.chap.API.PostViewModelFactory
+import com.example.chap.R
+import com.example.chap.components.CreatePostDialog
+import com.example.chap.components.SelectPopupOverlay
+import com.example.chap.components.ToggleDimension
+import com.example.chap.domain.repository.PostRepositoryImpl
 import com.example.chap.libs.GetLocation
 import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
-import com.example.chap.R
-import com.example.chap.components.SelectPopupOverlay
-import com.example.chap.components.CreatePostDialog
-<<<<<<< HEAD:app/src/main/java/com/example/chap/Screens/Login/MapScreen.kt
-import com.example.chap.components.map.LocationState
-import com.example.chap.components.map.LoadStatus
-import com.example.chap.components.map.PostCategory
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chap.API.PostViewModel
-=======
-import com.example.chap.components.map.LocationState as MapLocationState
-import com.example.chap.components.map.LoadStatus as MapLoadStatus
-import com.example.chap.components.map.LatLng as MapLatLng
-import com.example.chap.store.PostsViewModel
-import com.example.chap.store.PostsRepository
-import com.example.chap.store.PostCreateRequest
-import com.example.chap.store.Post
-import com.example.chap.store.AroundRequest
->>>>>>> master:app/src/main/java/com/example/chap/Screens/Map/MapScreen.kt
-import com.example.chap.components.ToggleDimension
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
@@ -62,16 +50,15 @@ import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportS
 import com.mapbox.maps.plugin.locationcomponent.location
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MapScreen() {
     // Compose で ViewModel の位置情報を監視
     var is3D by remember { mutableStateOf(false) }
-    val lastLocation by remember { derivedStateOf { LocationViewModel.location } }
     var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
     var showCreatePost by remember { mutableStateOf(false) }
-    val postViewModel: PostViewModel = viewModel()
-    val locationState = remember { LocationState(LoadStatus.LOADING, com.example.chap.components.map.Coordinate(0.0,0.0)) }
+    val postViewModel: PostViewModel = viewModel(factory = PostViewModelFactory(PostRepositoryImpl()))
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
@@ -82,12 +69,13 @@ fun MapScreen() {
 
     // Mapbox カメラ状態
     val viewportState = rememberMapViewportState {
+        println("Camera position: ${LocationViewModel.locationState.location}")
         setCameraOptions {
             zoom(16.5)
             center(
                 Point.fromLngLat(
-                    lastLocation?.lng ?: 0.0,
-                    lastLocation?.lat ?: 0.0
+                    LocationViewModel.locationState.location?.lng ?: 0.0,
+                    LocationViewModel.locationState.location?.lat ?: 0.0
                 )
             )
             pitch(0.0)
@@ -166,7 +154,7 @@ fun MapScreen() {
                     }
 
                     // 位置情報プラグイン設定
-                    MapEffect(lastLocation) { mapView ->
+                    MapEffect(LocationViewModel.locationState.location) { mapView ->
                         val plugin = mapView.location
                         plugin.updateSettings {
                             enabled = true
@@ -205,9 +193,7 @@ fun MapScreen() {
                 CreatePostDialog(
                     isOpen = showCreatePost,
                     onClose = { showCreatePost = false },
-                    locationState = locationState,
                     selectedCategoryFilter = null,
-                    postViewModel = postViewModel
                 )
                 // スタイル未読込時の表示
                 if (!styleLoaded) {

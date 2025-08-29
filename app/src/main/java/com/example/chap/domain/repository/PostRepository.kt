@@ -1,78 +1,120 @@
 package com.example.chap.domain.repository
-import com.example.chap.Models.Coordinate
-import com.example.chap.Models.Post
-import com.example.chap.Models.User
-import com.example.chap.domain.model.PostId
-
-interface PostRepository {
-    suspend fun findById(id: PostId): Post?
-    suspend fun findAllPublic(): List<Post>
-    suspend fun findAllHome(): List<Post>
-    suspend fun create(
-        id: PostId,
-        type: String,
-        created_at: String,
-        updated_at: String,
-        deleted_at: String?,
-        user_id: String,
-        username: String,
-        user: User,
-        coordinate: Coordinate,
-        content: String,
-        category: String,
-        valid: Boolean,
-        like: Int,
-        tags: List<String>
-    ): Post
-    suspend fun delete(post: Post)
-}
 
 // API連携用の実装クラス
+
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.chap.API.ApiClient
 import com.example.chap.API.ApiEndpoints
 import com.example.chap.API.LocationViewModel
+import com.example.chap.Models.Coordinate
+import com.example.chap.Models.Post
+import com.example.chap.Models.PostCreateRequest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import org.json.JSONArray
+import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-import android.os.Build
-import androidx.annotation.RequiresApi
+
+interface PostRepository {
+    suspend fun getAll(): Result<List<Post>>
+
+    suspend fun create(
+        request: PostCreateRequest
+    ): Result<String>
+}
+
 
 class PostRepositoryImpl : PostRepository {
-    suspend fun getAllPostsApi(): Result<String> {
+    private val _posts = MutableStateFlow<List<Post>>(emptyList())
+    val posts: StateFlow<List<Post>> get() = _posts
+
+    override suspend fun getAll(): Result<List<Post>> {
         return try {
             val response = ApiClient.request(
                 url = ApiEndpoints.Posts.LIST,
                 method = "POST",
                 body = mapOf(
-                    "lat" to LocationViewModel.location?.lat.toString(),
-                    "lng" to LocationViewModel.location?.lng.toString()
+                    "lat" to LocationViewModel.locationState.location?.lat.toString(),
+                    "lng" to LocationViewModel.locationState.location?.lng.toString()
                 )
             )
-            Result.success(response.toString())
+            // レスポンスをパースしてPostリストに変換し、_postsにセット
+            val postList = parsePosts(response)
+            Result.success(postList)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun createPostApi(post: Post): Result<String> {
-        return try {
-            val coordinateMap = LocationViewModel.location?.let { loc ->
-                mapOf(
-                    "lat" to loc.lat.toString(),
-                    "lng" to loc.lng.toString()
-                )
-            } ?: emptyMap()
 
+
+    // レスポンス(JSON)からList<Post>へ変換する関数（簡易実装例）
+    private fun parsePosts(response: Any?): List<Post> {
+        if (response == null) return emptyList()
+        return try {
+            val jsonArray = when (response) {
+                is String -> JSONArray(response)
+                else -> JSONArray(response.toString())
+            }
+            List(jsonArray.length()) { i ->
+                val obj = jsonArray.getJSONObject(i)
+                Post(
+                    id = obj.optLong("id", 0L),
+                    type = obj.optString("type", ""),
+                    created_at = obj.optString("created_at", ""),
+                    updated_at = obj.optString("updated_at", ""),
+                    deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
+                    user_id = obj.optString("user_id", ""),
+                    username = obj.optString("username", ""),
+                    coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+                    content = obj.optString("content", ""),
+                    category = obj.optString("category", ""),
+                    valid = obj.optBoolean("valid", true),
+                    like = obj.optInt("like", 0),
+                    tags = parseTags(obj.optJSONArray("tags"))
+                )
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+
+
+    // Coordinateのパース
+    private fun parseCoordinate(obj: JSONObject?): Coordinate {
+        return if (obj == null) Coordinate(0.0, 0.0)
+        else Coordinate(
+            lat = obj.optDouble("lat", 0.0),
+            lng = obj.optDouble("lng", 0.0)
+        )
+    }
+
+    // tagsのパース
+    private fun parseTags(array: JSONArray?): List<String> {
+        if (array == null) return emptyList()
+        return List(array.length()) { i -> array.optString(i, "") }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun create(request: PostCreateRequest): Result<String> {
+        return try {
+            val coordinateMap = mapOf(
+                "lat" to request.coordinate.lat.toString(),
+                "lng" to request.coordinate.lng.toString()
+            )
             val formatted = getCurrentTimeISO()
             val requestBody = mapOf(
-                "category" to post.category,
-                "content" to post.content,
+                "category" to request.category,
+                "content" to request.content,
                 "coordinate" to coordinateMap,
                 "created_at" to formatted,
                 "like" to "0",
-                "tags" to post.tags,
+                "tags" to request.tags,
                 "type" to "post",
-                "valid" to "true"
+                "valid" to request.valid.toString()
             )
             val response = ApiClient.request(
                 url = ApiEndpoints.Posts.CREATE,
@@ -90,26 +132,4 @@ class PostRepositoryImpl : PostRepository {
         val now = Instant.now()
         return DateTimeFormatter.ISO_INSTANT.format(now)
     }
-
-    // 既存メソッドは未実装のまま
-    override suspend fun findById(id: PostId): Post? = null
-    override suspend fun findAllPublic(): List<Post> = emptyList()
-    override suspend fun findAllHome(): List<Post> = emptyList()
-    override suspend fun create(
-        id: Long,
-        type: String,
-        created_at: String,
-        updated_at: String,
-        deleted_at: String?,
-        user_id: String,
-        username: String,
-        user: User,
-        coordinate: Coordinate,
-        content: String,
-        category: String,
-        valid: Boolean,
-        like: Int,
-        tags: List<String>
-    ): Post = throw NotImplementedError()
-    override suspend fun delete(post: Post) {}
 }

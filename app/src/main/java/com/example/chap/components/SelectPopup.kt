@@ -1,23 +1,31 @@
 package com.example.chap.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,11 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chap.API.LocationViewModel
+import com.example.chap.API.LocationViewModel.locationState
+import com.example.chap.API.Status
 import com.example.chap.R
 
 // 状態種別
 enum class LoadStatus { IDLE, LOADING, LOADED, ERROR }
-data class LocationState(val lat: Double, val lng: Double, val status: LoadStatus)
+data class LocationState(val lat: LoadStatus, val lng: Double, val status: LoadStatus)
 
 private data class FabAction(
     val label: String,
@@ -117,7 +128,6 @@ private fun SimpleModal(
 fun SelectPopupOverlay(
     visible: Boolean,
     onDismiss: () -> Unit,
-    locationState: LocationState = LocationState(0.0, 0.0, LoadStatus.IDLE),
     onReloadEvents: (lat: Double, lng: Double) -> Unit = { _, _ -> },
     onRequestCreatePost: () -> Unit = {}, // 新規: CreatePostDialog を開くためのコールバック
     onPostCreated: () -> Unit = {},
@@ -182,8 +192,8 @@ fun SelectPopupOverlay(
         onDismiss = { showEvent = false },
         onConfirm = {
             onEventCreated(); showEvent = false
-            if (locationState.status == LoadStatus.LOADED) {
-                onReloadEvents(locationState.lat, locationState.lng)
+            if (LocationViewModel.locationState.status == Status.LOADED) {
+                onReloadEvents(locationState.location?.lat!!, locationState.location?.lng!!)
             }
         }
     )
