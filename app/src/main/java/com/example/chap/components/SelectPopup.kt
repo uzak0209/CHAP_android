@@ -135,7 +135,7 @@ fun SelectPopupOverlay(
             label = "投稿作成",
             iconRes = R.drawable.outline_imagesmode_24,
             containerColor = Color(0xFF16A34A)
-        ) { onDismiss(); onPostCreated() },
+        ) { onDismiss(); onRequestCreatePost() },
         FabAction(
             label = "スレッド作成",
             iconRes = R.drawable.outline_comment_24,
@@ -174,7 +174,7 @@ fun SelectPopupOverlay(
     }
 
     // 投稿は CreatePostDialog を上位で制御するのでここではモーダルを表示しない
-
+    // 投稿作成は上位のダイアログ表示に委譲
     if (showThread) SimpleModal(
         title = "スレッド作成",
         onDismiss = { showThread = false },

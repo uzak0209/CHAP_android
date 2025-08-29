@@ -138,6 +138,7 @@ fun MapScreen() {
                         .padding(12.dp),
                     onClick = { showPopup = true }
                 ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
+
                 CreatePostDialog(
                     isOpen = showCreatePost,
                     onClose = { showCreatePost = false },
@@ -148,7 +149,7 @@ fun MapScreen() {
                 SelectPopupOverlay(
                     visible = showPopup,
                     onDismiss = { showPopup = false },
-                    onPostCreated = {showCreatePost = true}
+                    onRequestCreatePost = { showCreatePost = true }
                 )
                 if (!styleLoaded) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
