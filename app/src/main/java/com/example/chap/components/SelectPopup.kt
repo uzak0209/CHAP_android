@@ -135,11 +135,12 @@ fun SelectPopupOverlay(
             label = "投稿作成",
             iconRes = R.drawable.outline_imagesmode_24,
             containerColor = Color(0xFF16A34A)
-        ) { onDismiss(); onPostCreated() },
+        ) { onDismiss(); onRequestCreatePost() },
         FabAction(
             label = "スレッド作成",
             iconRes = R.drawable.outline_comment_24,
             containerColor = Color(0xFF7E22CE)
+        ) { onDismiss(); onThreadCreated() },
         ) { onDismiss(); onThreadCreated() },
         FabAction(
             label = "イベント作成",
