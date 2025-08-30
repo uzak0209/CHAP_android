@@ -4,7 +4,9 @@ data class Coordinate(
     val lat: Double,
     val lng: Double
 )
-
+enum class CreateKind{
+    POST,THREAD,EVENT;
+}
 // 投稿作成リクエスト DTO (UI -> API)
 data class PostCreateRequest(
     val content: String,
@@ -14,7 +16,13 @@ data class PostCreateRequest(
     val visible: Boolean,
     val valid: Boolean
 )
+enum class PostCategory{
+    ENTERTAINMENT,DISASTER,COMMUNITY;
 
+    override fun toString(): String {
+        return name.lowercase()
+    }
+}
 // ユーザー
 data class User(
     val id: String,

@@ -9,20 +9,21 @@ import androidx.lifecycle.viewModelScope
 import com.example.chap.Models.Post
 import com.example.chap.Models.PostCreateRequest
 import com.example.chap.domain.repository.PostRepositoryImpl
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class PostViewModel(
     private val postRepository: PostRepositoryImpl
 ) : ViewModel() {
-    private val _posts = MutableStateFlow<List<Post>>(emptyList())
-    val posts: MutableStateFlow<List<Post>> = _posts
+    fun getPosts(): List<Post> {
+        return postRepository.posts.value
+    }
 
     fun getAllPosts() {
         viewModelScope.launch {
             val result = postRepository.getAll()
             result.onSuccess { response ->
                 println("投稿一覧取得成功: $response")
+
                 // 必要に応じて_postの更新など
             }.onFailure { e ->
                 println("エラー: ${e.message}")

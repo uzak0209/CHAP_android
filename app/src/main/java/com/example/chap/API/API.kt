@@ -83,7 +83,7 @@ object ApiClient {
         println(requestBody.toString())
         val response = client.newCall(builder.build()).execute()
 
-        response.body?.string()
+        response.body.string()
 
     }
 }

@@ -23,9 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -33,10 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chap.API.LocationViewModel
-import com.example.chap.API.LocationViewModel.locationState
-import com.example.chap.API.Status
-import androidx.compose.ui.util.packFloats
 import com.example.chap.R
 
 // 状態種別
@@ -137,9 +130,6 @@ fun SelectPopupOverlay(
 ) {
     if (!visible) return
 
-    var showThread by remember { mutableStateOf(false) }
-    var showEvent by remember { mutableStateOf(false) }
-
     val actionButtons = listOf(
         FabAction(
             label = "投稿作成",
@@ -150,12 +140,12 @@ fun SelectPopupOverlay(
             label = "スレッド作成",
             iconRes = R.drawable.outline_comment_24,
             containerColor = Color(0xFF7E22CE)
-        ) { onDismiss(); showThread = true },
+        ) { onDismiss(); onThreadCreated() },
         FabAction(
             label = "イベント作成",
             iconRes = R.drawable.outline_calendar_today_24,
             containerColor = Color(0xFFF97316)
-        ) { onDismiss(); showEvent = true }
+        ) { onDismiss();onEventCreated() }
     )
 
     Box(
@@ -165,7 +155,6 @@ fun SelectPopupOverlay(
             .clickable(onClick = onDismiss),
         contentAlignment = Alignment.BottomEnd
     ) {
-        // クリック透過させたくない領域を別 Box で包む
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -183,21 +172,4 @@ fun SelectPopupOverlay(
         }
     }
 
-    // 投稿は CreatePostDialog を上位で制御するのでここではモーダルを表示しない
-
-    if (showThread) SimpleModal(
-        title = "スレッド作成",
-        onDismiss = { showThread = false },
-        onConfirm = { onThreadCreated(); showThread = false }
-    )
-    if (showEvent) SimpleModal(
-        title = "イベント作成",
-        onDismiss = { showEvent = false },
-        onConfirm = {
-            onEventCreated(); showEvent = false
-            if (LocationViewModel.locationState.status == Status.LOADED) {
-                onReloadEvents(locationState.location?.lat!!, locationState.location?.lng!!)
-            }
-        }
-    )
 }
