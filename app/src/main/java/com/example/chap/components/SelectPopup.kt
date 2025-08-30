@@ -141,7 +141,6 @@ fun SelectPopupOverlay(
             iconRes = R.drawable.outline_comment_24,
             containerColor = Color(0xFF7E22CE)
         ) { onDismiss(); onThreadCreated() },
-        ) { onDismiss(); onThreadCreated() },
         FabAction(
             label = "イベント作成",
             iconRes = R.drawable.outline_calendar_today_24,

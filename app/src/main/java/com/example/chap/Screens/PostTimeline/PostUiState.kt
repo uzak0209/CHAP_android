@@ -19,10 +19,6 @@ data class PostUiState(
                 deleted_at = null,
                 user_id = "",
                 username = "",
-                user = User(
-                    id = "", name = "", image = null, email = "", created_at = "", valid = true,
-                    password = "", login_type = null, updated_at = "", deleted_at = null
-                ),
                 coordinate = Coordinate(0.0, 0.0),
                 content = "",
                 category = "",

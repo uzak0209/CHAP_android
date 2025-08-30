@@ -36,7 +36,6 @@ import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.LoadStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.PostViewModel
-import com.example.chap.components.CreatePostDialog
 import com.example.chap.components.ToggleDimension
 import com.example.chap.components.map.SubmitCategory
 import com.mapbox.geojson.Point

@@ -8,8 +8,8 @@ import com.example.chap.API.ApiClient
 import com.example.chap.API.ApiEndpoints
 import com.example.chap.API.LocationViewModel
 import com.example.chap.Models.Coordinate
-import com.example.chap.Models.Post
 import com.example.chap.Models.PostCreateRequest
+import com.example.chap.domain.model.Post
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
@@ -49,8 +49,6 @@ class PostRepositoryImpl : PostRepository {
         }
     }
 
-
-
     // レスポンス(JSON)からList<Post>へ変換する関数（簡易実装例）
     private fun parsePosts(response: Any?): List<Post> {
         if (response == null) return emptyList()
@@ -74,7 +72,7 @@ class PostRepositoryImpl : PostRepository {
                     category = obj.optString("category", ""),
                     valid = obj.optBoolean("valid", true),
                     like = obj.optInt("like", 0),
-                    tags = parseTags(obj.optJSONArray("tags"))
+                    tags = parseTags(obj.optJSONArray("tags")),
                 )
             }
         } catch (e: Exception) {
