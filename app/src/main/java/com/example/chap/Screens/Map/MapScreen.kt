@@ -5,15 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,26 +20,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.LocationViewModel
-import com.example.chap.API.PostViewModelFactory
-import com.example.chap.R
-import com.example.chap.components.CreatePostDialog
+import com.example.chap.Models.CreateKind
+import com.example.chap.components.CreateDialog
 import com.example.chap.components.SelectPopupOverlay
+import com.example.chap.components.ToggleDimension
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.BottomDestination
-import com.example.chap.components.map.LocationState
-import com.example.chap.components.map.LoadStatus
-import com.example.chap.components.map.PostCategory
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chap.API.PostViewModel
-import com.example.chap.components.CreatePostDialog
-import com.example.chap.components.ToggleDimension
-import com.example.chap.domain.repository.PostRepositoryImpl
 import com.example.chap.libs.GetLocation
 import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
 import com.mapbox.geojson.Point
@@ -64,7 +48,8 @@ fun MapScreen() {
     var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
     var showCreatePost by remember { mutableStateOf(false) }
-    val postViewModel: PostViewModel = viewModel(factory = PostViewModelFactory(PostRepositoryImpl()))
+    var showCreateThread by remember { mutableStateOf(false) }
+    var showCreateEvent by remember { mutableStateOf(false) }
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
@@ -142,15 +127,28 @@ fun MapScreen() {
                         .padding(12.dp),
                     onClick = { showPopup = true }
                 ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
-                CreatePostDialog(
+                CreateDialog(
                     isOpen = showCreatePost,
                     onClose = { showCreatePost = false },
-                    selectedCategoryFilter = null,
+                    selectedKind = CreateKind.POST,
                 )
+                CreateDialog(
+                    isOpen = showCreateThread,
+                    onClose = { showCreateThread = false },
+                    selectedKind = CreateKind.THREAD,
+                )
+                CreateDialog(
+                    isOpen = showCreateEvent,
+                    onClose = { showCreateEvent = false },
+                    selectedKind = CreateKind.EVENT,
+                )
+
                 SelectPopupOverlay(
                     visible = showPopup,
                     onDismiss = { showPopup = false },
-                    onPostCreated = {showCreatePost = true}
+                    onPostCreated = {showCreatePost = true},
+                    onThreadCreated = {showCreateThread = true},
+                    onEventCreated = {showCreateEvent = true}
                 )
                 if (!styleLoaded) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

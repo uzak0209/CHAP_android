@@ -52,26 +52,38 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chap.API.EventViewModelFactory
 import com.example.chap.API.LocationViewModel.locationState
 import com.example.chap.API.PostViewModelFactory
 import com.example.chap.API.Status
+import com.example.chap.API.ThreadViewModelFactory
+import com.example.chap.Models.CreateKind
+import com.example.chap.Models.PostCategory
 import com.example.chap.Models.PostCreateRequest
-import com.example.chap.components.map.PostCategory
+import com.example.chap.domain.repository.EventRepositoryImpl
 import com.example.chap.domain.repository.PostRepositoryImpl
+import com.example.chap.domain.repository.ThreadRepositoryImpl
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePostDialog(
+fun CreateDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
-    selectedCategoryFilter: PostCategory?,
-    postRepository: PostRepositoryImpl = PostRepositoryImpl()
+    selectedKind: CreateKind,
 ) {
+
     val postViewModel: com.example.chap.API.PostViewModel = viewModel(
-        factory = PostViewModelFactory(postRepository)
+        factory = PostViewModelFactory(PostRepositoryImpl())
     )
+    val threadViewModel: com.example.chap.API.ThreadViewModel = viewModel(
+        factory = ThreadViewModelFactory(ThreadRepositoryImpl())
+    )
+    val eventViewModel: com.example.chap.API.EventViewModel = viewModel(
+        factory = EventViewModelFactory(EventRepositoryImpl())
+    )
+
     if (!isOpen) return
     val locationState = locationState
     val scope = rememberCoroutineScope()
@@ -114,7 +126,7 @@ fun CreatePostDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("新しい投稿を作成", style = MaterialTheme.typography.titleMedium)
+                    Text("新しい${selectedKind}作成", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.weight(1f))
                     IconButton(
                         enabled = !loading,
@@ -136,7 +148,6 @@ fun CreatePostDialog(
                         if (it.length <= 280) content = it
                     },
                     label = { Text("投稿内容") },
-                    placeholder = { Text("今何をしていますか？") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 120.dp),
@@ -175,7 +186,7 @@ fun CreatePostDialog(
                     ) {
             PostCategory.values().forEach {
                             DropdownMenuItem(
-                text = { Text(it.name) },
+                text = { Text(it.toString()) },
                                 onClick = {
                                     category = it
                                     categoryMenuExpanded = false
@@ -292,28 +303,62 @@ fun CreatePostDialog(
                     }
                     Button(
                         onClick = {
-                            if (category != null && locationState.status == Status.LOADED) {
-                                scope.launch {
-                                    loading = true
-                                    try {
-                                        val post = PostCreateRequest(
-                                            coordinate = locationState.location!!,
-                                            content = content.trim(),
-                                            category = category!!.name,
-                                            valid = true,
-                                            tags=emptyList(),
-                                            visible = true
-                                        )
-                                        postViewModel.createPost(post)
-                                        postViewModel.getAllPosts()
-//
-                                        reset()
-                                        onClose()
-                                    } finally {
-                                        loading = false
+                            val createObject = PostCreateRequest(
+                                coordinate = locationState.location!!,
+                                content = content.trim(),
+                                category = category!!.toString(),
+                                valid = true,
+                                tags=emptyList(),
+                                visible = true
+                            )
+                            when(selectedKind) {
+                                CreateKind.POST -> {
+                                    if (category != null && locationState.status == Status.LOADED) {
+                                        scope.launch {
+                                            loading = true
+                                            try {
+                                                postViewModel.createPost(createObject)
+                                            } catch (e: Exception) {
+                                                loading = false
+                                                e.printStackTrace()
+                                            }
+
+                                        }
                                     }
                                 }
+
+                                CreateKind.EVENT -> {
+                                    if (category != null && locationState.status == Status.LOADED) {
+                                        scope.launch {
+                                            loading = true
+                                            try {
+                                                eventViewModel.createEvent(createObject)
+                                            } catch (e: Exception) {
+                                                loading = false
+                                                e.printStackTrace()
+                                            }
+                                        }
+                                    }
+                                }
+                                CreateKind.THREAD -> {
+                                    if (category != null && locationState.status == Status.LOADED) {
+                                        scope.launch {
+                                            loading = true
+                                            try {
+                                                threadViewModel.createThread(createObject)
+                                            } catch (e: Exception) {
+                                                loading = false
+                                                e.printStackTrace()
+                                            }
+                                        }
+                                    }
+                                }
+
                             }
+                            reset()
+                            onClose()
+
+
                         },
                         modifier = Modifier.weight(1f),
                         enabled = content.isNotBlank() &&

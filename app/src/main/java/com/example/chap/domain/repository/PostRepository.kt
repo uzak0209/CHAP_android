@@ -42,6 +42,7 @@ class PostRepositoryImpl : PostRepository {
             )
             // レスポンスをパースしてPostリストに変換し、_postsにセット
             val postList = parsePosts(response)
+            _posts.value = postList
             Result.success(postList)
         } catch (e: Exception) {
             Result.failure(e)
