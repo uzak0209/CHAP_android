@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chap.Screens.PostTimeline.bindingmodel.PostBindingModel
 import com.example.chap.components.ui.AppBottomBar
@@ -57,6 +58,38 @@ fun PostTimelineTemplate(
                 }
             }
 
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PostTimelineTemplatePreview() {
+    ChapTheme {
+        Surface {
+            PostTimelineTemplate(
+                postList = listOf(
+                    PostBindingModel(
+                        id = "id1",
+                        displayName = "display name1",
+                        username = "username1",
+                        avatar = null,
+                        content = "preview content1",
+                        attachmentImageList = listOf()
+                    ),
+                    PostBindingModel(
+                        id = "id2",
+                        displayName = "display name2",
+                        username = "username2",
+                        avatar = null,
+                        content = "preview content2",
+                        attachmentImageList = listOf()
+                    ),
+                ),
+                isLoading = true,
+                isRefreshing = false,
+                onRefresh = {}
+            )
         }
     }
 }
