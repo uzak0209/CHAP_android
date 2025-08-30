@@ -62,34 +62,34 @@ fun PostTimelineTemplate(
     }
 }
 
-@Preview
-@Composable
-private fun PostTimelineTemplatePreview() {
-    ChapTheme {
-        Surface {
-            PostTimelineTemplate(
-                postList = listOf(
-                    PostBindingModel(
-                        id = "id1",
-                        displayName = "display name1",
-                        username = "username1",
-                        avatar = null,
-                        content = "preview content1",
-                        attachmentImageList = listOf()
-                    ),
-                    PostBindingModel(
-                        id = "id2",
-                        displayName = "display name2",
-                        username = "username2",
-                        avatar = null,
-                        content = "preview content2",
-                        attachmentImageList = listOf()
-                    ),
-                ),
-                isLoading = true,
-                isRefreshing = false,
-                onRefresh = {}
-            )
-        }
-    }
-}
+//@Preview
+//@Composable
+//private fun PostTimelineTemplatePreview() {
+//    ChapTheme {
+//        Surface {
+//            PostTimelineTemplate(
+//                postList = listOf(
+//                    PostBindingModel(
+//                        id = "id1",
+//                        displayName = "display name1",
+//                        username = "username1",
+//                        avatar = null,
+//                        content = "preview content1",
+//                        attachmentImageList = listOf()
+//                    ),
+//                    PostBindingModel(
+//                        id = "id2",
+//                        displayName = "display name2",
+//                        username = "username2",
+//                        avatar = null,
+//                        content = "preview content2",
+//                        attachmentImageList = listOf()
+//                    ),
+//                ),
+//                isLoading = true,
+//                isRefreshing = false,
+//                onRefresh = {}
+//            )
+//        }
+//    }
+//}
