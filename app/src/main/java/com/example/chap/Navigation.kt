@@ -14,9 +14,21 @@ import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.BottomDestination
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.chap.Screens.PostTimeline.PostTimelineViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chap.Models.Coordinate
+import com.example.chap.Models.Event
+import com.example.chap.Models.Thread
+import com.example.chap.Screens.Event.EventScreen
+import com.example.chap.Screens.Thread.ThreadScreen
 import com.example.chap.domain.repository.PostRepositoryImpl
+import kotlin.Boolean
+import kotlin.Int
+import kotlin.Long
+import kotlin.String
+import kotlin.collections.List
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -37,27 +49,16 @@ fun Navigation() {
             )
         }
         composable("map") {
-            Scaffold(
-                bottomBar = {
-                    AppBottomBar { dest ->
-                        when(dest){
-                            BottomDestination.Home -> navController.navigate("home") { launchSingleTop = true }
-                            BottomDestination.Map -> { /* already */ }
-                            BottomDestination.Event -> { /* TODO */ }
-                            BottomDestination.Thread -> { /* TODO */ }
-                        }
-                    }
-                }
-            ){ inner ->
-                MapScreen(
-                    onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
-                )
-            }
+            MapScreen(
+                onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
+                onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
+                onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
+            )
         }
         composable("home"){
             val repository = remember { PostRepositoryImpl() }
-            val vm: PostTimelineViewModel = viewModel(factory = object: androidx.lifecycle.ViewModelProvider.Factory {
-                override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+            val vm: PostTimelineViewModel = viewModel(factory = object: ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     @Suppress("UNCHECKED_CAST")
                     return PostTimelineViewModel(repository) as T
                 }
@@ -65,31 +66,64 @@ fun Navigation() {
             val postList by vm.posts.collectAsState()
             val loading by vm.isLoading.collectAsState()
             LaunchedEffect(Unit){ vm.load() }
-            Scaffold(
-                bottomBar = {
-                    AppBottomBar { dest ->
-                        when(dest){
-                            BottomDestination.Home -> { /* already */ }
-                            BottomDestination.Map -> navController.navigate("map") { launchSingleTop = true }
-                            BottomDestination.Event -> { /* TODO */ }
-                            BottomDestination.Thread -> { /* TODO */ }
-                        }
-                    }
-                }
-            ){ inner ->
-                PostTimelineTemplate(
-                    postList = postList,
-                    iLoading = loading,
-                    isRefreshing = false,
-                    onRefresh = { vm.refresh() },
+            PostTimelineTemplate(
+                postList = postList,
+                iLoading = loading,
+                isRefreshing = false,
+                onRefresh = { vm.load() },
+                onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
+                onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
+            )
+    
+        }
+        composable("thread"){
+            ThreadScreen(
+                onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
+                onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
+                onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                threadList = listOf(
+                    Thread( // Create an instance of your data class
+                        id = 1, // Provide actual values
+                        type = "discussion",
+                        created_at = "2023-01-01T12:00:00Z",
+                        updated_at = "2023-01-01T12:00:00Z",
+                        deleted_at = null,
+                        username = "User1",
+                        user_id = "userId1",
+                        coordinate = Coordinate(0.0, 0.0), // Assuming Coordinate structure
+                        category = "general",
+                        content = "This is the first thread content.",
+                        valid = true,   // 'valid' is a property of ThreadItem
+                        like = 10,
+                        tags = listOf("kotlin", "android")
+                    )
                 )
-            }
+            )
         }
-        composable("ThreadScreen"){
-
-        }
-        composable("EventScreen"){
-
+        composable("event"){
+            EventScreen(
+                onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
+                onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
+                eventList = listOf(
+                    Event( // Create an instance of your data class
+                        id = 1, // Provide actual values
+                        type = "discussion",
+                        created_at = "2023-01-01T12:00:00Z",
+                        updated_at = "2023-01-01T12:00:00Z",
+                        deleted_at = null,
+                        username = "User1",
+                        user_id = "userId1",
+                        coordinate = Coordinate(0.0, 0.0), // Assuming Coordinate structure
+                        category = "general",
+                        content = "This is the first thread content.",
+                        valid = true,   // 'valid' is a property of ThreadItem
+                        like = 10,
+                        tags = listOf("kotlin", "android")
+                    )
+                )
+            )
         }
 
     }

@@ -1,5 +1,6 @@
 package com.example.chap.Screens.PostTimeline
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,26 +17,50 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chap.Screens.PostTimeline.bindingmodel.PostBindingModel
 import com.example.chap.components.ui.AppBottomBar
+import com.example.chap.components.ui.AppTopBar
 import com.example.chap.components.ui.BottomDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostTimelineTemplate(
     postList: List<PostBindingModel>,
+    onNavigateThread: () -> Unit,
+    onNavigateMap: () -> Unit,
+    onNavigateEvent: () -> Unit,
     iLoading: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
 ){
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
-    Surface(modifier = Modifier
-        .fillMaxSize()
-    ){
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
+    Scaffold(
+        topBar = {
+            AppTopBar(
+                title = "Home",
+            )
+        },
+        bottomBar = {
+            AppBottomBar { dest ->
+                when(dest){
+                    BottomDestination.Home -> { /* already */ }
+                    BottomDestination.Map -> {onNavigateMap()}
+                    BottomDestination.Event -> {onNavigateEvent()}
+                    BottomDestination.Thread -> {onNavigateThread()}
+                }
+            }
+        }
+    ){innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            items(postList) { item ->
-                PostRow(postBindingModel = item)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+            ) {
+                items(postList) { item ->
+                    PostRow(postBindingModel = item)
+                }
             }
         }
     }
