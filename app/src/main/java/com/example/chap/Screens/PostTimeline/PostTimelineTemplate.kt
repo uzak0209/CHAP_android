@@ -26,38 +26,17 @@ fun PostTimelineTemplate(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
 ){
-    Scaffold(
-        bottomBar = {
-            AppBottomBar { dest ->
-                when(dest){
-                    BottomDestination.Home -> { /* TODO */ }
-                    BottomDestination.Map -> { /* TODO navigate map */ }
-                    BottomDestination.Event -> { /* TODO */ }
-                    BottomDestination.Thread -> { /* Already here or TODO */ }
-                }
+    // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
+    Surface(modifier = Modifier
+        .fillMaxSize()
+    ){
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(8.dp),
+        ) {
+            items(postList) { item ->
+                PostRow(postBindingModel = item)
             }
-        },
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "タイムライン")
-                },
-            )
-        }
-    ){ innerPadding ->
-        Surface(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-        ){
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(8.dp),
-            ) {
-                items(postList) { item ->
-                    PostRow(postBindingModel = item)
-                }
-            }
-
         }
     }
 }

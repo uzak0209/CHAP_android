@@ -1,11 +1,11 @@
-package com.example.chap.domain.model
+package com.example.chap.Screens.PostTimeline.bindingmodel
 
 import com.example.chap.Models.Coordinate
-import com.example.chap.common.ddd.Entity
+import com.example.chap.domain.model.PostId
 
-// ドメインモデル(PostRepositoryが返す). UI層へは PostConverter で BindingModel に変換する
-class Post(
-    override val id: Long,
+// UI表示専用 (必要最低限 + 今後拡張用のフィールド保持)
+data class PostBindingModel(
+    val id: PostId,
     val type: String,
     val created_at: String,
     val updated_at: String,
@@ -17,5 +17,5 @@ class Post(
     val category: String,
     val valid: Boolean,
     val like: Int,
-    val tags: List<String>
-) : Entity<PostId>(id)
+    val tags: List<String>,
+)

@@ -48,7 +48,9 @@ import com.mapbox.maps.plugin.locationcomponent.location
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MapScreen() {
+fun MapScreen(
+    onNavigateHome: () -> Unit,
+) {
     // Compose で ViewModel の位置情報を監視
     var is3D by remember { mutableStateOf(false) }
     var styleLoaded by remember { mutableStateOf(false) }
@@ -84,7 +86,7 @@ fun MapScreen() {
         bottomBar = {
             AppBottomBar { dest ->
                 when(dest){
-                    BottomDestination.Home -> { /* TODO navigate home */ }
+                    BottomDestination.Home -> onNavigateHome()
                     BottomDestination.Map -> { /* current */ }
                     BottomDestination.Event -> { /* TODO */ }
                     BottomDestination.Thread -> { /* TODO */ }
