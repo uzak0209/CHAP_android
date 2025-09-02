@@ -17,23 +17,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.chap.API.PostViewModel
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppTopBar
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.ui.SubmitRow
 import com.example.chap.Models.Post
+import com.example.chap.domain.repository.PostRepository
+import com.example.chap.domain.repository.PostRepositoryImpl
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostTimelineTemplate(
-    postList: List<Post>,
+    postViewModel: PostViewModel = PostViewModel(PostRepositoryImpl()),
     onNavigateThread: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateEvent: () -> Unit,
-    iLoading: Boolean,
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
 ){
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
@@ -62,7 +62,7 @@ fun PostTimelineTemplate(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
             ) {
-                items(postList) { item ->
+                items(postViewModel.getPosts()) { item ->
                     SubmitRow(post = item)
                 }
             }
