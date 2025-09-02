@@ -1,6 +1,7 @@
 package com.example.chap.Screens.PostTimeline
 
-import androidx.compose.foundation.Image
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,36 +12,42 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.chap.Screens.PostTimeline.bindingmodel.PostBindingModel
+import com.example.chap.Models.Event
+import com.example.chap.domain.model.Post
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PostRow(postBindingModel: PostBindingModel, modifier: Modifier = Modifier) {
+fun SubmitRow(
+    post: Post,
+    thread: Thread,
+    event: Event,
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F))
     ) {
         Column(Modifier.padding(16.dp)) {
-            PostHeader(username = postBindingModel.username)
-            PostContent(content = postBindingModel.content, images = emptyList())
-            if (postBindingModel.category.isNotBlank() && postBindingModel.category != "entertainment") {
-                PostCategoryDisplay(category = postBindingModel.category)
+            SubmitHeader(username = post.username)
+            SubmitContent(content = post.content, images = emptyList())
+            if (post.category.isNotBlank() && post.category != "entertainment") {
+                SubmitCategoryDisplay(category = post.category)
             }
-            PostFooter(createdAt = postBindingModel.created_at)
+            SubmitFooter(createdAt = post.created_at)
         }
     }
 }
 
 @Composable
-private fun PostHeader(username: String) {
+private fun SubmitHeader(username: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,18 +65,19 @@ private fun PostHeader(username: String) {
 }
 
 @Composable
-private fun PostContent(content: String, images: List<String>?) {
+private fun SubmitContent(content: String, images: List<String>?) {
     Column {
         Text(
             text = content,
             style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
             modifier = Modifier.padding(bottom = if (images.isNullOrEmpty()) 12.dp else 12.dp)
         )
     }
 }
 
 @Composable
-private fun PostCategoryDisplay(category: String) {
+private fun SubmitCategoryDisplay(category: String) {
     val (bg, fg) = when (category) {
         "community" -> Color(0xFFE3F2FD) to Color(0xFF0D47A1)
         "disaster" -> Color(0xFFFFEBEE) to Color(0xFFB71C1C)
@@ -99,8 +107,9 @@ private fun PostCategoryDisplay(category: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun PostFooter(createdAt: String) {
+private fun SubmitFooter(createdAt: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
@@ -113,9 +122,10 @@ private fun PostFooter(createdAt: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 private fun formatTime(isoString: String): String {
     return try {
-    // isoString は各 PostBindingModel の created_at 値
+    // isoString は各 Post の created_at 値
     val odt = OffsetDateTime.parse(isoString)
         val now = OffsetDateTime.now(ZoneId.systemDefault())
         val minutes = Duration.between(odt, now).toMinutes()
