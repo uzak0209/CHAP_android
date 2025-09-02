@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.chap.Models.Event
-import com.example.chap.Screens.PostTimeline.PostRow
-import com.example.chap.Screens.PostTimeline.bindingmodel.PostBindingModel
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppTopBar
 import com.example.chap.components.ui.BottomDestination

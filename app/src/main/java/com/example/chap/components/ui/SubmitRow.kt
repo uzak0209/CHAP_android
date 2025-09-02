@@ -1,4 +1,4 @@
-package com.example.chap.Screens.PostTimeline
+package com.example.chap.components.ui
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -25,10 +25,10 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SubmitRow(
-    post: Post,
-    thread: Thread,
-    event: Event,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    post: Post? = null,
+    thread: Thread? = null,
+    event: Event? = null,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -36,12 +36,12 @@ fun SubmitRow(
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F))
     ) {
         Column(Modifier.padding(16.dp)) {
-            SubmitHeader(username = post.username)
-            SubmitContent(content = post.content, images = emptyList())
-            if (post.category.isNotBlank() && post.category != "entertainment") {
+            SubmitHeader(username = post?.username ?:" username" )
+            SubmitContent(content = post?.content ?: "Content", images = emptyList())
+            if (post?.category?.isNotBlank() == true && post.category != "entertainment") {
                 SubmitCategoryDisplay(category = post.category)
             }
-            SubmitFooter(createdAt = post.created_at)
+            SubmitFooter(createdAt = post?.created_at ?: "created_at")
         }
     }
 }

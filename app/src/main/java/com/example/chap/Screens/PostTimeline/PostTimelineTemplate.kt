@@ -1,5 +1,7 @@
 package com.example.chap.Screens.PostTimeline
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,15 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.chap.Screens.PostTimeline.bindingmodel.PostBindingModel
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppTopBar
 import com.example.chap.components.ui.BottomDestination
+import com.example.chap.components.ui.SubmitRow
+import com.example.chap.domain.model.Post
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostTimelineTemplate(
-    postList: List<PostBindingModel>,
+    postList: List<Post>,
     onNavigateThread: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateEvent: () -> Unit,
@@ -59,7 +63,7 @@ fun PostTimelineTemplate(
                 contentPadding = PaddingValues(8.dp),
             ) {
                 items(postList) { item ->
-                    PostRow(postBindingModel = item)
+                    SubmitRow(post = item)
                 }
             }
         }
