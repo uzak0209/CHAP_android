@@ -14,6 +14,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,11 +33,16 @@ import com.example.chap.domain.repository.PostRepositoryImpl
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostTimelineTemplate(
-    postViewModel: PostViewModel = PostViewModel(PostRepositoryImpl()),
+    postViewModel: PostViewModel,
     onNavigateThread: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateEvent: () -> Unit,
 ){
+    val posts by postViewModel.posts.collectAsState()
+    LaunchedEffect(postViewModel) {
+        postViewModel.load()
+    }
+
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
         topBar = {
@@ -62,7 +70,7 @@ fun PostTimelineTemplate(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
             ) {
-                items(postViewModel.getPosts()) { item ->
+                items(posts) { item ->
                     SubmitRow(post = item)
                 }
             }
