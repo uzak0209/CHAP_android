@@ -11,8 +11,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.chap.API.ThreadViewModel
 import com.example.chap.Models.Thread
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppTopBar
@@ -23,11 +27,16 @@ import com.example.chap.components.ui.SubmitRow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThreadScreen(
-    threadList: List<Thread>,
+    threadViewModel: ThreadViewModel,
     onNavigateHome: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateEvent: () -> Unit,
 ){
+
+    val threads by threadViewModel.threads.collectAsState()
+    LaunchedEffect(threadViewModel) {
+        threadViewModel.load()
+    }
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
         topBar = {
@@ -55,7 +64,7 @@ fun ThreadScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
             ) {
-                items(threadList) { item ->
+                items(threads) { item ->
                     SubmitRow(thread = item)
                 }
             }

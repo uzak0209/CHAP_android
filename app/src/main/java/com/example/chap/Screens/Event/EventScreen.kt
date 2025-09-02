@@ -11,8 +11,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.chap.API.EventViewModel
 import com.example.chap.Models.Event
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppTopBar
@@ -23,11 +27,16 @@ import com.example.chap.components.ui.SubmitRow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventScreen(
-    eventList: List<Event>,
+    eventViewModel: EventViewModel,
     onNavigateMap: () -> Unit,
     onNavigateHome: () -> Unit,
     onNavigateThread: () -> Unit,
 ){
+
+    val events by eventViewModel.events.collectAsState()
+    LaunchedEffect(eventViewModel) {
+        eventViewModel.load()
+    }
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
         topBar = {
@@ -55,7 +64,7 @@ fun EventScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
             ) {
-                items(eventList) { item ->
+                items(events) { item ->
                     SubmitRow(event = item)
                 }
             }

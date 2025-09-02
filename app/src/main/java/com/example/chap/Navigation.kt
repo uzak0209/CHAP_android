@@ -59,6 +59,7 @@ fun Navigation(
         }
         composable("thread"){
             ThreadScreen(
+                threadViewModel = threadViewModel,
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
@@ -66,10 +67,10 @@ fun Navigation(
         }
         composable("event"){
             EventScreen(
+                eventViewModel = eventViewModel,
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
                 onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
-
             )
         }
 
