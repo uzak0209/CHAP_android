@@ -2,7 +2,7 @@ package com.example.chap.Screens.PostTimeline
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chap.domain.model.Post
+import com.example.chap.Models.Post
 import com.example.chap.domain.repository.PostRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

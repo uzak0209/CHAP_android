@@ -9,7 +9,7 @@ import com.example.chap.API.ApiEndpoints
 import com.example.chap.API.LocationViewModel
 import com.example.chap.Models.Coordinate
 import com.example.chap.Models.PostCreateRequest
-import com.example.chap.domain.model.Post
+import com.example.chap.Models.Post
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray

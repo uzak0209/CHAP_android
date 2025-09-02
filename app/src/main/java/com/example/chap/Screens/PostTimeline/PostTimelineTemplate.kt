@@ -21,7 +21,7 @@ import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppTopBar
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.ui.SubmitRow
-import com.example.chap.domain.model.Post
+import com.example.chap.Models.Post
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

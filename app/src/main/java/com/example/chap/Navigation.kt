@@ -10,9 +10,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chap.Screens.Login.LoginScreen
 import com.example.chap.Screens.Map.MapScreen
 import com.example.chap.Screens.PostTimeline.PostTimelineTemplate
-import com.example.chap.components.ui.AppBottomBar
-import com.example.chap.components.ui.BottomDestination
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -24,11 +21,7 @@ import com.example.chap.Models.Thread
 import com.example.chap.Screens.Event.EventScreen
 import com.example.chap.Screens.Thread.ThreadScreen
 import com.example.chap.domain.repository.PostRepositoryImpl
-import kotlin.Boolean
-import kotlin.Int
-import kotlin.Long
-import kotlin.String
-import kotlin.collections.List
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

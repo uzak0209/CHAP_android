@@ -16,11 +16,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.chap.Models.Event
-import com.example.chap.domain.model.Post
+import com.example.chap.Models.Post
+import com.example.chap.Models.Thread
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.text.isNotBlank
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -30,6 +32,23 @@ fun SubmitRow(
     thread: Thread? = null,
     event: Event? = null,
 ) {
+    if (post != null) {
+        PostCard(modifier, post)
+    }
+    if (thread != null) {
+        ThreadCard(modifier, thread)
+    }
+    if (event != null) {
+        EventCard(modifier, event)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun PostCard(
+    modifier: Modifier = Modifier,
+    post: Post
+){
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -45,7 +64,48 @@ fun SubmitRow(
         }
     }
 }
-
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun ThreadCard(
+    modifier: Modifier = Modifier,
+    thread: Thread
+){
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F))
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            SubmitHeader(username = thread?.username ?:" username" )
+            SubmitContent(content = thread?.content ?: "Content", images = emptyList())
+            if (thread?.category?.isNotBlank() == true && thread.category != "entertainment") {
+                SubmitCategoryDisplay(category = thread.category)
+            }
+            SubmitFooter(createdAt = thread?.created_at ?: "created_at")
+        }
+    }
+}
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun EventCard(
+    modifier: Modifier = Modifier,
+    event: Event
+){
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F))
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            SubmitHeader(username = event?.username ?:" username" )
+            SubmitContent(content = event?.content ?: "Content", images = emptyList())
+            if (event?.category?.isNotBlank() == true && event.category != "entertainment") {
+                SubmitCategoryDisplay(category = event.category)
+            }
+            SubmitFooter(createdAt = event?.created_at ?: "created_at")
+        }
+    }
+}
 @Composable
 private fun SubmitHeader(username: String) {
     Row(

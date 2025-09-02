@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chap.Models.PostCreateRequest
-import com.example.chap.domain.model.Post
+import com.example.chap.Models.Post
 import com.example.chap.domain.repository.PostRepositoryImpl
 import kotlinx.coroutines.launch
 
