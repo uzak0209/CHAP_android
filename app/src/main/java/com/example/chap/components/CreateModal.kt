@@ -89,11 +89,9 @@ fun CreateDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
     selectedKind: CreateKind,
+    postViewModel: PostViewModel,
 ) {
 
-    val postViewModel: PostViewModel = viewModel(
-        factory = PostViewModelFactory(PostRepositoryImpl())
-    )
     val threadViewModel: ThreadViewModel = viewModel(
         factory = ThreadViewModelFactory(ThreadRepositoryImpl())
     )
@@ -106,7 +104,7 @@ fun CreateDialog(
     val scope = rememberCoroutineScope()
     // 未定義だった ViewModel をローカルで取得
     var content by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf<SubmitCategory>(ENTERTAINMENT) }
+    var category by remember { mutableStateOf(ENTERTAINMENT) }
     var tags by remember { mutableStateOf(listOf<String>()) }
     var tagInput by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
@@ -187,7 +185,7 @@ fun CreateDialog(
                     onExpandedChange = { categoryMenuExpanded = !categoryMenuExpanded }
                 ) {
                     OutlinedTextField(
-                        value = category?.name ?: "",
+                        value = category.name,
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("カテゴリ") },
@@ -324,14 +322,14 @@ fun CreateDialog(
                             val createObject = PostCreateRequest(
                                 coordinate = locationState.location!!,
                                 content = content.trim(),
-                                category = category!!.toString(),
+                                category = category.toString(),
                                 valid = true,
-                                tags=emptyList(),
+                                tags = emptyList(),
                                 visible = true
                             )
                             when(selectedKind) {
                                 CreateKind.POST -> {
-                                    if (category != null && locationState.status == Status.LOADED) {
+                                    if (locationState.status == Status.LOADED) {
                                         scope.launch {
                                             loading = true
                                             try {
@@ -346,7 +344,7 @@ fun CreateDialog(
                                 }
 
                                 CreateKind.EVENT -> {
-                                    if (category != null && locationState.status == Status.LOADED) {
+                                    if (locationState.status == Status.LOADED) {
                                         scope.launch {
                                             loading = true
                                             try {
@@ -359,7 +357,7 @@ fun CreateDialog(
                                     }
                                 }
                                 CreateKind.THREAD -> {
-                                    if (category != null && locationState.status == Status.LOADED) {
+                                    if (locationState.status == Status.LOADED) {
                                         scope.launch {
                                             loading = true
                                             try {

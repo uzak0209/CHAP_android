@@ -123,7 +123,6 @@ fun SelectPopupOverlay(
     visible: Boolean,
     onDismiss: () -> Unit,
     onReloadEvents: (lat: Double, lng: Double) -> Unit = { _, _ -> },
-    onRequestCreatePost: () -> Unit = {}, // 新規: CreatePostDialog を開くためのコールバック
     onPostCreated: () -> Unit = {},
     onThreadCreated: () -> Unit = {},
     onEventCreated: () -> Unit = {}
@@ -135,7 +134,7 @@ fun SelectPopupOverlay(
             label = "投稿作成",
             iconRes = R.drawable.outline_imagesmode_24,
             containerColor = Color(0xFF16A34A)
-        ) { onDismiss(); onRequestCreatePost() },
+        ) { onDismiss(); onPostCreated() },
         FabAction(
             label = "スレッド作成",
             iconRes = R.drawable.outline_comment_24,

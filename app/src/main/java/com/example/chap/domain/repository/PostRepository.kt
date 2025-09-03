@@ -121,6 +121,11 @@ class PostRepositoryImpl : PostRepository {
                 method = "POST",
                 body = requestBody
             )
+            // サーバーがエラー時にも200と {"error":"..."} を返すケース対策
+            val bodyStr = response ?: ""
+            if (bodyStr.contains("\"error\"")) {
+                return Result.failure(IllegalStateException("Post create failed: $bodyStr"))
+            }
             Result.success(response.toString())
         } catch (e: Exception) {
             Result.failure(e)
