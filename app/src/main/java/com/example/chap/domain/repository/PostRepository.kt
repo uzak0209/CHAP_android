@@ -115,19 +115,24 @@ class PostRepositoryImpl : PostRepository {
                 "type" to "post",
                 "valid" to true
             )
-            println(requestBody)
+            println("[PostRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(
                 url = ApiEndpoints.Posts.CREATE,
                 method = "POST",
                 body = requestBody
             )
+            println("[PostRepository] API response: $response")
             // サーバーがエラー時にも200と {"error":"..."} を返すケース対策
             val bodyStr = response ?: ""
             if (bodyStr.contains("\"error\"")) {
+                println("[PostRepository] Error in response: $bodyStr")
                 return Result.failure(IllegalStateException("Post create failed: $bodyStr"))
             }
+            println("[PostRepository] Post created successfully")
             Result.success(response.toString())
         } catch (e: Exception) {
+            println("[PostRepository] Exception during post creation: ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }

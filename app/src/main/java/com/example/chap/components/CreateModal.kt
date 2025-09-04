@@ -319,62 +319,41 @@ fun CreateDialog(
                     }
                     Button(
                         onClick = {
-                            val createObject = PostCreateRequest(
-                                coordinate = locationState.location!!,
-                                content = content.trim(),
-                                category = category.toString(),
-                                valid = true,
-                                tags = emptyList(),
-                                visible = true
-                            )
-                            when(selectedKind) {
-                                CreateKind.POST -> {
-                                    if (locationState.status == Status.LOADED) {
-                                        scope.launch {
-                                            loading = true
-                                            try {
+                            if (locationState.status == Status.LOADED) {
+                                val createObject = PostCreateRequest(
+                                    coordinate = locationState.location!!,
+                                    content = content.trim(),
+                                    category = category.toString(),
+                                    valid = true,
+                                    tags = tags,
+                                    visible = true
+                                )
+                                
+                                scope.launch {
+                                    loading = true
+                                    try {
+                                        when(selectedKind) {
+                                            CreateKind.POST -> {
                                                 postViewModel.createPost(createObject)
-                                            } catch (e: Exception) {
-                                                loading = false
-                                                e.printStackTrace()
                                             }
-
-                                        }
-                                    }
-                                }
-
-                                CreateKind.EVENT -> {
-                                    if (locationState.status == Status.LOADED) {
-                                        scope.launch {
-                                            loading = true
-                                            try {
+                                            CreateKind.EVENT -> {
                                                 eventViewModel.createEvent(createObject)
-                                            } catch (e: Exception) {
-                                                loading = false
-                                                e.printStackTrace()
                                             }
-                                        }
-                                    }
-                                }
-                                CreateKind.THREAD -> {
-                                    if (locationState.status == Status.LOADED) {
-                                        scope.launch {
-                                            loading = true
-                                            try {
+                                            CreateKind.THREAD -> {
                                                 threadViewModel.createThread(createObject)
-                                            } catch (e: Exception) {
-                                                loading = false
-                                                e.printStackTrace()
                                             }
                                         }
+                                        // 投稿成功時の処理
+                                        loading = false
+                                        reset()
+                                        onClose()
+                                    } catch (e: Exception) {
+                                        loading = false
+                                        e.printStackTrace()
+                                        // エラー時はダイアログを閉じない
                                     }
                                 }
-
                             }
-                            reset()
-                            onClose()
-
-
                         },
                         modifier = Modifier.weight(1f),
                         enabled = content.isNotBlank() &&

@@ -99,9 +99,10 @@ class EventRepositoryImpl : EventRepository {
                 "created_at" to formatted,
                 "like" to 0,
                 "tags" to request.tags,
-                "type" to "post",
+                "type" to "event",
                 "valid" to true
             )
+            println("[EventRepository] Creating event with body: $requestBody")
 
             val response = ApiClient.request(
                 url = ApiEndpoints.Events.CREATE,

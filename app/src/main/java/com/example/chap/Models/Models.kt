@@ -132,8 +132,3 @@ data class ThreadTable(
 )
 
 // ヒートマップポイント
-data class HeatmapPoint(
-    val lat: Double,
-    val lng: Double,
-    val value: Int
-)

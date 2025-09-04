@@ -70,10 +70,11 @@ class PostViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun createPost(post: PostCreateRequest) {
+        println("[PostViewModel] Starting post creation...")
         viewModelScope.launch {
             val result = postRepository.create(post)
             result.onSuccess { response ->
-                println("投稿成功: $response")
+                println("[PostViewModel] 投稿成功: $response")
                 // レスポンスJSONをPostにパースしてStateFlowへ即時反映
                 try {
                     val json = JSONObject(response)
@@ -96,11 +97,14 @@ class PostViewModel(
                         tags = emptyList() // backend が tags 配列を返すなら parse へ拡張
                     )
                     _posts.value = (listOf(created) + _posts.value.filterNot { it.id == created.id })
+                    println("[PostViewModel] Post added to StateFlow with ID: ${created.id}")
                 } catch (e: Exception) {
-                    // parse 失敗は無視 (ログ等必要なら追加)
+                    println("[PostViewModel] Failed to parse response JSON: ${e.message}")
+                    e.printStackTrace()
                 }
             }.onFailure { e ->
-                println("エラー: ${e.message}")
+                println("[PostViewModel] 投稿エラー: ${e.message}")
+                e.printStackTrace()
             }
         }
     }

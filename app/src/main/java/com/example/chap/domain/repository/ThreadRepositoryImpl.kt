@@ -101,6 +101,7 @@ class ThreadRepositoryImpl : ThreadRepository {
                 "type" to "thread",
                 "valid" to true
             )
+            println("[ThreadRepository] Creating thread with body: $requestBody")
 
             val response = ApiClient.request(
                 url = ApiEndpoints.Threads.CREATE,
