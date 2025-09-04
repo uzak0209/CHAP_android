@@ -54,33 +54,19 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.EventViewModel
 import com.example.chap.API.EventViewModelFactory
-import com.example.chap.components.map.LoadStatus
-import com.example.chap.components.map.LocationState
-import com.example.chap.components.map.MapEventListener
 import kotlinx.coroutines.launch
-import com.example.chap.components.map.Coordinate as MapCoordinate
-import com.example.chap.Models.Coordinate
 import com.example.chap.API.LocationViewModel.locationState
 import com.example.chap.API.PostViewModel
-import com.example.chap.API.PostViewModelFactory
 import com.example.chap.API.Status
 import com.example.chap.API.ThreadViewModel
 import com.example.chap.API.ThreadViewModelFactory
 import com.example.chap.Models.CreateKind
 import com.example.chap.Models.PostCategory
 import com.example.chap.Models.PostCreateRequest
-import com.example.chap.Models.Post
-import com.example.chap.Models.User
-import com.example.chap.components.map.SubmitCategory
-import com.example.chap.components.map.SubmitType
-import java.time.Instant
-import com.example.chap.components.map.SubmitCategory.ENTERTAINMENT
 import com.example.chap.domain.repository.EventRepositoryImpl
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
-
-import com.example.chap.domain.repository.PostRepositoryImpl
 import com.example.chap.domain.repository.ThreadRepositoryImpl
-import kotlinx.coroutines.launch
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,7 +90,7 @@ fun CreateDialog(
     val scope = rememberCoroutineScope()
     // 未定義だった ViewModel をローカルで取得
     var content by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf(ENTERTAINMENT) }
+    var category by remember { mutableStateOf(PostCategory.ENTERTAINMENT) }
     var tags by remember { mutableStateOf(listOf<String>()) }
     var tagInput by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
@@ -114,7 +100,7 @@ fun CreateDialog(
 
     fun reset() {
         content = ""
-        category = ENTERTAINMENT
+        category = PostCategory.ENTERTAINMENT
         tags = emptyList()
         tagInput = ""
     }
@@ -200,7 +186,7 @@ fun CreateDialog(
                         expanded = categoryMenuExpanded,
                         onDismissRequest = { categoryMenuExpanded = false }
                     ) {
-            SubmitCategory.values().forEach {
+            PostCategory.values().forEach {
                             DropdownMenuItem(
                 text = { Text(it.toString()) },
                                 onClick = {
