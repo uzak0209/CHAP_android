@@ -76,14 +76,9 @@ fun CreateDialog(
     onClose: () -> Unit,
     selectedKind: CreateKind,
     postViewModel: PostViewModel,
+    threadViewModel: ThreadViewModel,
+    eventViewModel: EventViewModel
 ) {
-
-    val threadViewModel: ThreadViewModel = viewModel(
-        factory = ThreadViewModelFactory(ThreadRepositoryImpl())
-    )
-    val eventViewModel: EventViewModel = viewModel(
-        factory = EventViewModelFactory(EventRepositoryImpl())
-    )
 
     if (!isOpen) return
     val locationState = locationState

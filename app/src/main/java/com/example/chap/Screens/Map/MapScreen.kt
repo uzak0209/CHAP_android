@@ -36,6 +36,8 @@ import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.LoadStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.PostViewModel
+import com.example.chap.API.ThreadViewModel
+import com.example.chap.API.EventViewModel
 import com.example.chap.components.ToggleDimension
 import com.example.chap.components.map.SubmitCategory
 import com.mapbox.geojson.Point
@@ -52,15 +54,16 @@ fun MapScreen(
     onNavigateHome: () -> Unit,
     onNavigateEvent: () -> Unit,
     onNavigateThread: () -> Unit,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+    threadViewModel: ThreadViewModel,
+    eventViewModel: EventViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
     var is3D by remember { mutableStateOf(false) }
     var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
-    var showCreatePost by remember { mutableStateOf(false) }
-    var showCreateThread by remember { mutableStateOf(false) }
-    var showCreateEvent by remember { mutableStateOf(false) }
+    var showCreate by remember { mutableStateOf(false) }
+    var createKind by remember { mutableStateOf(CreateKind.POST) }
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
@@ -135,20 +138,22 @@ fun MapScreen(
                         .padding(12.dp),
                     onClick = { showPopup = true }
                 ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
+
                 CreateDialog(
-                    isOpen = showCreatePost,
-                    onClose = { showCreatePost = false },
-                    selectedKind = CreateKind.POST,
+                    isOpen = showCreate,
+                    onClose = { showCreate = false },
+                    selectedKind = createKind,
                     postViewModel = postViewModel,
+                    threadViewModel = threadViewModel,
+                    eventViewModel = eventViewModel
                 )
-                // TODO: Thread/Event 用も postViewModel 以外の共有 ViewModel を渡すAPIに合わせて改修
 
                 SelectPopupOverlay(
                     visible = showPopup,
                     onDismiss = { showPopup = false },
-                    onPostCreated = {showCreatePost = true},
-                    onThreadCreated = {showCreateThread = true},
-                    onEventCreated = {showCreateEvent = true}
+                    onPostCreated = { showPopup = false; createKind = CreateKind.POST; showCreate = true },
+                    onThreadCreated = { showPopup = false; createKind = CreateKind.THREAD; showCreate = true },
+                    onEventCreated = { showPopup = false; createKind = CreateKind.EVENT; showCreate = true }
                 )
                 if (!styleLoaded) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

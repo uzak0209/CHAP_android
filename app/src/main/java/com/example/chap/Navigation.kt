@@ -47,7 +47,9 @@ fun Navigation(
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
                 onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
-                postViewModel = postViewModel
+                postViewModel = postViewModel,
+                threadViewModel = threadViewModel,
+                eventViewModel = eventViewModel
             )
         }
     composable("home"){
