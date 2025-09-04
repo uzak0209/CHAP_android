@@ -1,0 +1,77 @@
+package com.example.chap.API
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.chap.Models.Comment
+import com.example.chap.Models.PostCreateRequest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+class CommentViewModel(
+    private val commentRepository: CommentRepositoryImpl
+) : ViewModel() {
+
+    private val _comments = MutableStateFlow<List<Comment>>(emptyList())
+    val comments: StateFlow<List<Comment>> = _comments
+
+    fun getComments(): List<Comment> {
+        return commentRepository.comments.value
+    }
+
+    fun getAllComments() {
+        viewModelScope.launch {
+            val result = commentRepository.getAll()
+            result.onSuccess { response ->
+                println("スレッド一覧取得成功: $response")
+                // _commentsの更新はRepository側で行われる
+            }.onFailure { e ->
+                println("エラー: ${e.message}")
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun createComment(comment: PostCreateRequest) {
+        viewModelScope.launch {
+            val result = commentRepository.create(comment)
+            result.onSuccess { response ->
+                println("スレッド作成成功: $response")
+            }.onFailure { e ->
+                println("エラー: ${e.message}")
+            }
+        }
+    }
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    fun load() {
+        if (_isLoading.value) return
+        viewModelScope.launch {
+            _isLoading.value = true
+            commentRepository.getAll().onSuccess { list ->
+                _comments.value = list
+            }.onFailure {
+                // TODO: error handling (log/report)
+            }
+            _isLoading.value = false
+        }
+    }
+
+    fun refresh() = load()
+}
+
+class CommentViewModelFactory(private val commentRepository: CommentRepositoryImpl) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CommentViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return CommentViewModel(commentRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
