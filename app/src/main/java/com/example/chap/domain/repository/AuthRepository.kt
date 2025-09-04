@@ -1,7 +1,9 @@
-package com.example.chap.API
+package com.example.chap.domain.repository
 
 import android.content.Context
 import com.example.chap.Auth.TokenManager
+import com.example.chap.API.ApiClient
+import com.example.chap.API.ApiEndpoints
 import org.json.JSONObject
 
 interface AuthRepository {
@@ -18,9 +20,10 @@ class AuthRepositoryImpl : AuthRepository {
                 body = mapOf("email" to email, "password" to password)
             )
             val json = JSONObject(response ?: "")
-            val token = json.optString("token", null)
-            if (token != null) {
+            val token = json.optString("token", "")
+            if (token.isNotBlank()) {
                 TokenManager(context).saveToken(token)
+                ApiClient.token = token // 即時反映
             }
             Result.success(response ?: "")
         } catch (e: Exception) {
@@ -37,9 +40,10 @@ class AuthRepositoryImpl : AuthRepository {
                 body = mapOf("email" to email, "password" to password, "name" to displayName)
             )
             val json = JSONObject(response ?: "")
-            val token = json.optString("token", null)
-            if (token != null) {
+            val token = json.optString("token", "")
+            if (token.isNotBlank()) {
                 TokenManager(context).saveToken(token)
+                ApiClient.token = token // 即時反映
             }
             Result.success(response ?: "")
         } catch (e: Exception) {

@@ -105,29 +105,7 @@ data class Event(
     val tags: List<String>
 )
 
-// 投稿のいいね
-data class PostLikes(
-    val user_id: String,
-    val post_id: Long,
-    val user: User,
-    val post: Post
-)
 
-// スレッドのいいね
-data class ThreadLikes(
-    val user_id: String,
-    val thread_id: Long,
-    val user: User,
-    val thread: Thread
-)
-
-// イベントのいいね
-data class EventLikes(
-    val user_id: String,
-    val event_id: Long,
-    val user: User,
-    val event: Event
-)
 
 // Email ログイン
 data class EmailLogin(
@@ -154,8 +132,3 @@ data class ThreadTable(
 )
 
 // ヒートマップポイント
-data class HeatmapPoint(
-    val lat: Double,
-    val lng: Double,
-    val value: Int
-)

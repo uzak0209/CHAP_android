@@ -51,7 +51,8 @@ import com.mapbox.maps.plugin.locationcomponent.location
 fun MapScreen(
     onNavigateHome: () -> Unit,
     onNavigateEvent: () -> Unit,
-    onNavigateThread: () -> Unit
+    onNavigateThread: () -> Unit,
+    postViewModel: PostViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
     var is3D by remember { mutableStateOf(false) }
@@ -109,12 +110,9 @@ fun MapScreen(
                     style = { Style.STANDARD }
                 ) {
                     MapEffect(Unit) { mapView ->
-                        if (mapView.getMapboxMap().style == null && !styleLoaded) {
-                            mapView.getMapboxMap().loadStyleUri(Style.STANDARD) { _ ->
-                                styleLoaded = true
-                            }
-                        } else if (mapView.getMapboxMap().style != null) {
-                            styleLoaded = true
+                        val mbMap = mapView.mapboxMap
+                        if (!styleLoaded) {
+                            mbMap.loadStyleUri(Style.STANDARD) { styleLoaded = true }
                         }
                     }
                     MapEffect(LocationViewModel.locationState.location) { mapView ->
@@ -141,17 +139,9 @@ fun MapScreen(
                     isOpen = showCreatePost,
                     onClose = { showCreatePost = false },
                     selectedKind = CreateKind.POST,
+                    postViewModel = postViewModel,
                 )
-                CreateDialog(
-                    isOpen = showCreateThread,
-                    onClose = { showCreateThread = false },
-                    selectedKind = CreateKind.THREAD,
-                )
-                CreateDialog(
-                    isOpen = showCreateEvent,
-                    onClose = { showCreateEvent = false },
-                    selectedKind = CreateKind.EVENT,
-                )
+                // TODO: Thread/Event 用も postViewModel 以外の共有 ViewModel を渡すAPIに合わせて改修
 
                 SelectPopupOverlay(
                     visible = showPopup,

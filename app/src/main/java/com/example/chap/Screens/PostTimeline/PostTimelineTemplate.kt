@@ -39,8 +39,10 @@ fun PostTimelineTemplate(
     onNavigateEvent: () -> Unit,
 ){
     val posts by postViewModel.posts.collectAsState()
-    LaunchedEffect(postViewModel) {
-        postViewModel.load()
+    LaunchedEffect(postViewModel, posts.isEmpty()) {
+        if (posts.isEmpty()) {
+            postViewModel.load()
+        }
     }
 
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ

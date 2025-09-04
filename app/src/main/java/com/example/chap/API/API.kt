@@ -77,13 +77,22 @@ object ApiClient {
             .addHeader("Content-Type", "application/json")
             .apply { token?.let { addHeader("Authorization", "Bearer $it") } }
 
-        val requestBody = body?.let { gson.toJson(it).toRequestBody("application/json".toMediaType()) }
-        println(token)
+        val requestBody = body?.let { 
+            val jsonString = gson.toJson(it)
+            println("[ApiClient] Request to $url")
+            println("[ApiClient] Request body: $jsonString")
+            jsonString.toRequestBody("application/json".toMediaType()) 
+        }
+        println("[ApiClient] Token: ${token?.take(20)}...")
         builder.method(method, if (method.uppercase() == "GET") null else requestBody)
-        println(requestBody.toString())
+        
         val response = client.newCall(builder.build()).execute()
-
-        response.body.string()
+        val responseBody = response.body.string()
+        
+        println("[ApiClient] Response code: ${response.code}")
+        println("[ApiClient] Response body: $responseBody")
+        
+        responseBody
 
     }
 }
