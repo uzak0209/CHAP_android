@@ -43,6 +43,10 @@ class MainActivity : ComponentActivity() {
         EventViewModelFactory(EventRepositoryImpl())
     }
 
+    private val commentViewModel: CommentViewModel by viewModels {
+        CommentViewModelFactory(CommentRepositoryImpl())
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +62,8 @@ class MainActivity : ComponentActivity() {
                     Navigation(
                         postViewModel = postViewModel,
                         threadViewModel = threadViewModel,
-                        eventViewModel = eventViewModel
+                        eventViewModel = eventViewModel,
+                        commentViewModel = commentViewModel
                     )
                 }
             }

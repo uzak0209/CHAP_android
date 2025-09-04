@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chap.API.CommentViewModel
 import com.example.chap.API.EventViewModel
 import com.example.chap.Screens.Login.LoginScreen
 import com.example.chap.Screens.Map.MapScreen
@@ -15,6 +16,7 @@ import com.example.chap.API.ThreadViewModel
 import com.example.chap.Models.Coordinate
 import com.example.chap.Models.Event
 import com.example.chap.Models.Thread
+import com.example.chap.Screens.Comment.CommentScreen
 import com.example.chap.Screens.Event.EventScreen
 import com.example.chap.Screens.Thread.ThreadScreen
 
@@ -25,7 +27,8 @@ import com.example.chap.Screens.Thread.ThreadScreen
 fun Navigation(
     postViewModel: PostViewModel,
     threadViewModel: ThreadViewModel,
-    eventViewModel: EventViewModel
+    eventViewModel: EventViewModel,
+    commentViewModel: CommentViewModel
 ) {
     val navController = rememberNavController()
 
@@ -66,6 +69,16 @@ fun Navigation(
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+            )
+        }
+
+        composable("comment"){
+            CommentScreen(
+                commentViewModel = commentViewModel,
+                onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
+                onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
+                onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
             )
         }
         composable("event"){

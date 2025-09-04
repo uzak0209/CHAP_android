@@ -1,6 +1,9 @@
 package com.example.chap.Screens.Comment
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,24 +19,46 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.example.chap.API.CommentViewModel
+import com.example.chap.API.ThreadViewModel
+import com.example.chap.Models.Comment
 
 
 @Composable
 fun CommentScreen(
-    threadId: String,
+    commentViewModel: CommentViewModel,
     threadViewModel: ThreadViewModel,
     onNavigateHome: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateThread: () -> Unit,
     onNavigateEvent: () -> Unit,
 ) {
+
+    val comments by commentViewModel.comments.collectAsState()
+    LaunchedEffect(commentViewModel) {
+        commentViewModel.load()
+    }
 
     Scaffold(
         topBar = {
@@ -57,70 +82,39 @@ fun CommentScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when {
-                ui.loading -> LoadingView()
-                ui.thread == null -> EmptyView(onBack)
-                else -> CommentContent(
-                    thread = ui.thread,
-                    replies = ui.replies,
-                    posting = ui.posting,
-                    error = ui.error,
-                    onRetry = controller.reload,
-                    onPost = controller.postReply
-                )
-            }
+            CommentContent(
+                threadViewModel = threadViewModel,
+                commentViewModel = commentViewModel,
+                comments = comments,
+                reRoad = { commentViewModel.load() }
+            )
         }
     }
 }
 
-@Composable
-private fun LoadingView() {
-    Box(
-        Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
 
-@Composable
-private fun EmptyView(onBack: () -> Unit) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("スレッドが見つかりません", color = Color.Gray)
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = onBack) { Text("戻る") }
-    }
-}
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun CommentContent(
-    thread: Thread,
-    replies: List<Post>,
-    posting: Boolean,
-    error: String?,
-    onRetry: () -> Unit,
-    onPost: (String, String?) -> Unit
+    commentViewModel: CommentViewModel,
+    threadViewModel: ThreadViewModel,
+    reRoad: () -> Unit,
+    comments: List<Comment>
 ) {
     var replyText by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
 
     Column(Modifier.fillMaxSize()) {
-        ThreadHeader(thread = thread, replyCount = replies.size)
-        if (error != null) {
-            AssistChip(
-                onClick = onRetry,
-                label = { Text("エラー: $error (再試行)") },
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            )
-        }
+        ThreadHeader(
+            comment = comments
+        )
+        AssistChip(
+            onClick = {reRoad()},
+            label = { Text("エラーが発生しました。リロードします。", color = Color.Red) },
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+        )
+
         Divider()
         // リスト + フォーム
         LazyColumn(
@@ -129,26 +123,10 @@ private fun CommentContent(
                 .fillMaxWidth()
         ) {
             // スレッド本体 (番号1)
-            item {
-                ThreadResponseRow(
-                    number = 1,
-                    content = thread.content,
-                    userId = thread.userId,
-                    createdAt = thread.createdAt,
-                    isOP = true
-                )
+            items(comments) {item ->
+                CommentRow(comment = item)
             }
-            // レス
-            itemsIndexed(replies) { index, post ->
-                ThreadResponseRow(
-                    number = index + 2,
-                    content = post.content,
-                    userId = post.userId,
-                    createdAt = post.createdAt,
-                    isOP = false
-                )
-            }
-            if (replies.isEmpty()) {
+            if (comments.isEmpty()) {
                 item {
                     Box(
                         Modifier
@@ -168,11 +146,11 @@ private fun CommentContent(
                     content = replyText,
                     onContentChange = { replyText = it },
                     onSubmit = {
-                        onPost(replyText, name.ifBlank { null })
+                        commentViewModel.createComment(replyText, name.ifBlank { null })
                         replyText = ""
                         name = ""
                     },
-                    posting = posting
+                    commenting = commenting
                 )
                 Spacer(Modifier.height(24.dp))
             }
@@ -182,7 +160,7 @@ private fun CommentContent(
 
 // ====== 個別 UI パーツ ======
 @Composable
-private fun ThreadHeader(thread: Thread, replyCount: Int) {
+private fun ThreadHeader(comment: List<Comment>) {
     Column(
         Modifier
             .padding(16.dp)
@@ -190,7 +168,7 @@ private fun ThreadHeader(thread: Thread, replyCount: Int) {
             .padding(16.dp)
     ) {
         Text(
-            thread.content,
+            comment.content,
             style = MaterialTheme.typography.titleMedium,
             color = Color(0xFF0A2F66)
         )
@@ -205,12 +183,8 @@ private fun ThreadHeader(thread: Thread, replyCount: Int) {
 }
 
 @Composable
-private fun ThreadResponseRow(
-    number: Int,
-    content: String,
-    userId: String,
-    createdAt: String,
-    isOP: Boolean
+private fun CommentRow(
+    comment: Comment
 ) {
     Column(
         Modifier
@@ -261,7 +235,7 @@ private fun ReplyForm(
     content: String,
     onContentChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    posting: Boolean
+    commenting: Boolean
 ) {
     Column(
         Modifier
@@ -291,9 +265,9 @@ private fun ReplyForm(
         Row {
             Button(
                 onClick = onSubmit,
-                enabled = content.isNotBlank() && !posting
+                enabled = content.isNotBlank() && !commenting
             ) {
-                Text(if (posting) "投稿中..." else "投稿する")
+                Text(if (commenting) "投稿中..." else "投稿する")
             }
             Spacer(Modifier.width(8.dp))
             OutlinedButton(onClick = {

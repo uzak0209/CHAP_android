@@ -57,18 +57,13 @@ data class Post(
 // コメント
 data class Comment(
     val id: Long,
+    val user_id: String,
     val created_at: String,
     val updated_at: String,
     val deleted_at: String?,
-    val user_id: String,
     val username: String,
-    val coordinate: Coordinate,
     val content: String,
-    val valid: Boolean,
     val thread_id: Long,
-    val thread: Thread,
-    val like: Int,
-    val tags: List<String>
 )
 
 // スレッド
