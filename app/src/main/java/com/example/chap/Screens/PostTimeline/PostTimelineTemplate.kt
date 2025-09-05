@@ -58,7 +58,7 @@ fun PostTimelineTemplate(
                     BottomDestination.Home -> { /* already */ }
                     BottomDestination.Map -> {onNavigateMap()}
                     BottomDestination.Event -> {onNavigateEvent()}
-                    BottomDestination.Thread -> {onNavigateThread()}
+                    BottomDestination.Thread -> { /* Thread一覧への遷移など別用途ならここで処理 */ }
                 }
             }
         }

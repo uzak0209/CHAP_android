@@ -35,6 +35,9 @@ class ThreadViewModel(
         }
     }
 
+    // Added helper to fetch a thread by id from current cache
+    fun getThreadById(id: Long): Thread? = threadRepository.threads.value.firstOrNull { it.id == id }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun createThread(thread: PostCreateRequest) {
         viewModelScope.launch {

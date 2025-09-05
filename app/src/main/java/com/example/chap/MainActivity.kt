@@ -17,6 +17,9 @@ import com.example.chap.API.PostViewModel
 import com.example.chap.API.PostViewModelFactory
 import com.example.chap.API.ThreadViewModel
 import com.example.chap.API.ThreadViewModelFactory
+import com.example.chap.API.CommentViewModel
+import com.example.chap.API.CommentViewModelFactory
+import com.example.chap.domain.repository.CommentRepositoryImpl
 import com.example.chap.domain.repository.EventRepositoryImpl
 import com.example.chap.domain.repository.PostRepositoryImpl
 import com.example.chap.domain.repository.ThreadRepositoryImpl
@@ -41,6 +44,9 @@ class MainActivity : ComponentActivity() {
     private val eventViewModel: EventViewModel by viewModels {
         EventViewModelFactory(EventRepositoryImpl())
     }
+    private val commentViewModel: CommentViewModel by viewModels {
+        CommentViewModelFactory(CommentRepositoryImpl())
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -58,7 +64,8 @@ class MainActivity : ComponentActivity() {
                     Navigation(
                         postViewModel = postViewModel,
                         threadViewModel = threadViewModel,
-                        eventViewModel = eventViewModel
+                        eventViewModel = eventViewModel,
+                        commentViewModel = commentViewModel
                     )
                 }
             }

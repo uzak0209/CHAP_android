@@ -19,6 +19,8 @@ class CommentViewModel(
 
     private val _comments = MutableStateFlow<List<Comment>>(emptyList())
     val comments: StateFlow<List<Comment>> = _comments
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     suspend fun getCommentsByThreadID(threadID:String): List<Comment> {
         val result: Result<List<Comment>> = commentRepository.getCommentsByThreadID(threadID)
@@ -45,20 +47,23 @@ class CommentViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun load(threadId: String) {
+    fun load(threadId: Long) {
         if (_isLoading.value) return
         viewModelScope.launch {
             _isLoading.value = true
-            commentRepository.getCommentsByThreadID(threadId).onSuccess { list ->
-                _comments.value = list
-            }.onFailure {
-                // TODO: error handling (log/report)
-            }
+            commentRepository.getCommentsByThreadID(threadId.toString())
+                .onSuccess { list ->
+                    _comments.value = list
+                    _errorMessage.value = null
+                }
+                .onFailure { e ->
+                    _errorMessage.value = e.message ?: "Unknown error"
+                }
             _isLoading.value = false
         }
     }
 
-    fun refresh(threadId: String) = load(threadId)
+    fun refresh(threadId: Long) = load(threadId)
 }
 
 class CommentViewModelFactory(private val commentRepository: CommentRepositoryImpl) : ViewModelProvider.Factory {

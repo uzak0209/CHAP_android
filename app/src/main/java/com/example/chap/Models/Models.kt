@@ -79,7 +79,7 @@ data class Comment(
 
 // スレッド
 data class Thread(
-    val id: String,
+    val id: Long,
     val type: String,
     val created_at: String,
     val updated_at: String,
@@ -136,6 +136,6 @@ data class RequestComment(
     val like:Int,
     val tags:List<String>,
     val valid:Boolean,
-    val thread_id: String
+    val thread_id: Long
 )
 // ヒートマップポイント

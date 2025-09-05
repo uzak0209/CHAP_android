@@ -84,11 +84,13 @@ fun CommentScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            val errorMessage by commentViewModel.errorMessage.collectAsState()
             CommentContent(
                 commentViewModel = commentViewModel,
                 thread = thread,
                 comments = comments,
-                reRoad = { commentViewModel.load(thread.id) }
+                reRoad = { commentViewModel.load(thread.id) },
+                errorMessage = errorMessage
             )
         }
     }
@@ -101,7 +103,8 @@ private fun CommentContent(
     commentViewModel: CommentViewModel,
     thread: Thread,
     reRoad: () -> Unit,
-    comments: List<Comment>
+    comments: List<Comment>,
+    errorMessage: String?
 ) {
     var replyText by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
@@ -112,14 +115,16 @@ private fun CommentContent(
             comment = comments,
             thread = thread
         )
-        AssistChip(
-            onClick = {reRoad()},
-            label = { Text("エラーが発生しました。リロードします。", color = Color.Red) },
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-        )
+        if (errorMessage != null) {
+            AssistChip(
+                onClick = { reRoad() },
+                label = { Text(errorMessage, color = Color.Red) },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+        }
 
-        Divider()
+    androidx.compose.material3.HorizontalDivider()
         // リスト + フォーム
         LazyColumn(
             modifier = Modifier
@@ -127,8 +132,9 @@ private fun CommentContent(
                 .fillMaxWidth()
         ) {
             // スレッド本体 (番号1)
-            items(comments) {item ->
-                CommentRow(comment = item)
+            items(comments) { item ->
+                val isOP = item.user_id == thread.user_id
+                CommentRow(comment = item, isOP = isOP)
             }
             if (comments.isEmpty()) {
                 item {
@@ -188,14 +194,15 @@ private fun ThreadHeader(comment: List<Comment>, thread: Thread) {
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("レス数: $comment.size", fontSize = MaterialTheme.typography.labelSmall.fontSize, color = Color(0xFF1955A6))
+            Text("レス数: ${comment.size}", fontSize = MaterialTheme.typography.labelSmall.fontSize, color = Color(0xFF1955A6))
         }
     }
 }
 
 @Composable
 private fun CommentRow(
-    comment: Comment
+    comment: Comment,
+    isOP: Boolean
 ) {
     Column(
         Modifier
@@ -236,7 +243,7 @@ private fun CommentRow(
             style = MaterialTheme.typography.bodyMedium
         )
     }
-    Divider(thickness = 0.6.dp, color = Color(0xFFE0E0E0))
+    androidx.compose.material3.HorizontalDivider(thickness = 0.6.dp, color = Color(0xFFE0E0E0))
 }
 
 @Composable

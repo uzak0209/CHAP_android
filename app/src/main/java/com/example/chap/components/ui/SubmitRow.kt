@@ -31,12 +31,13 @@ fun SubmitRow(
     post: Post? = null,
     thread: Thread? = null,
     event: Event? = null,
+    onThreadClick: (String) -> Unit = {}
 ) {
     if (post != null) {
         PostCard(modifier, post)
     }
     if (thread != null) {
-        ThreadCard(modifier, thread)
+        ThreadCard(modifier, onThreadClick = onThreadClick,thread)
     }
     if (event != null) {
         EventCard(modifier, event)
@@ -68,13 +69,14 @@ private fun PostCard(
 @Composable
 private fun ThreadCard(
     modifier: Modifier = Modifier,
+    onThreadClick: (String) -> Unit,
     thread: Thread
 ){
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F)),
-        onClick = {}
+        onClick = { onThreadClick(thread.id.toString()) }
     ) {
         Column(Modifier.padding(16.dp)) {
             SubmitHeader(username = thread?.username ?:" username" )
