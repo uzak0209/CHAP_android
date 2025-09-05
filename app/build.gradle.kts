@@ -82,6 +82,7 @@ dependencies {
     // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation(libs.androidx.foundation)
+    implementation(libs.material3)
 
     // Test
     testImplementation(libs.junit)

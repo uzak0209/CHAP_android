@@ -8,15 +8,21 @@ import androidx.lifecycle.viewModelScope
 import com.example.chap.Models.PostCreateRequest
 import com.example.chap.Models.Thread
 import com.example.chap.domain.repository.ThreadRepositoryImpl
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ThreadViewModel(
     private val threadRepository: ThreadRepositoryImpl
 ) : ViewModel() {
+
+    private val _threads = MutableStateFlow<List<Thread>>(emptyList())
+    val threads: StateFlow<List<Thread>> = _threads
+
     fun getThreads(): List<Thread> {
         return threadRepository.threads.value
     }
-
     fun getAllThreads() {
         viewModelScope.launch {
             val result = threadRepository.getAll()
@@ -29,6 +35,9 @@ class ThreadViewModel(
         }
     }
 
+    // Added helper to fetch a thread by id from current cache
+    fun getThreadById(id: Long): Thread? = threadRepository.threads.value.firstOrNull { it.id == id }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun createThread(thread: PostCreateRequest) {
         viewModelScope.launch {
@@ -40,6 +49,24 @@ class ThreadViewModel(
             }
         }
     }
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    fun load() {
+        if (_isLoading.value) return
+        viewModelScope.launch {
+            _isLoading.value = true
+            threadRepository.getAll().onSuccess { list ->
+                _threads.value = list
+            }.onFailure {
+                // TODO: error handling (log/report)
+            }
+            _isLoading.value = false
+        }
+    }
+
+    fun refresh() = load()
 }
 
 class ThreadViewModelFactory(private val threadRepository: ThreadRepositoryImpl) : ViewModelProvider.Factory {

@@ -36,6 +36,8 @@ import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.LoadStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.API.PostViewModel
+import com.example.chap.API.ThreadViewModel
+import com.example.chap.API.EventViewModel
 import com.example.chap.components.ToggleDimension
 import com.example.chap.components.map.SubmitCategory
 import com.mapbox.geojson.Point
@@ -48,14 +50,20 @@ import com.mapbox.maps.plugin.locationcomponent.location
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MapScreen() {
+fun MapScreen(
+    onNavigateHome: () -> Unit,
+    onNavigateEvent: () -> Unit,
+    onNavigateThread: () -> Unit,
+    postViewModel: PostViewModel,
+    threadViewModel: ThreadViewModel,
+    eventViewModel: EventViewModel
+) {
     // Compose で ViewModel の位置情報を監視
     var is3D by remember { mutableStateOf(false) }
     var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
-    var showCreatePost by remember { mutableStateOf(false) }
-    var showCreateThread by remember { mutableStateOf(false) }
-    var showCreateEvent by remember { mutableStateOf(false) }
+    var showCreate by remember { mutableStateOf(false) }
+    var createKind by remember { mutableStateOf(CreateKind.POST) }
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
@@ -84,10 +92,10 @@ fun MapScreen() {
         bottomBar = {
             AppBottomBar { dest ->
                 when(dest){
-                    BottomDestination.Home -> { /* TODO navigate home */ }
+                    BottomDestination.Home -> onNavigateHome()
                     BottomDestination.Map -> { /* current */ }
-                    BottomDestination.Event -> { /* TODO */ }
-                    BottomDestination.Thread -> { /* TODO */ }
+                    BottomDestination.Event -> { onNavigateEvent() }
+                    BottomDestination.Thread -> { onNavigateThread() }
                 }
             }
         }
@@ -105,12 +113,9 @@ fun MapScreen() {
                     style = { Style.STANDARD }
                 ) {
                     MapEffect(Unit) { mapView ->
-                        if (mapView.getMapboxMap().style == null && !styleLoaded) {
-                            mapView.getMapboxMap().loadStyleUri(Style.STANDARD) { _ ->
-                                styleLoaded = true
-                            }
-                        } else if (mapView.getMapboxMap().style != null) {
-                            styleLoaded = true
+                        val mbMap = mapView.mapboxMap
+                        if (!styleLoaded) {
+                            mbMap.loadStyleUri(Style.STANDARD) { styleLoaded = true }
                         }
                     }
                     MapEffect(LocationViewModel.locationState.location) { mapView ->
@@ -133,28 +138,22 @@ fun MapScreen() {
                         .padding(12.dp),
                     onClick = { showPopup = true }
                 ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
+
                 CreateDialog(
-                    isOpen = showCreatePost,
-                    onClose = { showCreatePost = false },
-                    selectedKind = CreateKind.POST,
-                )
-                CreateDialog(
-                    isOpen = showCreateThread,
-                    onClose = { showCreateThread = false },
-                    selectedKind = CreateKind.THREAD,
-                )
-                CreateDialog(
-                    isOpen = showCreateEvent,
-                    onClose = { showCreateEvent = false },
-                    selectedKind = CreateKind.EVENT,
+                    isOpen = showCreate,
+                    onClose = { showCreate = false },
+                    selectedKind = createKind,
+                    postViewModel = postViewModel,
+                    threadViewModel = threadViewModel,
+                    eventViewModel = eventViewModel
                 )
 
                 SelectPopupOverlay(
                     visible = showPopup,
                     onDismiss = { showPopup = false },
-                    onPostCreated = {showCreatePost = true},
-                    onThreadCreated = {showCreateThread = true},
-                    onEventCreated = {showCreateEvent = true}
+                    onPostCreated = { showPopup = false; createKind = CreateKind.POST; showCreate = true },
+                    onThreadCreated = { showPopup = false; createKind = CreateKind.THREAD; showCreate = true },
+                    onEventCreated = { showPopup = false; createKind = CreateKind.EVENT; showCreate = true }
                 )
                 if (!styleLoaded) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

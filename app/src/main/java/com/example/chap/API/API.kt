@@ -47,11 +47,6 @@ object ApiEndpoints {
         fun edit(id: String) = "$BASE/api/v1/edit/event/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/event/$id"
     }
-    object Comments {
-        fun get(threadId: String) = "$BASE/api/v1/comments/$threadId"
-        const val CREATE = "$BASE/api/v1/create/comment"
-        fun delete(id: String) = "$BASE/api/v1/delete/comment/$id"
-    }
     object Social {
         const val HEATMAP = "$BASE/api/v1/social-sensing/heatmap"
     }
@@ -77,13 +72,22 @@ object ApiClient {
             .addHeader("Content-Type", "application/json")
             .apply { token?.let { addHeader("Authorization", "Bearer $it") } }
 
-        val requestBody = body?.let { gson.toJson(it).toRequestBody("application/json".toMediaType()) }
-        println(token)
+        val requestBody = body?.let { 
+            val jsonString = gson.toJson(it)
+            println("[ApiClient] Request to $url")
+            println("[ApiClient] Request body: $jsonString")
+            jsonString.toRequestBody("application/json".toMediaType()) 
+        }
+        println("[ApiClient] Token: ${token?.take(20)}...")
         builder.method(method, if (method.uppercase() == "GET") null else requestBody)
-        println(requestBody.toString())
+        
         val response = client.newCall(builder.build()).execute()
-
-        response.body.string()
+        val responseBody = response.body.string()
+        
+        println("[ApiClient] Response code: ${response.code}")
+        println("[ApiClient] Response body: $responseBody")
+        
+        responseBody
 
     }
 }

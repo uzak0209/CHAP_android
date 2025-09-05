@@ -50,6 +50,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(LoginTab.Login) }
     var displayName by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     MainBody(
         email = email,
@@ -60,7 +61,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         onTabChange = { selectedTab = it },
         displayName = displayName,
         onDisplayNameChange = { displayName = it },
-        onLoginSuccess = onLoginSuccess
+    onLoginSuccess = onLoginSuccess,
+    errorMessage = errorMessage,
+    onErrorMessageChange = { errorMessage = it }
     )
 }
 
@@ -78,7 +81,9 @@ fun MainBody(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onTabChange: (LoginTab) -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    errorMessage: String?,
+    onErrorMessageChange: (String?) -> Unit
 
 ) {
 
@@ -133,15 +138,26 @@ fun MainBody(
             val context = LocalContext.current
             Button(
                 onClick = {
+                    onErrorMessageChange(null)
                     when (selectedTab) {
                         LoginTab.Login -> {
-                            LoginViewModel.login(email, password, context)
-                            onLoginSuccess()
+                            LoginViewModel.login(
+                                email = email,
+                                password = password,
+                                context = context,
+                                onSuccess = { onLoginSuccess() },
+                                onError = { onErrorMessageChange(it.message ?: "ログインに失敗しました") }
+                            )
                         }
-
                         LoginTab.SignUp -> {
-                            LoginViewModel.register(email, password, displayName, context)
-                            onLoginSuccess()
+                            LoginViewModel.register(
+                                email = email,
+                                password = password,
+                                displayName = displayName,
+                                context = context,
+                                onSuccess = { onLoginSuccess() },
+                                onError = { onErrorMessageChange(it.message ?: "登録に失敗しました") }
+                            )
                         }
                     }
                 },
@@ -156,6 +172,16 @@ fun MainBody(
                     LoginTab.SignUp -> "新規登録"
                 }
                 Text(text, color = Color.White, fontSize = 16.sp)
+            }
+            errorMessage?.let { msg ->
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = msg,
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
             if (selectedTab == LoginTab.Login) {
                 Spacer(modifier = Modifier.height(40.dp))
