@@ -23,7 +23,6 @@ class ThreadViewModel(
     fun getThreads(): List<Thread> {
         return threadRepository.threads.value
     }
-
     fun getAllThreads() {
         viewModelScope.launch {
             val result = threadRepository.getAll()
@@ -35,6 +34,9 @@ class ThreadViewModel(
             }
         }
     }
+
+    // Added helper to fetch a thread by id from current cache
+    fun getThreadById(id: Long): Thread? = threadRepository.threads.value.firstOrNull { it.id == id }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun createThread(thread: PostCreateRequest) {

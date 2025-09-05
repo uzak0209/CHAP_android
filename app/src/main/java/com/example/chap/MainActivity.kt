@@ -1,6 +1,5 @@
 package com.example.chap
 
-import com.example.chap.Navigation
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -12,15 +11,18 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.chap.API.PostViewModel
-import com.example.chap.API.PostViewModelFactory
-import com.example.chap.domain.repository.PostRepositoryImpl
-import com.example.chap.API.ThreadViewModel
-import com.example.chap.API.ThreadViewModelFactory
-import com.example.chap.domain.repository.ThreadRepositoryImpl
 import com.example.chap.API.EventViewModel
 import com.example.chap.API.EventViewModelFactory
+import com.example.chap.API.PostViewModel
+import com.example.chap.API.PostViewModelFactory
+import com.example.chap.API.ThreadViewModel
+import com.example.chap.API.ThreadViewModelFactory
+import com.example.chap.API.CommentViewModel
+import com.example.chap.API.CommentViewModelFactory
+import com.example.chap.domain.repository.CommentRepositoryImpl
 import com.example.chap.domain.repository.EventRepositoryImpl
+import com.example.chap.domain.repository.PostRepositoryImpl
+import com.example.chap.domain.repository.ThreadRepositoryImpl
 import com.example.chap.libs.GetLocation
 import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.ui.theme.CHAPTheme
@@ -42,6 +44,10 @@ class MainActivity : ComponentActivity() {
     private val eventViewModel: EventViewModel by viewModels {
         EventViewModelFactory(EventRepositoryImpl())
     }
+    private val commentViewModel: CommentViewModel by viewModels {
+        CommentViewModelFactory(CommentRepositoryImpl())
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +64,8 @@ class MainActivity : ComponentActivity() {
                     Navigation(
                         postViewModel = postViewModel,
                         threadViewModel = threadViewModel,
-                        eventViewModel = eventViewModel
+                        eventViewModel = eventViewModel,
+                        commentViewModel = commentViewModel
                     )
                 }
             }

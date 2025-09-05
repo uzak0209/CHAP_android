@@ -16,6 +16,13 @@ data class PostCreateRequest(
     val visible: Boolean,
     val valid: Boolean
 )
+
+//data class CommentCreateRequest(
+//    val content: String,
+//    val visible: Boolean,
+//    val valid: Boolean,
+//    val thread_id:Long
+//)
 enum class PostCategory{
     ENTERTAINMENT,DISASTER,COMMUNITY;
 
@@ -66,7 +73,6 @@ data class Comment(
     val content: String,
     val valid: Boolean,
     val thread_id: Long,
-    val thread: Thread,
     val like: Int,
     val tags: List<String>
 )
@@ -124,11 +130,12 @@ data class GoogleLogin(
     val name: String
 )
 
-// Thread と Comment IDs の紐付け
-data class ThreadTable(
-    val thread_id: Long,
-    val thread: Thread,
-    val comment_ids: List<Long>
-)
 
+data class RequestComment(
+    val content:String,
+    val like:Int,
+    val tags:List<String>,
+    val valid:Boolean,
+    val thread_id: Long
+)
 // ヒートマップポイント

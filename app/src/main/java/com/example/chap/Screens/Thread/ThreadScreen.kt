@@ -31,6 +31,7 @@ fun ThreadScreen(
     onNavigateHome: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateEvent: () -> Unit,
+    onNavigateComment: (String) -> Unit,
 ){
 
     val threads by threadViewModel.threads.collectAsState()
@@ -65,7 +66,7 @@ fun ThreadScreen(
                 contentPadding = PaddingValues(8.dp),
             ) {
                 items(threads) { item ->
-                    SubmitRow(thread = item)
+                    SubmitRow(thread = item, onThreadClick = { id -> onNavigateComment(id) })
                 }
             }
         }

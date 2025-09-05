@@ -47,11 +47,6 @@ object ApiEndpoints {
         fun edit(id: String) = "$BASE/api/v1/edit/event/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/event/$id"
     }
-    object Comments {
-        fun get(threadId: String) = "$BASE/api/v1/comments/$threadId"
-        const val CREATE = "$BASE/api/v1/create/comment"
-        fun delete(id: String) = "$BASE/api/v1/delete/comment/$id"
-    }
     object Social {
         const val HEATMAP = "$BASE/api/v1/social-sensing/heatmap"
     }
