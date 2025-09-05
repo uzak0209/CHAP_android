@@ -114,9 +114,45 @@ class ThreadRepositoryImpl : ThreadRepository {
         }
     }
 
+    override suspend fun getThreadById(id: String): Result<Thread> {
+        try {
+            val url = ApiEndpoints.Threads.details(id)
+            val response = ApiClient.request(url)
+
+            if (response != null) {
+                val threadObject = JSONObject(response).getJSONObject("thread")
+                val thread = Thread(
+                    id = threadObject.optLong("id", 0L),
+                    type = threadObject.optString("type", ""),
+                    created_at = threadObject.optString("created_at", ""),
+                    updated_at = threadObject.optString("updated_at", ""),
+                    deleted_at = if (threadObject.isNull("deleted_at")) null else threadObject.optString(
+                        "deleted_at"
+                    ),
+                    user_id = threadObject.optString("user_id", ""),
+                    username = threadObject.optString("username", ""),
+                    coordinate = parseCoordinate(threadObject.optJSONObject("coordinate")),
+                    content = threadObject.optString("content", ""),
+                    category = threadObject.optString("category", ""),
+                    valid = threadObject.optBoolean("valid", true),
+                    like = threadObject.optInt("like", 0),
+                    tags = parseTags(threadObject.optJSONArray("tags"))
+                )
+                return Result.success(thread)
+            } else {
+               return  Result.failure(Exception("Failed to fetch thread details"))
+            }
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
+
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getCurrentTimeISO(): String {
         val now = Instant.now()
         return DateTimeFormatter.ISO_INSTANT.format(now)
     }
+
 }

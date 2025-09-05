@@ -66,7 +66,6 @@ data class Comment(
     val content: String,
     val valid: Boolean,
     val thread_id: Long,
-    val thread: Thread,
     val like: Int,
     val tags: List<String>
 )
@@ -131,4 +130,11 @@ data class ThreadTable(
     val comment_ids: List<Long>
 )
 
+data class RequestComment(
+    val content:String,
+    val like:Int,
+    val tags:List<String>,
+    val valid:Boolean,
+    val thread_id:Long
+)
 // ヒートマップポイント

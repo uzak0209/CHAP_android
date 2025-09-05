@@ -7,17 +7,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chap.API.EventViewModel
+import com.example.chap.API.PostViewModel
+import com.example.chap.API.ThreadViewModel
+import com.example.chap.Screens.Event.EventScreen
 import com.example.chap.Screens.Login.LoginScreen
 import com.example.chap.Screens.Map.MapScreen
 import com.example.chap.Screens.PostTimeline.PostTimelineTemplate
-import com.example.chap.API.PostViewModel
-import com.example.chap.API.ThreadViewModel
-import com.example.chap.Models.Coordinate
-import com.example.chap.Models.Event
-import com.example.chap.Models.Thread
-import com.example.chap.Screens.Event.EventScreen
 import com.example.chap.Screens.Thread.ThreadScreen
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -80,37 +76,3 @@ fun Navigation(
     }
 }
 
-//threadList = listOf(
-//Thread( // Create an instance of your data class
-//id = 1, // Provide actual values
-//type = "discussion",
-//created_at = "2023-01-01T12:00:00Z",
-//updated_at = "2023-01-01T12:00:00Z",
-//deleted_at = null,
-//username = "User1",
-//user_id = "userId1",
-//coordinate = Coordinate(0.0, 0.0), // Assuming Coordinate structure
-//category = "general",
-//content = "This is the first thread content.",
-//valid = true,   // 'valid' is a property of ThreadItem
-//like = 10,
-//tags = listOf("kotlin", "android")
-//)
-//)
-//eventList = listOf(
-//Event( // Create an instance of your data class
-//id = 1, // Provide actual values
-//type = "discussion",
-//created_at = "2023-01-01T12:00:00Z",
-//updated_at = "2023-01-01T12:00:00Z",
-//deleted_at = null,
-//username = "User1",
-//user_id = "userId1",
-//coordinate = Coordinate(0.0, 0.0), // Assuming Coordinate structure
-//category = "general",
-//content = "This is the first thread content.",
-//valid = true,   // 'valid' is a property of ThreadItem
-//like = 10,
-//tags = listOf("kotlin", "android")
-//)
-//)
