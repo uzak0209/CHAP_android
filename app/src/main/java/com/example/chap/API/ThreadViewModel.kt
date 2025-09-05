@@ -23,7 +23,6 @@ class ThreadViewModel(
     fun getThreads(): List<Thread> {
         return threadRepository.threads.value
     }
-
     fun getAllThreads() {
         viewModelScope.launch {
             val result = threadRepository.getAll()

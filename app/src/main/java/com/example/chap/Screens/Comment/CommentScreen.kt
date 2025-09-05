@@ -43,12 +43,16 @@ import androidx.compose.ui.unit.dp
 import com.example.chap.API.CommentViewModel
 import com.example.chap.API.ThreadViewModel
 import com.example.chap.Models.Comment
+import com.example.chap.Models.CommentCreateRequest
+import com.example.chap.Models.PostCreateRequest
+import com.example.chap.Models.Coordinate
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CommentScreen(
     commentViewModel: CommentViewModel,
-    threadViewModel: ThreadViewModel,
+    thread: Thread,
     onNavigateHome: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateThread: () -> Unit,
@@ -59,6 +63,8 @@ fun CommentScreen(
     LaunchedEffect(commentViewModel) {
         commentViewModel.load()
     }
+
+    val thread = threadViewModel.get
 
     Scaffold(
         topBar = {
@@ -103,6 +109,7 @@ private fun CommentContent(
 ) {
     var replyText by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
+    val commenting by commentViewModel.isLoading.collectAsState()
 
     Column(Modifier.fillMaxSize()) {
         ThreadHeader(
@@ -146,7 +153,12 @@ private fun CommentContent(
                     content = replyText,
                     onContentChange = { replyText = it },
                     onSubmit = {
-                        commentViewModel.createComment(replyText, name.ifBlank { null })
+                        val comment = CommentCreateRequest(
+                            content = replyText.trim(),
+                            visible = true,
+                            valid = true
+                        )
+                        commentViewModel.createComment(comment)
                         replyText = ""
                         name = ""
                     },
@@ -168,7 +180,7 @@ private fun ThreadHeader(comment: List<Comment>) {
             .padding(16.dp)
     ) {
         Text(
-            comment.content,
+            thread.title,
             style = MaterialTheme.typography.titleMedium,
             color = Color(0xFF0A2F66)
         )

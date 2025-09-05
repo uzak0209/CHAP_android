@@ -16,6 +16,12 @@ data class PostCreateRequest(
     val visible: Boolean,
     val valid: Boolean
 )
+
+data class CommentCreateRequest(
+    val content: String,
+    val visible: Boolean,
+    val valid: Boolean
+)
 enum class PostCategory{
     ENTERTAINMENT,DISASTER,COMMUNITY;
 

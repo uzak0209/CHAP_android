@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chap.Models.Comment
+import com.example.chap.Models.CommentCreateRequest
 import com.example.chap.Models.PostCreateRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +37,7 @@ class CommentViewModel(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun createComment(comment: PostCreateRequest) {
+    fun createComment(comment: CommentCreateRequest) {
         viewModelScope.launch {
             val result = commentRepository.create(comment)
             result.onSuccess { response ->
