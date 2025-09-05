@@ -12,5 +12,9 @@ interface ThreadRepository {
 
     suspend fun create(thread: PostCreateRequest): Result<String>
 
+    //    suspend fun getDetailAll(): Result<Thread>
+//    suspend fun createDetail(thread: PostCreateRequest)
+    suspend fun getThreadById(id: String): Result<Thread>
+
 
 }
