@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chap.Models.Comment
-import com.example.chap.Models.CommentCreateRequest
-import com.example.chap.Models.PostCreateRequest
+import com.example.chap.Models.RequestComment
+import com.example.chap.domain.repository.CommentRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,26 +20,20 @@ class CommentViewModel(
     private val _comments = MutableStateFlow<List<Comment>>(emptyList())
     val comments: StateFlow<List<Comment>> = _comments
 
-    fun getComments(): List<Comment> {
-        return commentRepository.comments.value
-    }
-
-    fun getAllComments() {
-        viewModelScope.launch {
-            val result = commentRepository.getAll()
-            result.onSuccess { response ->
-                println("スレッド一覧取得成功: $response")
-                // _commentsの更新はRepository側で行われる
-            }.onFailure { e ->
-                println("エラー: ${e.message}")
-            }
+    suspend fun getCommentsByThreadID(threadID:String): List<Comment> {
+        val result: Result<List<Comment>> = commentRepository.getCommentsByThreadID(threadID)
+        result.onSuccess {comments ->
+            _comments.value = comments
+        }.onFailure {e ->
+            println("エラー: ${e.message}")
         }
+        return _comments.value
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun createComment(comment: CommentCreateRequest) {
+    fun createComment(comment: RequestComment) {
         viewModelScope.launch {
-            val result = commentRepository.create(comment)
+            val result = commentRepository.createComment(comment)
             result.onSuccess { response ->
                 println("スレッド作成成功: $response")
             }.onFailure { e ->
@@ -51,11 +45,11 @@ class CommentViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun load() {
+    fun load(threadId: String) {
         if (_isLoading.value) return
         viewModelScope.launch {
             _isLoading.value = true
-            commentRepository.getAll().onSuccess { list ->
+            commentRepository.getCommentsByThreadID(threadId).onSuccess { list ->
                 _comments.value = list
             }.onFailure {
                 // TODO: error handling (log/report)
@@ -64,7 +58,7 @@ class CommentViewModel(
         }
     }
 
-    fun refresh() = load()
+    fun refresh(threadId: String) = load(threadId)
 }
 
 class CommentViewModelFactory(private val commentRepository: CommentRepositoryImpl) : ViewModelProvider.Factory {

@@ -48,7 +48,7 @@ class ThreadRepositoryImpl : ThreadRepository {
             List(jsonArray.length()) { i ->
                 val obj = jsonArray.getJSONObject(i)
                 Thread(
-                    id = obj.optLong("id", 0L),
+                    id = obj.optString("id", ""),
                     type = obj.optString("type", ""),
                     created_at = obj.optString("created_at", ""),
                     updated_at = obj.optString("updated_at", ""),
@@ -122,7 +122,7 @@ class ThreadRepositoryImpl : ThreadRepository {
             if (response != null) {
                 val threadObject = JSONObject(response).getJSONObject("thread")
                 val thread = Thread(
-                    id = threadObject.optLong("id", 0L),
+                    id = threadObject.optString("id", ""),
                     type = threadObject.optString("type", ""),
                     created_at = threadObject.optString("created_at", ""),
                     updated_at = threadObject.optString("updated_at", ""),

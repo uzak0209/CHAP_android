@@ -41,11 +41,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.example.chap.API.CommentViewModel
-import com.example.chap.API.ThreadViewModel
 import com.example.chap.Models.Comment
-import com.example.chap.Models.CommentCreateRequest
-import com.example.chap.Models.PostCreateRequest
-import com.example.chap.Models.Coordinate
+import com.example.chap.Models.RequestComment
+import com.example.chap.Models.Thread
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -61,10 +59,8 @@ fun CommentScreen(
 
     val comments by commentViewModel.comments.collectAsState()
     LaunchedEffect(commentViewModel) {
-        commentViewModel.load()
+        commentViewModel.load(thread.id)
     }
-
-    val thread = threadViewModel.get
 
     Scaffold(
         topBar = {
@@ -89,10 +85,10 @@ fun CommentScreen(
                 .padding(innerPadding)
         ) {
             CommentContent(
-                threadViewModel = threadViewModel,
                 commentViewModel = commentViewModel,
+                thread = thread,
                 comments = comments,
-                reRoad = { commentViewModel.load() }
+                reRoad = { commentViewModel.load(thread.id) }
             )
         }
     }
@@ -103,7 +99,7 @@ fun CommentScreen(
 @Composable
 private fun CommentContent(
     commentViewModel: CommentViewModel,
-    threadViewModel: ThreadViewModel,
+    thread: Thread,
     reRoad: () -> Unit,
     comments: List<Comment>
 ) {
@@ -113,7 +109,8 @@ private fun CommentContent(
 
     Column(Modifier.fillMaxSize()) {
         ThreadHeader(
-            comment = comments
+            comment = comments,
+            thread = thread
         )
         AssistChip(
             onClick = {reRoad()},
@@ -153,10 +150,12 @@ private fun CommentContent(
                     content = replyText,
                     onContentChange = { replyText = it },
                     onSubmit = {
-                        val comment = CommentCreateRequest(
+                        val comment = RequestComment(
                             content = replyText.trim(),
-                            visible = true,
-                            valid = true
+                            valid = true,
+                            thread_id = thread.id,
+                            like = 123,
+                            tags = emptyList(),
                         )
                         commentViewModel.createComment(comment)
                         replyText = ""
@@ -172,7 +171,7 @@ private fun CommentContent(
 
 // ====== 個別 UI パーツ ======
 @Composable
-private fun ThreadHeader(comment: List<Comment>) {
+private fun ThreadHeader(comment: List<Comment>, thread: Thread) {
     Column(
         Modifier
             .padding(16.dp)
@@ -180,7 +179,7 @@ private fun ThreadHeader(comment: List<Comment>) {
             .padding(16.dp)
     ) {
         Text(
-            thread.title,
+            thread.content,
             style = MaterialTheme.typography.titleMedium,
             color = Color(0xFF0A2F66)
         )
@@ -189,7 +188,7 @@ private fun ThreadHeader(comment: List<Comment>) {
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("レス数: $replyCount", fontSize = MaterialTheme.typography.labelSmall.fontSize, color = Color(0xFF1955A6))
+            Text("レス数: $comment.size", fontSize = MaterialTheme.typography.labelSmall.fontSize, color = Color(0xFF1955A6))
         }
     }
 }
@@ -206,7 +205,7 @@ private fun CommentRow(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                number.toString(),
+                comment.username,
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier
                     .background(
@@ -219,13 +218,13 @@ private fun CommentRow(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                (if (isOP) "★" else "") + "名無しさん@" + userId.take(8),
+                (if (isOP) "★" else "") + "名無しさん@" + comment.user_id.take(8),
                 fontFamily = FontFamily.Monospace,
                 color = Color.Gray,
                 style = MaterialTheme.typography.labelSmall
             )
             Spacer(Modifier.width(8.dp))
-            Text(formatDateTime(createdAt), color = Color.Gray, style = MaterialTheme.typography.labelSmall)
+            Text(comment.created_at, color = Color.Gray, style = MaterialTheme.typography.labelSmall)
             if (isOP) {
                 Spacer(Modifier.width(8.dp))
                 Text("[スレ主]", color = Color(0xFFB80000), style = MaterialTheme.typography.labelSmall)
@@ -233,7 +232,7 @@ private fun CommentRow(
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            content,
+            comment.content,
             style = MaterialTheme.typography.bodyMedium
         )
     }
