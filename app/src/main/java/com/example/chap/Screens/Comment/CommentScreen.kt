@@ -96,7 +96,6 @@ fun CommentScreen(
     }
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun CommentContent(
@@ -108,7 +107,7 @@ private fun CommentContent(
 ) {
     var replyText by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    val commenting by commentViewModel.isLoading.collectAsState()
+    val posting by commentViewModel.isPosting.collectAsState()
 
     Column(Modifier.fillMaxSize()) {
         ThreadHeader(
@@ -167,7 +166,8 @@ private fun CommentContent(
                         replyText = ""
                         name = ""
                     },
-                    commenting = commenting
+                    commenting = posting
+
                 )
                 Spacer(Modifier.height(24.dp))
             }
@@ -224,13 +224,6 @@ private fun CommentRow(
                 style = MaterialTheme.typography.labelSmall
             )
             Spacer(Modifier.width(8.dp))
-            Text(
-                (if (isOP) "★" else "") + "名無しさん@" + comment.user_id.take(8),
-                fontFamily = FontFamily.Monospace,
-                color = Color.Gray,
-                style = MaterialTheme.typography.labelSmall
-            )
-            Spacer(Modifier.width(8.dp))
             Text(comment.created_at, color = Color.Gray, style = MaterialTheme.typography.labelSmall)
             if (isOP) {
                 Spacer(Modifier.width(8.dp))
@@ -254,7 +247,7 @@ private fun ReplyForm(
     onContentChange: (String) -> Unit,
     onSubmit: () -> Unit,
     commenting: Boolean
-) {
+){
     Column(
         Modifier
             .fillMaxWidth()
@@ -263,14 +256,6 @@ private fun ReplyForm(
             .padding(16.dp)
     ) {
         Text("レスを書く", style = MaterialTheme.typography.titleSmall)
-        Spacer(Modifier.height(12.dp))
-        OutlinedTextField(
-            value = name,
-            onValueChange = onNameChange,
-            label = { Text("名前（省略可）") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(0.5f)
-        )
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(
             value = content,
@@ -282,7 +267,9 @@ private fun ReplyForm(
         Spacer(Modifier.height(12.dp))
         Row {
             Button(
-                onClick = onSubmit,
+                onClick = {
+                    onSubmit()
+                },
                 enabled = content.isNotBlank() && !commenting
             ) {
                 Text(if (commenting) "投稿中..." else "投稿する")

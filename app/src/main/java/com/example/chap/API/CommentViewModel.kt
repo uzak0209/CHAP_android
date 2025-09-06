@@ -21,6 +21,8 @@ class CommentViewModel(
     val comments: StateFlow<List<Comment>> = _comments
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+    private val _isPosting = MutableStateFlow(false)
+    val isPosting: StateFlow<Boolean> = _isPosting.asStateFlow()
 
     suspend fun getCommentsByThreadID(threadID:String): List<Comment> {
         val result: Result<List<Comment>> = commentRepository.getCommentsByThreadID(threadID)
@@ -34,13 +36,26 @@ class CommentViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun createComment(comment: RequestComment) {
+        if (_isPosting.value) return
         viewModelScope.launch {
+            _isPosting.value = true
             val result = commentRepository.createComment(comment)
             result.onSuccess { response ->
-                println("スレッド作成成功: $response")
+                println("コメント投稿成功: $response")
+                // 投稿成功後にリロードしてUIを更新
+                commentRepository.getCommentsByThreadID(comment.thread_id.toString())
+                    .onSuccess { list ->
+                        _comments.value = list
+                        _errorMessage.value = null
+                    }
+                    .onFailure { e ->
+                        _errorMessage.value = e.message ?: "Unknown error"
+                    }
             }.onFailure { e ->
+                _errorMessage.value = e.message ?: "Unknown error"
                 println("エラー: ${e.message}")
             }
+            _isPosting.value = false
         }
     }
 
