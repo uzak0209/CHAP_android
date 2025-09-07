@@ -5,9 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,6 +36,7 @@ import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.ToggleDimension
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.BottomDestination
+import com.example.chap.components.map.SlidBar
 import com.example.chap.libs.GetLocation
 import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.components.map.LocationState
@@ -46,6 +53,9 @@ import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.plugin.locationcomponent.location
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -88,8 +98,20 @@ fun MapScreen(
         }
     }
 
-    Scaffold(
-        bottomBar = {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            SlidBar(
+                onNavigateHome = onNavigateHome,
+                onNavigateEvent = onNavigateEvent,
+                onNavigateThread = onNavigateThread,
+            )
+        }
+    ) {
+        Scaffold(
+            bottomBar = {
             AppBottomBar { dest ->
                 when(dest){
                     BottomDestination.Home -> onNavigateHome()
@@ -98,8 +120,8 @@ fun MapScreen(
                     BottomDestination.Thread -> { onNavigateThread() }
                 }
             }
-        }
-    ) { innerPadding ->
+            }
+        ) { innerPadding ->
         // innerPadding を適用して画面本体を表示
         Surface(
             modifier = Modifier
@@ -123,15 +145,25 @@ fun MapScreen(
                         plugin.updateSettings { enabled = true; pulsingEnabled = true }
                     }
                 }
-                FloatingActionButton(
+                Column(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(12.dp),
-                    onClick = {
-                        is3D = !is3D
-                        ToggleDimension(viewportState, is3D)
-                    }
-                ) { Text(text = if (is3D) "2D" else "3D") }
+                    .align(Alignment.TopEnd)
+                    .padding(12.dp),
+                ){
+                    FloatingActionButton(
+                        modifier = Modifier
+                        onClick = {
+                            is3D = !is3D
+                            ToggleDimension(viewportState, is3D)
+                        }
+                    ) { Text(text = if (is3D) "2D" else "3D") },
+                    FloatingActionButton(
+                        modifier = Modifier
+                        onClick = {
+                            scope.launch { drawerState.open() }
+                        }
+                    ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation") }
+                }
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
