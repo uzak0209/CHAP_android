@@ -78,7 +78,7 @@ fun MapScreen(
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
         if (this is ComponentActivity) {
-            GetLocation(this,  LOCATION_PERMISSION_REQUEST_CODE)
+            GetLocation(this, LOCATION_PERMISSION_REQUEST_CODE)
         }
     }
 
@@ -112,84 +112,98 @@ fun MapScreen(
     ) {
         Scaffold(
             bottomBar = {
-            AppBottomBar { dest ->
-                when(dest){
-                    BottomDestination.Home -> onNavigateHome()
-                    BottomDestination.Map -> { /* current */ }
-                    BottomDestination.Event -> { onNavigateEvent() }
-                    BottomDestination.Thread -> { onNavigateThread() }
+                AppBottomBar { dest ->
+                    when (dest) {
+                        BottomDestination.Home -> onNavigateHome()
+                        BottomDestination.Map -> { /* current */
+                        }
+
+                        BottomDestination.Event -> {
+                            onNavigateEvent()
+                        }
+
+                        BottomDestination.Thread -> {
+                            onNavigateThread()
+                        }
+                    }
                 }
-            }
             }
         ) { innerPadding ->
-        // innerPadding を適用して画面本体を表示
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            Box(modifier = Modifier.fillMaxSize().background(Color(0xFFEEEEEE))) {
-                MapboxMap(
-                    modifier = Modifier.fillMaxSize(),
-                    mapViewportState = viewportState,
-                    style = { Style.STANDARD }
-                ) {
-                    MapEffect(Unit) { mapView ->
-                        val mbMap = mapView.mapboxMap
-                        if (!styleLoaded) {
-                            mbMap.loadStyleUri(Style.STANDARD) { styleLoaded = true }
+            // innerPadding を適用して画面本体を表示
+            Surface(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                Box(modifier = Modifier.fillMaxSize().background(Color(0xFFEEEEEE))) {
+                    MapboxMap(
+                        modifier = Modifier.fillMaxSize(),
+                        mapViewportState = viewportState,
+                        style = { Style.STANDARD }
+                    ) {
+                        MapEffect(Unit) { mapView ->
+                            val mbMap = mapView.mapboxMap
+                            if (!styleLoaded) {
+                                mbMap.loadStyleUri(Style.STANDARD) { styleLoaded = true }
+                            }
+                        }
+                        MapEffect(LocationViewModel.locationState.location) { mapView ->
+                            val plugin = mapView.location
+                            plugin.updateSettings { enabled = true; pulsingEnabled = true }
                         }
                     }
-                    MapEffect(LocationViewModel.locationState.location) { mapView ->
-                        val plugin = mapView.location
-                        plugin.updateSettings { enabled = true; pulsingEnabled = true }
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(12.dp),
+                    ) {
+                        FloatingActionButton(
+                            modifier = Modifier,
+                            onClick = {
+                                is3D = !is3D
+                                ToggleDimension(viewportState, is3D)
+                            }
+                        ) { Text(text = if (is3D) "2D" else "3D") }
+                        FloatingActionButton(
+                            modifier = Modifier,
+                            onClick = {
+                                scope.launch { drawerState.open() }
+                            }
+                        ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation") }
                     }
-                }
-                Column(
-                    modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(12.dp),
-                ){
                     FloatingActionButton(
                         modifier = Modifier
-                        onClick = {
-                            is3D = !is3D
-                            ToggleDimension(viewportState, is3D)
-                        }
-                    ) { Text(text = if (is3D) "2D" else "3D") },
-                    FloatingActionButton(
-                        modifier = Modifier
-                        onClick = {
-                            scope.launch { drawerState.open() }
-                        }
-                    ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation") }
-                }
-                FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(12.dp),
-                    onClick = { showPopup = true }
-                ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
+                            .align(Alignment.BottomEnd)
+                            .padding(12.dp),
+                        onClick = { showPopup = true }
+                    ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
 
-                CreateDialog(
-                    isOpen = showCreate,
-                    onClose = { showCreate = false },
-                    selectedKind = createKind,
-                    postViewModel = postViewModel,
-                    threadViewModel = threadViewModel,
-                    eventViewModel = eventViewModel
-                )
+                    CreateDialog(
+                        isOpen = showCreate,
+                        onClose = { showCreate = false },
+                        selectedKind = createKind,
+                        postViewModel = postViewModel,
+                        threadViewModel = threadViewModel,
+                        eventViewModel = eventViewModel
+                    )
 
-                SelectPopupOverlay(
-                    visible = showPopup,
-                    onDismiss = { showPopup = false },
-                    onPostCreated = { showPopup = false; createKind = CreateKind.POST; showCreate = true },
-                    onThreadCreated = { showPopup = false; createKind = CreateKind.THREAD; showCreate = true },
-                    onEventCreated = { showPopup = false; createKind = CreateKind.EVENT; showCreate = true }
-                )
-                if (!styleLoaded) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("地図スタイル読み込み中…", color = Color.DarkGray)
+                    SelectPopupOverlay(
+                        visible = showPopup,
+                        onDismiss = { showPopup = false },
+                        onPostCreated = {
+                            showPopup = false; createKind = CreateKind.POST; showCreate = true
+                        },
+                        onThreadCreated = {
+                            showPopup = false; createKind = CreateKind.THREAD; showCreate = true
+                        },
+                        onEventCreated = {
+                            showPopup = false; createKind = CreateKind.EVENT; showCreate = true
+                        }
+                    )
+                    if (!styleLoaded) {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("地図スタイル読み込み中…", color = Color.DarkGray)
+                        }
                     }
                 }
             }

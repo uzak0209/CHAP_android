@@ -4,12 +4,33 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import androidx.compose.ui.unit.dp
+import com.example.chap.R
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.RadioButton
 
 @Composable
 fun SlidBar(
@@ -17,26 +38,107 @@ fun SlidBar(
     onNavigateHome: () -> Unit,
     onNavigateEvent: () -> Unit,
     onNavigateThread: () -> Unit,
+    isChatChecked: Boolean = true,
+    isCommunityChecked: Boolean = false,
+    isDisasterChecked: Boolean = false,
+    onToggleChat: () -> Unit = {},
+    onToggleCommunity: () -> Unit = {},
+    onToggleDisaster: () -> Unit = {},
 ) {
     ModalDrawerSheet(modifier = modifier) {
+        // Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(color = 0xFF9DC4FF))
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.chap_android),
+                    contentDescription = "App",
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                )
+                Spacer(modifier = Modifier.size(12.dp))
+                Text(
+                    text = "CHAP",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White
+                )
+            }
+        }
+
+        Divider()
+
+        // Menu section
+        Text(
+            text = "メニュー",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        )
         NavigationDrawerItem(
-            label = { Text("Home") },
+            label = { Text("ホーム") },
             selected = false,
             onClick = onNavigateHome,
             icon = { Icon(Icons.Default.Home, contentDescription = null) }
         )
         NavigationDrawerItem(
-            label = { Text("Events") },
-            selected = false,
-            onClick = onNavigateEvent,
-            icon = { Icon(Icons.Default.Event, contentDescription = null) }
-        )
-        NavigationDrawerItem(
-            label = { Text("Threads") },
+            label = { Text("スレッド") },
             selected = false,
             onClick = onNavigateThread,
             icon = { Icon(Icons.Default.Forum, contentDescription = null) }
         )
+        NavigationDrawerItem(
+            label = { Text("イベント") },
+            selected = false,
+            onClick = onNavigateEvent,
+            icon = { Icon(Icons.Default.Event, contentDescription = null) }
+        )
+
+        Divider(modifier = Modifier.padding(top = 8.dp))
+
+        // Category section
+        Text(
+            text = "投稿カテゴリ",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected = isChatChecked, onClick = { onToggleChat() })
+                Spacer(modifier = Modifier.size(8.dp))
+                Text("雑談")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected = isCommunityChecked, onClick = { onToggleCommunity() })
+                Spacer(modifier = Modifier.size(8.dp))
+                Text("地域住民コミュニケーション")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected = isDisasterChecked, onClick = { onToggleDisaster() })
+                Spacer(modifier = Modifier.size(8.dp))
+                Text("災害情報")
+            }
+        }
     }
 }
 
