@@ -11,7 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.chap.components.ui.AppBottomBar
-import com.example.chap.components.ui.AppTopBar
 import com.example.chap.components.ui.BottomDestination
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,11 +62,6 @@ fun CommentScreen(
     }
 
     Scaffold(
-        topBar = {
-            AppTopBar(
-                title = "Threads",
-            )
-        },
         bottomBar = {
             AppBottomBar { dest ->
                 when(dest){
