@@ -1,0 +1,151 @@
+---
+alwaysApply: false
+---
+.cursor/rules/figma-to-compose.mdc
+
+## 1. 基本原則
+- Material3のデザインシステムに準拠すること
+- アクセシビリティを考慮した実装を行うこと
+- 再利用可能なコンポーネントとして実装すること
+
+## 2. コンポーネント構造・命名規則
+
+### 構造サンプル
+```kotlin
+@Composable
+fun ComponentName(
+    modifier: Modifier = Modifier,
+    // その他のパラメータ
+) {
+    // 実装
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ComponentNamePreview() {
+    MaterialTheme {
+        ComponentName()
+    }
+}
+```
+
+### 命名規則
+- コンポーネント名は`PascalCase`
+- パラメータ名は`camelCase`
+- プレビュー関数名は`コンポーネント名Preview`
+
+### パラメータ設計
+- `modifier: Modifier = Modifier`を最初のパラメータとして定義
+- 必須パラメータはデフォルト値なしで定義
+- オプショナルパラメータはデフォルト値を設定
+
+## 3. レイアウト・スタイリング
+
+### レイアウト
+- FigmaのFrameは`Box`として実装
+- Auto Layoutは`Column`、`Row`、`Box`の組み合わせで実装
+- Constraintsは`Modifier`の`fillMaxSize`、`fillMaxWidth`、`fillMaxHeight`で実装
+- フレックスレイアウトで余白を自動で埋める場合は`Modifier.weight(1f)`を使用
+- 中央寄せ、右寄せ、左寄せを守って実装してください
+- ステータスバーのコンポーネントは作成しない
+
+### スタイリング
+- カラーは`ExtendedTheme.colors`から取得
+- スペーシングは`Spacing.kt`を使用
+
+#### Spacingマッピングルール
+- Figmaから取得したpadding/marginの値がSpacing.ktに存在する場合は、必ずSpacingオブジェクトの該当プロパティを使うこと
+- 存在しない場合のみ、dp値を直接指定してもよい
+- 例: `.padding(horizontal = Spacing.L)`
+- Spacing例:
+    - 4.dp → Spacing.XXS
+    - 8.dp → Spacing.XS
+    - 12.dp → Spacing.S
+    - 16.dp → Spacing.M
+    - 24.dp → Spacing.L
+    - 32.dp → Spacing.XL
+    - 40.dp → Spacing.XXL
+
+## 4. ファイル・パッケージ構成
+- コンポーネントは`app/src/main/java/com/example/figmamcp/ui/component`に配置
+- 関連するコンポーネントは同じパッケージにグループ化
+- コンポーネント毎にファイルを分割すること
+
+## 5. その他
+- 存在しない画像やアイコンは仮の表示に置き換えること
+- Jetpack Composeのコンポーネントは @Deprecated が付与されていない関数を使用すること
+
+.cursor/rules/figma-to-compose.mdc
+
+## 1. 基本原則
+- Material3のデザインシステムに準拠すること
+- アクセシビリティを考慮した実装を行うこと
+- 再利用可能なコンポーネントとして実装すること
+
+## 2. コンポーネント構造・命名規則
+
+### 構造サンプル
+```kotlin
+@Composable
+fun ComponentName(
+    modifier: Modifier = Modifier,
+    // その他のパラメータ
+) {
+    // 実装
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ComponentNamePreview() {
+    MaterialTheme {
+        ComponentName()
+    }
+}
+```
+
+### 命名規則
+- コンポーネント名は`PascalCase`
+- パラメータ名は`camelCase`
+- プレビュー関数名は`コンポーネント名Preview`
+
+### パラメータ設計
+- `modifier: Modifier = Modifier`を最初のパラメータとして定義
+- 必須パラメータはデフォルト値なしで定義
+- オプショナルパラメータはデフォルト値を設定
+
+## 3. レイアウト・スタイリング
+
+### レイアウト
+- FigmaのFrameは`Box`として実装
+- Auto Layoutは`Column`、`Row`、`Box`の組み合わせで実装
+- Constraintsは`Modifier`の`fillMaxSize`、`fillMaxWidth`、`fillMaxHeight`で実装
+- フレックスレイアウトで余白を自動で埋める場合は`Modifier.weight(1f)`を使用
+- 中央寄せ、右寄せ、左寄せを守って実装してください
+- ステータスバーのコンポーネントは作成しない
+
+### スタイリング
+- カラーは`ExtendedTheme.colors`から取得
+- スペーシングは`Spacing.kt`を使用
+
+#### Spacingマッピングルール
+- Figmaから取得したpadding/marginの値がSpacing.ktに存在する場合は、必ずSpacingオブジェクトの該当プロパティを使うこと
+- 存在しない場合のみ、dp値を直接指定してもよい
+- 例: `.padding(horizontal = Spacing.L)`
+- Spacing例:
+    - 4.dp → Spacing.XXS
+    - 8.dp → Spacing.XS
+    - 12.dp → Spacing.S
+    - 16.dp → Spacing.M
+    - 24.dp → Spacing.L
+    - 32.dp → Spacing.XL
+    - 40.dp → Spacing.XXL
+
+## 4. ファイル・パッケージ構成
+- コンポーネントは`app/src/main/java/com/example/figmamcp/ui/component`に配置
+- 関連するコンポーネントは同じパッケージにグループ化
+- コンポーネント毎にファイルを分割すること
+
+## 5. その他
+- 存在しない画像やアイコンは仮の表示に置き換えること
+- Jetpack Composeのコンポーネントは @Deprecated が付与されていない関数を使用すること
+
