@@ -71,18 +71,16 @@ fun PostTimelineTemplate(
         }
     }
 
+
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
-        topBar = {
-            HomeHeader()
-        },
         bottomBar = {
             AppBottomBar { dest ->
                 when(dest){
                     BottomDestination.Home -> { /* already */ }
                     BottomDestination.Map -> {onNavigateMap()}
                     BottomDestination.Event -> {onNavigateEvent()}
-                    BottomDestination.Thread -> { /* Thread一覧への遷移など別用途ならここで処理 */ }
+                    BottomDestination.Thread -> { onNavigateThread()}
                 }
             }
         }
@@ -92,6 +90,7 @@ fun PostTimelineTemplate(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            HomeHeader()
             SearchBar()
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -186,34 +185,4 @@ private fun MessageRow(
     }
 }
 
-//@Preview
-//@Composable
-//private fun PostTimelineTemplatePreview() {
-//    ChapTheme {
-//        Surface {
-//            PostTimelineTemplate(
-//                postList = listOf(
-//                    PostBindingModel(
-//                        id = "id1",
-//                        displayName = "display name1",
-//                        username = "username1",
-//                        avatar = null,
-//                        content = "preview content1",
-//                        attachmentImageList = listOf()
-//                    ),
-//                    PostBindingModel(
-//                        id = "id2",
-//                        displayName = "display name2",
-//                        username = "username2",
-//                        avatar = null,
-//                        content = "preview content2",
-//                        attachmentImageList = listOf()
-//                    ),
-//                ),
-//                isLoading = true,
-//                isRefreshing = false,
-//                onRefresh = {}
-//            )
-//        }
-//    }
-//}
+

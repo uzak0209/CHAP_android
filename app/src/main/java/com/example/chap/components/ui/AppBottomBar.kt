@@ -1,5 +1,6 @@
 package com.example.chap.components.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
@@ -7,6 +8,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.chap.R
@@ -20,18 +22,22 @@ fun AppBottomBar(
     modifier: Modifier = Modifier,
     onNavigate: (BottomDestination) -> Unit,
 ) {
-    BottomAppBar(modifier = modifier) {
+    BottomAppBar(
+        modifier = modifier,
+        containerColor = Color(0xFF9DC4FF)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.CenterVertically)
-                .padding(horizontal = 55.dp),
+                .padding(horizontal = 55.dp)
         ) {
             IconButton(onClick = { onNavigate(BottomDestination.Home) }) {
                 Icon(
                     painter = painterResource(id = R.drawable.outline_home_24),
                     contentDescription = "Home",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.White
                 )
             }
             Spacer(modifier = Modifier.width(32.dp))
@@ -39,7 +45,8 @@ fun AppBottomBar(
                 Icon(
                     painter = painterResource(id = R.drawable.outline_map_24),
                     contentDescription = "Map",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.White
                 )
             }
             Spacer(modifier = Modifier.width(32.dp))
@@ -47,7 +54,8 @@ fun AppBottomBar(
                 Icon(
                     painter = painterResource(id = R.drawable.outline_flag_24),
                     contentDescription = "Event",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.White
                 )
             }
             Spacer(modifier = Modifier.width(32.dp))
@@ -55,7 +63,8 @@ fun AppBottomBar(
                 Icon(
                     painter = painterResource(id = R.drawable.outline_mode_comment_24),
                     contentDescription = "Thread",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.White
                 )
             }
         }
