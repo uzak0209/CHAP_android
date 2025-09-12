@@ -53,6 +53,8 @@ import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.plugin.scalebar.scalebar
+import com.mapbox.maps.plugin.gestures.gestures
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import kotlinx.coroutines.launch
@@ -100,8 +102,10 @@ fun MapScreen(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    // No-op: scale bar is disabled permanently after style load
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             SlidBar(
                 onNavigateHome = onNavigateHome,
@@ -110,25 +114,7 @@ fun MapScreen(
             )
         }
     ) {
-        Scaffold(
-            bottomBar = {
-                AppBottomBar { dest ->
-                    when (dest) {
-                        BottomDestination.Home -> onNavigateHome()
-                        BottomDestination.Map -> { /* current */
-                        }
-
-                        BottomDestination.Event -> {
-                            onNavigateEvent()
-                        }
-
-                        BottomDestination.Thread -> {
-                            onNavigateThread()
-                        }
-                    }
-                }
-            }
-        ) { innerPadding ->
+        Scaffold{ innerPadding ->
             // innerPadding を適用して画面本体を表示
             Surface(
                 modifier = Modifier
@@ -150,6 +136,27 @@ fun MapScreen(
                         MapEffect(LocationViewModel.locationState.location) { mapView ->
                             val plugin = mapView.location
                             plugin.updateSettings { enabled = true; pulsingEnabled = true }
+                        }
+                        // Disable map gestures while popup overlay is visible OR drawer is open
+                        MapEffect(Pair(showPopup, drawerState.currentValue)) { mapView ->
+                            runCatching { mapView.gestures }
+                                .getOrNull()
+                                ?.updateSettings {
+                                    val allowMapGestures = !showPopup && drawerState.currentValue != DrawerValue.Open
+                                    scrollEnabled = allowMapGestures
+                                    pinchToZoomEnabled = allowMapGestures
+                                    rotateEnabled = allowMapGestures
+                                    quickZoomEnabled = allowMapGestures
+                                    pitchEnabled = allowMapGestures
+                                }
+                        }
+                        // Permanently disable ScaleBar after style is loaded
+                        MapEffect(styleLoaded) { mapView ->
+                            if (styleLoaded) {
+                                runCatching { mapView.scalebar }
+                                    .getOrNull()
+                                    ?.updateSettings { enabled = false }
+                            }
                         }
                     }
                     Column(

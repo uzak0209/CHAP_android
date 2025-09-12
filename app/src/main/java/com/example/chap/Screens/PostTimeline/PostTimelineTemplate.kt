@@ -113,7 +113,7 @@ fun PostTimelineTemplate(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_calendar_today_24),
-                        contentDescription = "Create event",
+                        contentDescription = "Create post",
                         tint = Color.White
                     )
                 }
