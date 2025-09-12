@@ -31,6 +31,7 @@ import com.example.chap.R
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.RadioButton
+import com.example.chap.ui.theme.BrandBlue
 
 @Composable
 fun SlidBar(
@@ -50,7 +51,7 @@ fun SlidBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(color = 0xFF9DC4FF))
+                .background(BrandBlue)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

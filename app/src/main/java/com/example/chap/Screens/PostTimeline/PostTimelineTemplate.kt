@@ -42,6 +42,7 @@ import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.ui.AppHeader
 import com.example.chap.components.ui.SearchBar
+import com.example.chap.ui.theme.BrandBlue
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,14 +65,25 @@ fun PostTimelineTemplate(
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
         bottomBar = {
-            AppBottomBar { dest ->
-                when(dest){
-                    BottomDestination.Home -> { /* already */ }
-                    BottomDestination.Map -> {onNavigateMap()}
-                    BottomDestination.Event -> {onNavigateEvent()}
-                    BottomDestination.Thread -> { onNavigateThread()}
-                }
-            }
+            AppBottomBar(
+                modifier = Modifier,
+                onNavigate = { dest ->
+                    when (dest) {
+                        BottomDestination.Home -> { /* already */
+                        }
+                        BottomDestination.Map -> {
+                            onNavigateMap()
+                        }
+                        BottomDestination.Event -> {
+                            onNavigateEvent()
+                        }
+                        BottomDestination.Thread -> {
+                            onNavigateThread()
+                        }
+                    }
+                },
+                bottomIconColor = Color.White
+            )
         }
     ){innerPadding ->
         Column(
@@ -81,10 +93,10 @@ fun PostTimelineTemplate(
         ) {
             AppHeader(
                 title = "Home",
-                color = Color(0xFF9DC4FF)
+                color = BrandBlue
             )
             SearchBar(
-                color = Color(0xFF9DC4FF),
+                color = BrandBlue,
                 searchTarget= "message"
             )
             Box(
@@ -109,10 +121,10 @@ fun PostTimelineTemplate(
                         .align(Alignment.BottomEnd)
                         .padding(12.dp),
                     onClick = { showCreate = true },
-                    containerColor = Color(0xFFFF7272)
+                    containerColor = BrandBlue
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.outline_calendar_today_24),
+                        painter = painterResource(id = R.drawable.chat_bubble_24px),
                         contentDescription = "Create post",
                         tint = Color.White
                     )
@@ -123,7 +135,7 @@ fun PostTimelineTemplate(
     CreateDialog(
         isOpen = showCreate,
         onClose = { showCreate = false },
-        selectedKind = CreateKind.EVENT,
+        selectedKind = CreateKind.POST,
         postViewModel = postViewModel,
     )
 }

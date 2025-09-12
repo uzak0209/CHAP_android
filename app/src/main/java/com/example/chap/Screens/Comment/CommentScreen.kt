@@ -63,14 +63,18 @@ fun CommentScreen(
 
     Scaffold(
         bottomBar = {
-            AppBottomBar { dest ->
-                when(dest){
-                    BottomDestination.Home -> { onNavigateHome() }
-                    BottomDestination.Map -> {onNavigateMap()}
-                    BottomDestination.Event -> {onNavigateEvent()}
-                    BottomDestination.Thread -> {onNavigateThread()}
-                }
-            }
+            AppBottomBar(
+                modifier = Modifier,
+                onNavigate = { dest ->
+                    when(dest){
+                        BottomDestination.Home -> { onNavigateHome() }
+                        BottomDestination.Map -> {onNavigateMap()}
+                        BottomDestination.Event -> {onNavigateEvent()}
+                        BottomDestination.Thread -> {onNavigateThread()}
+                    }
+                },
+                bottomIconColor = Color.Black
+            )
         }
     ){ innerPadding ->
         Box(

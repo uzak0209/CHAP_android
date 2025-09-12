@@ -4,8 +4,10 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
@@ -57,6 +59,7 @@ import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.maps.plugin.gestures.gestures
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import com.example.chap.ui.theme.BrandBlue
 import kotlinx.coroutines.launch
 
 
@@ -71,7 +74,7 @@ fun MapScreen(
     eventViewModel: EventViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
-    var is3D by remember { mutableStateOf(false) }
+    var is3D by remember { mutableStateOf(true) }
     var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
     var showCreate by remember { mutableStateOf(false) }
@@ -159,31 +162,35 @@ fun MapScreen(
                             }
                         }
                     }
-                    Column(
+                    Row(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         FloatingActionButton(
                             modifier = Modifier,
+                            containerColor = BrandBlue,
                             onClick = {
                                 is3D = !is3D
                                 ToggleDimension(viewportState, is3D)
                             }
-                        ) { Text(text = if (is3D) "2D" else "3D") }
+                        ) { Text(text = if (is3D) "2D" else "3D", color = Color.White) }
                         FloatingActionButton(
                             modifier = Modifier,
+                            containerColor = BrandBlue,
                             onClick = {
                                 scope.launch { drawerState.open() }
                             }
-                        ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation") }
+                        ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation", tint = Color.White) }
                     }
                     FloatingActionButton(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(12.dp),
-                        onClick = { showPopup = true }
-                    ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
+                        onClick = { showPopup = true },
+                        containerColor = BrandBlue,
+                    ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White) }
 
                     CreateDialog(
                         isOpen = showCreate,

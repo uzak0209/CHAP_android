@@ -44,6 +44,7 @@ import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppHeader
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.ui.SearchBar
+import com.example.chap.ui.theme.BrandYellow
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,14 +65,19 @@ fun ThreadScreen(
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
         bottomBar = {
-            AppBottomBar { dest ->
-                when(dest){
-                    BottomDestination.Home -> { onNavigateHome() }
-                    BottomDestination.Map -> {onNavigateMap()}
-                    BottomDestination.Event -> {onNavigateEvent()}
-                    BottomDestination.Thread -> {/* already */}
-                }
-            }
+            AppBottomBar(
+                modifier = Modifier,
+                onNavigate = {dest ->
+                    when(dest){
+                        BottomDestination.Home -> { onNavigateHome() }
+                        BottomDestination.Map -> {onNavigateMap()}
+                        BottomDestination.Event -> {onNavigateEvent()}
+                        BottomDestination.Thread -> {/* already */}
+                    }
+                },
+                bottomIconColor = Color.Black,
+                bottomBackgroundColor = BrandYellow
+            )
         }
     ){innerPadding ->
         Column(
@@ -81,11 +87,13 @@ fun ThreadScreen(
         ) {
             AppHeader(
                 title = "Thread",
-                color = Color(0xFFFFF59D)
+                color = BrandYellow,
+                headerTextColor = Color.Black
             )
             SearchBar(
-                color = Color(0xFFFFF59D),
-                searchTarget= "thread"
+                color = BrandYellow,
+                searchTarget= "thread",
+                searchTextColor = Color.Black
             )
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
