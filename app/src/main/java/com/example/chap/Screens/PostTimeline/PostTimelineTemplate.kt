@@ -48,8 +48,6 @@ import com.example.chap.components.ui.SearchBar
 @Composable
 fun PostTimelineTemplate(
     postViewModel: PostViewModel,
-    threadViewModel: ThreadViewModel,
-    eventViewModel: EventViewModel,
     onNavigateThread: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateEvent: () -> Unit,
@@ -127,8 +125,6 @@ fun PostTimelineTemplate(
         onClose = { showCreate = false },
         selectedKind = CreateKind.EVENT,
         postViewModel = postViewModel,
-        threadViewModel = threadViewModel,
-        eventViewModel = eventViewModel
     )
 }
 

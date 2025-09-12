@@ -53,8 +53,6 @@ import com.example.chap.components.ui.SearchBar
 @Composable
 fun EventScreen(
     eventViewModel: EventViewModel,
-    postViewModel: PostViewModel,
-    threadViewModel: ThreadViewModel,
     onNavigateMap: () -> Unit,
     onNavigateHome: () -> Unit,
     onNavigateThread: () -> Unit,
@@ -123,8 +121,6 @@ fun EventScreen(
         isOpen = showCreate,
         onClose = { showCreate = false },
         selectedKind = CreateKind.EVENT,
-        postViewModel = postViewModel,
-        threadViewModel = threadViewModel,
         eventViewModel = eventViewModel
     )
 }
