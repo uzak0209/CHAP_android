@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.chap.R
+import com.example.chap.ui.theme.BrandBlue
 
 /**
  * アプリ共通の BottomBar。
@@ -21,10 +22,12 @@ import com.example.chap.R
 fun AppBottomBar(
     modifier: Modifier = Modifier,
     onNavigate: (BottomDestination) -> Unit,
+    bottomIconColor: Color = Color.White,
+    bottomBackgroundColor: Color = BrandBlue
 ) {
     BottomAppBar(
         modifier = modifier,
-        containerColor = Color(0xFF9DC4FF)
+        containerColor = bottomBackgroundColor
     ) {
         Row(
             modifier = Modifier
@@ -37,7 +40,7 @@ fun AppBottomBar(
                     painter = painterResource(id = R.drawable.outline_home_24),
                     contentDescription = "Home",
                     modifier = Modifier.size(64.dp),
-                    tint = Color.White
+                    tint = bottomIconColor
                 )
             }
             Spacer(modifier = Modifier.width(32.dp))
@@ -46,7 +49,7 @@ fun AppBottomBar(
                     painter = painterResource(id = R.drawable.outline_map_24),
                     contentDescription = "Map",
                     modifier = Modifier.size(64.dp),
-                    tint = Color.White
+                    tint = bottomIconColor
                 )
             }
             Spacer(modifier = Modifier.width(32.dp))
@@ -55,7 +58,7 @@ fun AppBottomBar(
                     painter = painterResource(id = R.drawable.outline_flag_24),
                     contentDescription = "Event",
                     modifier = Modifier.size(64.dp),
-                    tint = Color.White
+                    tint = bottomIconColor
                 )
             }
             Spacer(modifier = Modifier.width(32.dp))
@@ -64,7 +67,7 @@ fun AppBottomBar(
                     painter = painterResource(id = R.drawable.outline_mode_comment_24),
                     contentDescription = "Thread",
                     modifier = Modifier.size(64.dp),
-                    tint = Color.White
+                    tint = bottomIconColor
                 )
             }
         }

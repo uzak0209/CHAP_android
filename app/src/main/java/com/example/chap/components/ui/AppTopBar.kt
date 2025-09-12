@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.chap.R
+import com.example.chap.ui.theme.BrandBlue
 
 /**
  * アプリ共通の BottomBar。
@@ -32,7 +33,8 @@ import com.example.chap.R
 public fun AppHeader(
     modifier: Modifier = Modifier,
     title: String = "Home",
-    color: Color = Color(0xFF9DC4FF)
+    headerTextColor: Color = Color.White,
+    color: Color = BrandBlue
 ) {
     Box(
         modifier = modifier
@@ -50,7 +52,7 @@ public fun AppHeader(
             )
             Text(
                 text = title,
-                color = Color.White,
+                color = headerTextColor,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(start = 12.dp)
             )

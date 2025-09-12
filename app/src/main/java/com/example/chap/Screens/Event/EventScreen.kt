@@ -47,6 +47,7 @@ import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppHeader
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.ui.SearchBar
+import com.example.chap.ui.theme.BrandRed
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,14 +67,19 @@ fun EventScreen(
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
     Scaffold(
         bottomBar = {
-            AppBottomBar { dest ->
-                when(dest){
-                    BottomDestination.Home -> { onNavigateHome() }
-                    BottomDestination.Map -> {onNavigateMap()}
-                    BottomDestination.Event -> {/* already */}
-                    BottomDestination.Thread -> {onNavigateThread()}
-                }
-            }
+            AppBottomBar(
+                modifier = Modifier,
+                onNavigate = { dest ->
+                    when(dest){
+                        BottomDestination.Home -> { onNavigateHome() }
+                        BottomDestination.Map -> {onNavigateMap()}
+                        BottomDestination.Event -> {/* already */}
+                        BottomDestination.Thread -> {onNavigateThread()}
+                    }
+                },
+                bottomIconColor = Color.White,
+                bottomBackgroundColor = BrandRed
+            )
         }
     ){innerPadding ->
         Column(
@@ -83,10 +89,10 @@ fun EventScreen(
         ) {
             AppHeader(
                 title = "Events",
-                color = Color(0xFFFF7272)
+                color = BrandRed
             )
             SearchBar(
-                color = Color(0xFFFF7272),
+                color = BrandRed,
                 searchTarget= "event"
             )
             Box(modifier = Modifier.fillMaxSize()) {
@@ -105,7 +111,7 @@ fun EventScreen(
                         .align(Alignment.BottomEnd)
                         .padding(12.dp),
                     onClick = { showCreate = true },
-                    containerColor = Color(0xFFFF7272)
+                    containerColor = BrandRed
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_calendar_today_24),
@@ -151,12 +157,12 @@ private fun EventListRow(event: Event) {
             Text(text = event.created_at.take(10), color = Color(0xFF9AA1A9), fontSize = 12.sp)
             Text(
                 text = "開始: " + event.created_at.replace('T', ' ').take(16),
-                color = Color(0xFFFF7272),
+                color = BrandRed,
                 fontSize = 12.sp
             )
             Text(
                 text = "場所:緯度" + "%.0f".format(event.coordinate.lat) + " ・ 経度" + "%.0f".format(event.coordinate.lng),
-                color = Color(0xFFFF7272),
+                color = BrandRed,
                 fontSize = 12.sp
             )
         }

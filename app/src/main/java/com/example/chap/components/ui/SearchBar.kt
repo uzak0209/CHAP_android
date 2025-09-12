@@ -19,11 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.chap.ui.theme.BrandBlue
 
 @Composable
 public fun SearchBar(
     modifier: Modifier = Modifier,
-    color: Color = Color(0xFFE9EEF3),
+    color: Color = BrandBlue,
+    searchTextColor: Color = Color.White,
     searchTarget: String = "message"
 ) {
     var keyword by remember { mutableStateOf("") }
@@ -36,7 +38,7 @@ public fun SearchBar(
                 horizontal = 12.dp,
                 vertical = 10.dp)
             .clip(RoundedCornerShape(24.dp)),
-        placeholder = { Text("Search for the $searchTarget") },
+        placeholder = { Text("Search for the $searchTarget", color = searchTextColor) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color(0xFF7D8790)) },
         singleLine = true,
         colors = TextFieldDefaults.colors(

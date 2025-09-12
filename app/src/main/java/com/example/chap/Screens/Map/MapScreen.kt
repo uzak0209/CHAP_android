@@ -4,8 +4,10 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
@@ -53,8 +55,11 @@ import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.plugin.scalebar.scalebar
+import com.mapbox.maps.plugin.gestures.gestures
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import com.example.chap.ui.theme.BrandBlue
 import kotlinx.coroutines.launch
 
 
@@ -69,7 +74,7 @@ fun MapScreen(
     eventViewModel: EventViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
-    var is3D by remember { mutableStateOf(false) }
+    var is3D by remember { mutableStateOf(true) }
     var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
     var showCreate by remember { mutableStateOf(false) }
@@ -100,8 +105,10 @@ fun MapScreen(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    // No-op: scale bar is disabled permanently after style load
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             SlidBar(
                 onNavigateHome = onNavigateHome,
@@ -110,25 +117,7 @@ fun MapScreen(
             )
         }
     ) {
-        Scaffold(
-            bottomBar = {
-                AppBottomBar { dest ->
-                    when (dest) {
-                        BottomDestination.Home -> onNavigateHome()
-                        BottomDestination.Map -> { /* current */
-                        }
-
-                        BottomDestination.Event -> {
-                            onNavigateEvent()
-                        }
-
-                        BottomDestination.Thread -> {
-                            onNavigateThread()
-                        }
-                    }
-                }
-            }
-        ) { innerPadding ->
+        Scaffold{ innerPadding ->
             // innerPadding を適用して画面本体を表示
             Surface(
                 modifier = Modifier
@@ -151,32 +140,57 @@ fun MapScreen(
                             val plugin = mapView.location
                             plugin.updateSettings { enabled = true; pulsingEnabled = true }
                         }
+                        // Disable map gestures while popup overlay is visible OR drawer is open
+                        MapEffect(Pair(showPopup, drawerState.currentValue)) { mapView ->
+                            runCatching { mapView.gestures }
+                                .getOrNull()
+                                ?.updateSettings {
+                                    val allowMapGestures = !showPopup && drawerState.currentValue != DrawerValue.Open
+                                    scrollEnabled = allowMapGestures
+                                    pinchToZoomEnabled = allowMapGestures
+                                    rotateEnabled = allowMapGestures
+                                    quickZoomEnabled = allowMapGestures
+                                    pitchEnabled = allowMapGestures
+                                }
+                        }
+                        // Permanently disable ScaleBar after style is loaded
+                        MapEffect(styleLoaded) { mapView ->
+                            if (styleLoaded) {
+                                runCatching { mapView.scalebar }
+                                    .getOrNull()
+                                    ?.updateSettings { enabled = false }
+                            }
+                        }
                     }
-                    Column(
+                    Row(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         FloatingActionButton(
                             modifier = Modifier,
+                            containerColor = BrandBlue,
                             onClick = {
                                 is3D = !is3D
                                 ToggleDimension(viewportState, is3D)
                             }
-                        ) { Text(text = if (is3D) "2D" else "3D") }
+                        ) { Text(text = if (is3D) "2D" else "3D", color = Color.White) }
                         FloatingActionButton(
                             modifier = Modifier,
+                            containerColor = BrandBlue,
                             onClick = {
                                 scope.launch { drawerState.open() }
                             }
-                        ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation") }
+                        ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation", tint = Color.White) }
                     }
                     FloatingActionButton(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(12.dp),
-                        onClick = { showPopup = true }
-                    ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold) }
+                        onClick = { showPopup = true },
+                        containerColor = BrandBlue,
+                    ) { Text(text = "+", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White) }
 
                     CreateDialog(
                         isOpen = showCreate,
