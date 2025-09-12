@@ -50,8 +50,6 @@ import com.example.chap.components.ui.SearchBar
 @Composable
 fun ThreadScreen(
     threadViewModel: ThreadViewModel,
-    postViewModel: PostViewModel,
-    eventViewModel: EventViewModel,
     onNavigateHome: () -> Unit,
     onNavigateMap: () -> Unit,
     onNavigateEvent: () -> Unit,
@@ -124,9 +122,7 @@ fun ThreadScreen(
         isOpen = showCreate,
         onClose = { showCreate = false },
         selectedKind = CreateKind.THREAD,
-        postViewModel = postViewModel,
         threadViewModel = threadViewModel,
-        eventViewModel = eventViewModel
     )
 }
 
