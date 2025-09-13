@@ -195,6 +195,45 @@ fun CreateDialog(
 
                 Spacer(Modifier.height(16.dp))
 
+                // イベント開始時間入力
+                Text("イベント開始時間を入力してください）", style = MaterialTheme.typography.labelMedium)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = tagInput,
+                        onValueChange = { tagInput = it },
+                        placeholder = { Text("タグを入力") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (tagInput.isNotBlank() && !tags.contains(tagInput.trim())) {
+                                    tags = tags + tagInput.trim()
+                                    tagInput = ""
+                                }
+                                focusManager.clearFocus()
+                            }
+                        )
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    OutlinedButton(
+                        onClick = {
+                            if (tagInput.isNotBlank() && !tags.contains(tagInput.trim())) {
+                                tags = tags + tagInput.trim()
+                                tagInput = ""
+                            }
+                        },
+                        enabled = tagInput.isNotBlank()
+                    ) {
+                        Text("#")
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
                 // タグ入力
                 Text("タグ（任意）", style = MaterialTheme.typography.labelMedium)
                 Row(
