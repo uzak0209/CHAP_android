@@ -59,8 +59,21 @@ import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.maps.plugin.gestures.gestures
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.runtime.collectAsState
 import com.example.chap.ui.theme.BrandBlue
 import kotlinx.coroutines.launch
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -74,33 +87,31 @@ fun MapScreen(
     eventViewModel: EventViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
-    var is3D by remember { mutableStateOf(true) }
-    var styleLoaded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
     var showCreate by remember { mutableStateOf(false) }
     var createKind by remember { mutableStateOf(CreateKind.POST) }
+    val posts by postViewModel.posts.collectAsState()
+    val threads by threadViewModel.threads.collectAsState()
+    val events by eventViewModel.events.collectAsState()
 
     // 位置情報を取得（既存の GetLocation を利用）
     LaunchedEffect(Unit) {
+        postViewModel.getAllPosts()
+        threadViewModel.getAllThreads()
+        eventViewModel.getAllEvents()
         if (this is ComponentActivity) {
             GetLocation(this, LOCATION_PERMISSION_REQUEST_CODE)
         }
     }
 
     // Mapbox カメラ状態
-    val viewportState = rememberMapViewportState {
-        println("Camera position: ${LocationViewModel.locationState.location}")
-        setCameraOptions {
-            zoom(16.5)
-            center(
-                Point.fromLngLat(
-                    LocationViewModel.locationState.location?.lng ?: 0.0,
-                    LocationViewModel.locationState.location?.lat ?: 0.0
-                )
-            )
-            pitch(0.0)
-            bearing(0.0)
-        }
+    val currentLocation = LatLng(
+        LocationViewModel.locationState.location?.lat ?: 35.6762,
+        LocationViewModel.locationState.location?.lng ?: 139.6503
+    )
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(currentLocation, 16f)
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -124,41 +135,77 @@ fun MapScreen(
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                Box(modifier = Modifier.fillMaxSize().background(Color(0xFFEEEEEE))) {
-                    MapboxMap(
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize())
+                {
+                    GoogleMap(
                         modifier = Modifier.fillMaxSize(),
-                        mapViewportState = viewportState,
-                        style = { Style.STANDARD }
+                        cameraPositionState = cameraPositionState,
+                        properties = MapProperties(
+                            mapType = MapType.NORMAL,
+                            isMyLocationEnabled = true,
+                        ),
+                        uiSettings = MapUiSettings(
+                            zoomControlsEnabled = true,
+                            myLocationButtonEnabled = true,
+                        ),
+                        onMapClick = { latLng ->
+                            // 地図クリック時の処理
+                            println("Map clicked at: ${latLng.latitude}, ${latLng.longitude}")
+                        }
                     ) {
-                        MapEffect(Unit) { mapView ->
-                            val mbMap = mapView.mapboxMap
-                            if (!styleLoaded) {
-                                mbMap.loadStyleUri(Style.STANDARD) { styleLoaded = true }
+                        posts.forEach { post ->
+                            if (post.coordinate.lat != 0.0 || post.coordinate.lng != 0.0) {
+                                val position = LatLng(post.coordinate.lat, post.coordinate.lng)
+                                Marker(
+                                    state = MarkerState(position = position),
+                                    title = "POST: ${post.content}",
+                                    snippet = "Category: ${post.category}\nDate: ${post.updated_at}",
+                                    icon = BitmapDescriptorFactory.defaultMarker(
+                                        BitmapDescriptorFactory.HUE_BLUE
+                                    ),
+                                    onClick = { marker ->
+                                        println("Post marker clicked: ${post.id}")
+                                        false
+                                    }
+                                )
                             }
                         }
-                        MapEffect(LocationViewModel.locationState.location) { mapView ->
-                            val plugin = mapView.location
-                            plugin.updateSettings { enabled = true; pulsingEnabled = true }
+                        threads.forEach { thread ->
+                            if (thread.coordinate.lat != 0.0 || thread.coordinate.lng != 0.0) {
+                                val position =
+                                    LatLng(thread.coordinate.lat, thread.coordinate.lng)
+                                Marker(
+                                    state = MarkerState(position = position),
+                                    title = "THREAD: ${thread.content}",
+                                    snippet = "Category: ${thread.category}\nDate: ${thread.updated_at}",
+                                    icon = BitmapDescriptorFactory.defaultMarker(
+                                        BitmapDescriptorFactory.HUE_ORANGE
+                                    ),
+                                    onClick = { marker ->
+                                        println("Thread marker clicked: ${thread.id}")
+                                        onNavigateThread()
+                                        false
+                                    }
+                                )
+                            }
                         }
-                        // Disable map gestures while popup overlay is visible OR drawer is open
-                        MapEffect(Pair(showPopup, drawerState.currentValue)) { mapView ->
-                            runCatching { mapView.gestures }
-                                .getOrNull()
-                                ?.updateSettings {
-                                    val allowMapGestures = !showPopup && drawerState.currentValue != DrawerValue.Open
-                                    scrollEnabled = allowMapGestures
-                                    pinchToZoomEnabled = allowMapGestures
-                                    rotateEnabled = allowMapGestures
-                                    quickZoomEnabled = allowMapGestures
-                                    pitchEnabled = allowMapGestures
-                                }
-                        }
-                        // Permanently disable ScaleBar after style is loaded
-                        MapEffect(styleLoaded) { mapView ->
-                            if (styleLoaded) {
-                                runCatching { mapView.scalebar }
-                                    .getOrNull()
-                                    ?.updateSettings { enabled = false }
+
+                        // Events のマーカーを表示
+                        events.forEach { event ->
+                            if (event.coordinate.lat != 0.0 || event.coordinate.lng != 0.0) {
+                                val position = LatLng(event.coordinate.lat, event.coordinate.lng)
+                                Marker(
+                                    state = MarkerState(position = position),
+                                    title = "EVENT: ${event.content}",
+                                    snippet = "Category: ${event.category}\nDate: ${event.updated_at}",
+                                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED),
+                                    onClick = { marker ->
+                                        println("Event marker clicked: ${event.id}")
+                                        false
+                                    }
+                                )
                             }
                         }
                     }
@@ -168,14 +215,6 @@ fun MapScreen(
                             .padding(12.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        FloatingActionButton(
-                            modifier = Modifier,
-                            containerColor = BrandBlue,
-                            onClick = {
-                                is3D = !is3D
-                                ToggleDimension(viewportState, is3D)
-                            }
-                        ) { Text(text = if (is3D) "2D" else "3D", color = Color.White) }
                         FloatingActionButton(
                             modifier = Modifier,
                             containerColor = BrandBlue,
@@ -214,11 +253,6 @@ fun MapScreen(
                             showPopup = false; createKind = CreateKind.EVENT; showCreate = true
                         }
                     )
-                    if (!styleLoaded) {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("地図スタイル読み込み中…", color = Color.DarkGray)
-                        }
-                    }
                 }
             }
         }
