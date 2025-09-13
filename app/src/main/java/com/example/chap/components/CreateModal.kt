@@ -75,9 +75,9 @@ fun CreateDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
     selectedKind: CreateKind,
-    postViewModel: PostViewModel,
-    threadViewModel: ThreadViewModel,
-    eventViewModel: EventViewModel
+    postViewModel: PostViewModel? = null,
+    threadViewModel: ThreadViewModel? = null,
+    eventViewModel: EventViewModel? = null, //ViewModelの疎結合のため。できればエラーハンドリングしておきたい
 ) {
 
     if (!isOpen) return
@@ -181,7 +181,7 @@ fun CreateDialog(
                         expanded = categoryMenuExpanded,
                         onDismissRequest = { categoryMenuExpanded = false }
                     ) {
-            PostCategory.values().forEach {
+            PostCategory.entries.forEach {
                             DropdownMenuItem(
                 text = { Text(it.toString()) },
                                 onClick = {
@@ -190,6 +190,45 @@ fun CreateDialog(
                                 }
                             )
                         }
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                // イベント開始時間入力
+                Text("イベント開始時間を入力してください）", style = MaterialTheme.typography.labelMedium)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = tagInput,
+                        onValueChange = { tagInput = it },
+                        placeholder = { Text("タグを入力") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (tagInput.isNotBlank() && !tags.contains(tagInput.trim())) {
+                                    tags = tags + tagInput.trim()
+                                    tagInput = ""
+                                }
+                                focusManager.clearFocus()
+                            }
+                        )
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    OutlinedButton(
+                        onClick = {
+                            if (tagInput.isNotBlank() && !tags.contains(tagInput.trim())) {
+                                tags = tags + tagInput.trim()
+                                tagInput = ""
+                            }
+                        },
+                        enabled = tagInput.isNotBlank()
+                    ) {
+                        Text("#")
                     }
                 }
 
@@ -315,13 +354,13 @@ fun CreateDialog(
                                     try {
                                         when(selectedKind) {
                                             CreateKind.POST -> {
-                                                postViewModel.createPost(createObject)
+                                                postViewModel?.createPost(createObject)
                                             }
                                             CreateKind.EVENT -> {
-                                                eventViewModel.createEvent(createObject)
+                                                eventViewModel?.createEvent(createObject)
                                             }
                                             CreateKind.THREAD -> {
-                                                threadViewModel.createThread(createObject)
+                                                threadViewModel?.createThread(createObject)
                                             }
                                         }
                                         // 投稿成功時の処理

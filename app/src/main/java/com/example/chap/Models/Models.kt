@@ -98,6 +98,7 @@ data class Thread(
 data class Event(
     val id: Long,
     val type: String,
+    val eventdate: Long,
     val created_at: String,
     val updated_at: String,
     val deleted_at: String?,
