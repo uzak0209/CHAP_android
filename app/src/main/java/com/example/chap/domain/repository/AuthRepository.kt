@@ -1,9 +1,9 @@
 package com.example.chap.domain.repository
 
 import android.content.Context
-import com.example.chap.Auth.TokenManager
-import com.example.chap.API.ApiClient
-import com.example.chap.API.ApiEndpoints
+import com.example.chap.auth.TokenManager
+import com.example.chap.api.ApiClient
+import com.example.chap.api.ApiEndpoints
 import org.json.JSONObject
 
 interface AuthRepository {

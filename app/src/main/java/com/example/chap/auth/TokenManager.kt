@@ -1,4 +1,4 @@
-package com.example.chap.Auth
+package com.example.chap.auth
 
 import android.content.Context
 import androidx.datastore.core.DataStore

@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
@@ -35,25 +34,21 @@ import com.example.chap.models.CreateKind
 import com.example.chap.components.CreateDialog
 import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.ToggleDimension
-import com.example.chap.components.ui.AppBottomBar
-import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.map.SlidBar
 import com.example.chap.libs.GetLocation
 import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
-import com.example.chap.components.map.LocationState
-import com.example.chap.components.map.LoadStatus
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chap.components.ToggleDimension
-import com.example.chap.components.map.SubmitCategory
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.Menu
 import com.example.chap.screens.event.EventViewModel
 import com.example.chap.screens.post.PostViewModel
@@ -161,12 +156,19 @@ fun MapScreen(
                             }
                         }
                     }
-                    Row(
+                    Column(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        FloatingActionButton(
+                            modifier = Modifier,
+                            containerColor = BrandBlue,
+                            onClick = {
+                                scope.launch { drawerState.open() }
+                            }
+                        ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation", tint = Color.White) }
                         FloatingActionButton(
                             modifier = Modifier,
                             containerColor = BrandBlue,
@@ -179,9 +181,9 @@ fun MapScreen(
                             modifier = Modifier,
                             containerColor = BrandBlue,
                             onClick = {
-                                scope.launch { drawerState.open() }
+                                returnMyLocation(viewportState, scope)
                             }
-                        ) { Icon(Icons.Default.Menu, contentDescription = "Open navigation", tint = Color.White) }
+                        ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
                     }
                     FloatingActionButton(
                         modifier = Modifier
@@ -221,5 +223,39 @@ fun MapScreen(
                 }
             }
         }
+    }
+}
+
+/**
+ * 地図の視点を現在地に戻す関数
+ * @param viewportState Mapboxのビューポート状態
+ * @param scope コルーチンスコープ
+ */
+fun returnMyLocation(
+    viewportState: MapViewportState,
+    scope: kotlinx.coroutines.CoroutineScope
+) {
+    val currentLocation = LocationViewModel.locationState.location
+    
+    if (currentLocation == null) {
+        println("[ReturnMyLocation] 現在地が取得できていません")
+        return
+    }
+    
+    println("[ReturnMyLocation] カメラを現在地に移動: lat=${currentLocation.lat}, lng=${currentLocation.lng}")
+    
+    // カメラを現在地にアニメーションで移動
+    scope.launch {
+        viewportState.flyTo(
+            cameraOptions = com.mapbox.maps.CameraOptions.Builder()
+                .center(Point.fromLngLat(currentLocation.lng, currentLocation.lat))
+                .zoom(16.5)
+                .pitch(0.0)
+                .bearing(0.0)
+                .build(),
+            animationOptions = MapAnimationOptions.mapAnimationOptions {
+                duration(1000) // 1秒のアニメーション
+            }
+        )
     }
 }

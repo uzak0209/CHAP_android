@@ -1,7 +1,7 @@
 package com.example.chap.domain.repository
 
-import com.example.chap.API.ApiClient
-import com.example.chap.API.ApiEndpoints
+import com.example.chap.api.ApiClient
+import com.example.chap.api.ApiEndpoints
 import com.example.chap.models.Comment
 import com.example.chap.models.RequestComment
 import com.example.chap.models.Coordinate

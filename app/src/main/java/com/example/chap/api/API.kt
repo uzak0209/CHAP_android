@@ -1,8 +1,8 @@
-package com.example.chap.API
+package com.example.chap.api
 
 import android.annotation.SuppressLint
 import com.example.chap.AppContextHolder
-import com.example.chap.Auth.TokenManager
+import com.example.chap.auth.TokenManager
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
