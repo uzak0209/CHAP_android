@@ -1,4 +1,4 @@
-package com.example.chap.API
+package com.example.chap.screens.post
 
 
 import android.os.Build
@@ -6,15 +6,16 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.chap.Models.PostCreateRequest
-import com.example.chap.Models.Post
+import com.example.chap.models.PostCreateRequest
+import com.example.chap.models.Post
 import org.json.JSONObject
-import com.example.chap.API.LocationViewModel
 import com.example.chap.domain.repository.PostRepositoryImpl
+import com.example.chap.screens.map.LocationViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+
 
 class PostViewModel(
 
@@ -86,7 +87,7 @@ class PostViewModel(
                         deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
                         user_id = json.optString("user_id", ""),
                         username = json.optString("username", ""),
-                        coordinate = com.example.chap.Models.Coordinate(
+                        coordinate = com.example.chap.models.Coordinate(
                             lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
                             lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
                         ),

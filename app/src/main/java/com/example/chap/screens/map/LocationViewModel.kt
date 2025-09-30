@@ -1,5 +1,5 @@
-package com.example.chap.API
-import com.example.chap.Models.Coordinate
+package com.example.chap.screens.map
+import com.example.chap.models.Coordinate
 enum class Status{
     LOADING,LOADED,ERROR
 }

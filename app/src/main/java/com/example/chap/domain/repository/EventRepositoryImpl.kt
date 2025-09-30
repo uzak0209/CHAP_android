@@ -4,10 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.chap.API.ApiClient
 import com.example.chap.API.ApiEndpoints
-import com.example.chap.API.LocationViewModel
-import com.example.chap.Models.Coordinate
-import com.example.chap.Models.Event
-import com.example.chap.Models.PostCreateRequest
+import com.example.chap.screens.map.LocationViewModel
+import com.example.chap.models.Coordinate
+import com.example.chap.models.Event
+import com.example.chap.models.PostCreateRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray

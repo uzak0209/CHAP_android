@@ -1,11 +1,10 @@
-package com.example.chap.API
+package com.example.chap.screens.event
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.chap.Models.Event
-import com.example.chap.Models.PostCreateRequest
-import com.example.chap.Models.Thread
+import com.example.chap.models.Event
+import com.example.chap.models.PostCreateRequest
 import com.example.chap.domain.repository.EventRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

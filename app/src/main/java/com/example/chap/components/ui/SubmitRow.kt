@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.chap.Models.Event
-import com.example.chap.Models.Post
-import com.example.chap.Models.Thread
+import com.example.chap.models.Event
+import com.example.chap.models.Post
+import com.example.chap.models.Thread
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneId

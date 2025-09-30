@@ -1,6 +1,6 @@
 package com.example.chap.components
 
-import com.example.chap.API.LocationViewModel
+import com.example.chap.screens.map.LocationViewModel
 import com.mapbox.geojson.Point
 
 

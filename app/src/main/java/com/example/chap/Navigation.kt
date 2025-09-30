@@ -10,16 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.chap.API.CommentViewModel
-import com.example.chap.API.EventViewModel
-import com.example.chap.API.PostViewModel
-import com.example.chap.API.ThreadViewModel
-import com.example.chap.Screens.Comment.CommentScreen
-import com.example.chap.Screens.Event.EventScreen
-import com.example.chap.Screens.Login.LoginScreen
-import com.example.chap.Screens.Map.MapScreen
-import com.example.chap.Screens.PostTimeline.PostTimelineTemplate
-import com.example.chap.Screens.Thread.ThreadScreen
+import com.example.chap.screens.comment.CommentScreen
+import com.example.chap.screens.comment.CommentViewModel
+import com.example.chap.screens.event.EventViewModel
+import com.example.chap.screens.post.PostViewModel
+import com.example.chap.screens.thread.ThreadViewModel
+import com.example.chap.screens.event.EventScreen
+import com.example.chap.screens.login.LoginScreen
+import com.example.chap.screens.map.MapScreen
+import com.example.chap.screens.post.PostTimelineTemplate
+import com.example.chap.screens.thread.ThreadScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)

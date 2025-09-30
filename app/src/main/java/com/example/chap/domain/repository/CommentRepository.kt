@@ -1,7 +1,7 @@
 package com.example.chap.domain.repository
 
-import com.example.chap.Models.Comment
-import com.example.chap.Models.RequestComment
+import com.example.chap.models.Comment
+import com.example.chap.models.RequestComment
 import kotlinx.coroutines.flow.StateFlow
 
 interface CommentRepository {

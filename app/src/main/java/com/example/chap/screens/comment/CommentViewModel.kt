@@ -1,12 +1,12 @@
-package com.example.chap.API
+package com.example.chap.screens.comment
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.chap.Models.Comment
-import com.example.chap.Models.RequestComment
+import com.example.chap.models.Comment
+import com.example.chap.models.RequestComment
 import com.example.chap.domain.repository.CommentRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

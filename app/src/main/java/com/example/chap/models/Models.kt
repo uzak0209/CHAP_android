@@ -1,4 +1,4 @@
-package com.example.chap.Models
+package com.example.chap.models
 
 data class Coordinate(
     val lat: Double,

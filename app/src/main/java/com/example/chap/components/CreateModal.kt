@@ -52,17 +52,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chap.API.EventViewModel
-import com.example.chap.API.EventViewModelFactory
+import com.example.chap.screens.event.EventViewModel
+import com.example.chap.screens.event.EventViewModelFactory
 import kotlinx.coroutines.launch
-import com.example.chap.API.LocationViewModel.locationState
-import com.example.chap.API.PostViewModel
-import com.example.chap.API.Status
-import com.example.chap.API.ThreadViewModel
-import com.example.chap.API.ThreadViewModelFactory
-import com.example.chap.Models.CreateKind
-import com.example.chap.Models.PostCategory
-import com.example.chap.Models.PostCreateRequest
+import com.example.chap.screens.map.LocationViewModel.locationState
+import com.example.chap.screens.post.PostViewModel
+import com.example.chap.screens.map.Status
+import com.example.chap.screens.thread.ThreadViewModel
+import com.example.chap.screens.thread.ThreadViewModelFactory
+import com.example.chap.models.CreateKind
+import com.example.chap.models.PostCategory
+import com.example.chap.models.PostCreateRequest
 import com.example.chap.domain.repository.EventRepositoryImpl
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
 import com.example.chap.domain.repository.ThreadRepositoryImpl

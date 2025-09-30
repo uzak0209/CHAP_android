@@ -1,7 +1,8 @@
-package com.example.chap.Screens.Event
+package com.example.chap.screens.thread
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,10 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.EventAvailable
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -36,32 +33,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chap.API.EventViewModel
-import com.example.chap.API.PostViewModel
-import com.example.chap.API.ThreadViewModel
-import com.example.chap.Models.Event
 import com.example.chap.R
 import com.example.chap.components.CreateDialog
-import com.example.chap.Models.CreateKind
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppHeader
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.ui.SearchBar
-import com.example.chap.ui.theme.BrandRed
+import com.example.chap.models.CreateKind
+import com.example.chap.ui.theme.BrandYellow
+import com.example.chap.models.Thread
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventScreen(
-    eventViewModel: EventViewModel,
-    onNavigateMap: () -> Unit,
+fun ThreadScreen(
+    threadViewModel: ThreadViewModel,
     onNavigateHome: () -> Unit,
-    onNavigateThread: () -> Unit,
+    onNavigateMap: () -> Unit,
+    onNavigateEvent: () -> Unit,
+    onNavigateComment: (String) -> Unit,
 ){
 
-    val events by eventViewModel.events.collectAsState()
-    LaunchedEffect(eventViewModel) {
-        eventViewModel.load()
+    val threads by threadViewModel.threads.collectAsState()
+    LaunchedEffect(threadViewModel) {
+        threadViewModel.load()
     }
     var showCreate by remember { mutableStateOf(false) }
     // 上位 (Navigation) で共通 BottomBar を提供するためここでは純粋なコンテンツのみ
@@ -69,16 +64,16 @@ fun EventScreen(
         bottomBar = {
             AppBottomBar(
                 modifier = Modifier,
-                onNavigate = { dest ->
+                onNavigate = {dest ->
                     when(dest){
                         BottomDestination.Home -> { onNavigateHome() }
                         BottomDestination.Map -> {onNavigateMap()}
-                        BottomDestination.Event -> {/* already */}
-                        BottomDestination.Thread -> {onNavigateThread()}
+                        BottomDestination.Event -> {onNavigateEvent()}
+                        BottomDestination.Thread -> {/* already */}
                     }
                 },
-                bottomIconColor = Color.White,
-                bottomBackgroundColor = BrandRed
+                bottomIconColor = Color.Black,
+                bottomBackgroundColor = BrandYellow
             )
         }
     ){innerPadding ->
@@ -88,20 +83,25 @@ fun EventScreen(
                 .padding(innerPadding)
         ) {
             AppHeader(
-                title = "Events",
-                color = BrandRed
+                title = "Thread",
+                color = BrandYellow,
+                headerTextColor = Color.Black
             )
             SearchBar(
-                color = BrandRed,
-                searchTarget= "event"
+                color = BrandYellow,
+                searchTarget= "thread",
+                searchTextColor = Color.Black
             )
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 8.dp),
                 ) {
-                    items(events) { item ->
-                        EventListRow(event = item)
+                    items(threads) { item ->
+                        ThreadListRow(
+                            thread = item,
+                            onClick = { onNavigateComment(item.id.toString()) }
+                        )
                         Divider(color = Color(0xFFE8ECF0))
                     }
                 }
@@ -111,12 +111,12 @@ fun EventScreen(
                         .align(Alignment.BottomEnd)
                         .padding(12.dp),
                     onClick = { showCreate = true },
-                    containerColor = BrandRed
+                    containerColor = Color(0xFFFFF59D)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.outline_calendar_today_24),
-                        contentDescription = "Create event",
-                        tint = Color.White
+                        painter = painterResource(id = R.drawable.outline_comment_24),
+                        contentDescription = "Create thread",
+                        tint = Color(0xFF1F2933)
                     )
                 }
             }
@@ -126,45 +126,56 @@ fun EventScreen(
     CreateDialog(
         isOpen = showCreate,
         onClose = { showCreate = false },
-        selectedKind = CreateKind.EVENT,
-        eventViewModel = eventViewModel
+        selectedKind = CreateKind.THREAD,
+        threadViewModel = threadViewModel,
     )
 }
 
 @Composable
-private fun EventListRow(event: Event) {
+private fun ThreadListRow(
+    thread: Thread,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val statusIcon = if (event.valid) Icons.Filled.EventAvailable else Icons.Filled.Cancel
-        val statusColor = if (event.valid) Color(0xFF22C55E) else Color(0xFFEF4444)
-        Icon(imageVector = statusIcon, contentDescription = null, tint = statusColor)
-
-        Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
-            Text(text = event.username, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF1F2933))
+        Icon(
+            painter = painterResource(id = R.drawable.outline_comment_24),
+            contentDescription = null,
+            tint = Color(0xFF6B7280)
+        )
+        Text(
+            text = " ${thread.like}",
+            color = Color(0xFF6B7280),
+            modifier = Modifier.padding(start = 4.dp, end = 12.dp)
+        )
+        Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = event.content,
+                text = thread.username,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                color = Color(0xFF1F2933)
+            )
+            Text(
+                text = thread.content,
                 color = Color(0xFF6B7280),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-        }
-
-        Column(horizontalAlignment = Alignment.End) {
-            Text(text = event.created_at.take(10), color = Color(0xFF9AA1A9), fontSize = 12.sp)
             Text(
-                text = "開始: " + event.created_at.replace('T', ' ').take(16),
-                color = BrandRed,
-                fontSize = 12.sp
-            )
-            Text(
-                text = "場所:緯度" + "%.0f".format(event.coordinate.lat) + " ・ 経度" + "%.0f".format(event.coordinate.lng),
-                color = BrandRed,
+                text = "タップでコメントを表示",
+                color = Color(0xFF9AA1A9),
                 fontSize = 12.sp
             )
         }
+        Text(
+            text = thread.created_at.take(10),
+            color = Color(0xFF9AA1A9),
+            fontSize = 12.sp
+        )
     }
 }

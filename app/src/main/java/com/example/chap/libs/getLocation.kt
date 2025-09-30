@@ -5,10 +5,10 @@ import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.chap.API.LocationState
-import com.example.chap.API.LocationViewModel
-import com.example.chap.API.Status
-import com.example.chap.Models.Coordinate
+import com.example.chap.screens.map.LocationState
+import com.example.chap.screens.map.LocationViewModel
+import com.example.chap.screens.map.Status
+import com.example.chap.models.Coordinate
 import com.google.android.gms.location.LocationServices
 
 val LOCATION_PERMISSION_REQUEST_CODE = 1000

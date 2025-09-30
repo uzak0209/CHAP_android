@@ -1,4 +1,4 @@
-package com.example.chap.Screens.Login
+package com.example.chap.screens.login
 
 import Logo
 import androidx.compose.ui.platform.LocalContext
@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chap.API.LoginViewModel
+import com.example.chap.screens.login.LoginViewModel
 import com.example.chap.components.TextInput
 
 private val PrimaryColor = Color(0xFF4A4AFF)

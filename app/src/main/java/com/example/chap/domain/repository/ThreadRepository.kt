@@ -1,7 +1,7 @@
 package com.example.chap.domain.repository
 
-import com.example.chap.Models.PostCreateRequest
-import com.example.chap.Models.Thread
+import com.example.chap.models.PostCreateRequest
+import com.example.chap.models.Thread
 import kotlinx.coroutines.flow.StateFlow
 
 interface ThreadRepository {

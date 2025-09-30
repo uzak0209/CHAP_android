@@ -1,7 +1,7 @@
 package com.example.chap.domain.repository
 
-import com.example.chap.Models.Event
-import com.example.chap.Models.PostCreateRequest
+import com.example.chap.models.Event
+import com.example.chap.models.PostCreateRequest
 import kotlinx.coroutines.flow.StateFlow
 
 interface EventRepository {

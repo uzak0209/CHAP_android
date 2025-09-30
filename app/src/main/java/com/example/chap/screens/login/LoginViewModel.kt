@@ -1,4 +1,4 @@
-package com.example.chap.API
+package com.example.chap.screens.login
 
 
 // ViewModel で API 呼び出し処理をRepositoryに移譲

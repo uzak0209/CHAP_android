@@ -2,9 +2,9 @@ package com.example.chap.domain.repository
 
 import com.example.chap.API.ApiClient
 import com.example.chap.API.ApiEndpoints
-import com.example.chap.Models.Comment
-import com.example.chap.Models.RequestComment
-import com.example.chap.Models.Coordinate
+import com.example.chap.models.Comment
+import com.example.chap.models.RequestComment
+import com.example.chap.models.Coordinate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

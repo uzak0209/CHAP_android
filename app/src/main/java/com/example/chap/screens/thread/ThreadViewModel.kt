@@ -1,17 +1,18 @@
-package com.example.chap.API
+package com.example.chap.screens.thread
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.chap.Models.PostCreateRequest
-import com.example.chap.Models.Thread
+import com.example.chap.models.PostCreateRequest
+import com.example.chap.models.Thread
 import com.example.chap.domain.repository.ThreadRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
 
 class ThreadViewModel(
     private val threadRepository: ThreadRepositoryImpl

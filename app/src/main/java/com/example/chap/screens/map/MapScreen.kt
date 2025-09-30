@@ -1,4 +1,4 @@
-package com.example.chap.Screens.Map
+package com.example.chap.screens.map
 
 import android.os.Build
 import androidx.activity.ComponentActivity
@@ -31,8 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chap.API.LocationViewModel
-import com.example.chap.Models.CreateKind
+import com.example.chap.models.CreateKind
 import com.example.chap.components.CreateDialog
 import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.ToggleDimension
@@ -44,9 +43,6 @@ import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.components.map.LocationState
 import com.example.chap.components.map.LoadStatus
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chap.API.PostViewModel
-import com.example.chap.API.ThreadViewModel
-import com.example.chap.API.EventViewModel
 import com.example.chap.components.ToggleDimension
 import com.example.chap.components.map.SubmitCategory
 import com.mapbox.geojson.Point
@@ -59,6 +55,9 @@ import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.maps.plugin.gestures.gestures
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import com.example.chap.screens.event.EventViewModel
+import com.example.chap.screens.post.PostViewModel
+import com.example.chap.screens.thread.ThreadViewModel
 import com.example.chap.ui.theme.BrandBlue
 import kotlinx.coroutines.launch
 
