@@ -53,6 +53,10 @@ import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotationGr
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
+import android.content.Context
+import androidx.appcompat.content.res.AppCompatResources
+import android.graphics.drawable.Drawable
+import com.example.chap.R
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -94,12 +98,12 @@ fun MapScreen(
     var showPopup by remember { mutableStateOf(false) }
     var showCreate by remember { mutableStateOf(false) }
     var createKind by remember { mutableStateOf(CreateKind.POST) }
-    
+
     // ViewModelからデータを監視
     val posts by postViewModel.posts.collectAsState()
     val threads by threadViewModel.threads.collectAsState()
     val events by eventViewModel.events.collectAsState()
-    
+
     // デバッグログ
     LaunchedEffect(posts.size) {
         println("[MapScreen] Posts count: ${posts.size}")
@@ -107,13 +111,13 @@ fun MapScreen(
             println("[MapScreen] Post ID: ${post.id}, Content: ${post.content}, Lat: ${post.coordinate.lat}, Lng: ${post.coordinate.lng}")
         }
     }
-    
+
     // 選択されたアイテムとポップアップ表示状態
     var selectedPost by remember { mutableStateOf<Post?>(null) }
     var selectedThread by remember { mutableStateOf<Thread?>(null) }
     var selectedEvent by remember { mutableStateOf<EventModel?>(null) }
 
-    // 位置情報を取得（既存の GetLocation を利用）
+    // 位置情報を取得
     LaunchedEffect(Unit) {
         if (this is ComponentActivity) {
             GetLocation(this, LOCATION_PERMISSION_REQUEST_CODE)
@@ -136,11 +140,12 @@ fun MapScreen(
         }
     }
 
+    //サイドバーの開閉を監視
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    // No-op: scale bar is disabled permanently after style load
     ModalNavigationDrawer(
         drawerState = drawerState,
+        //マップ操作をサイドバーが邪魔しない
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             SlidBar(
@@ -166,42 +171,42 @@ fun MapScreen(
                         MapEffect(Unit) { mapView ->
                             val mbMap = mapView.mapboxMap
                             if (!styleLoaded) {
-                                mbMap.loadStyleUri(Style.STANDARD) { 
-                                    // スタイルロード後にピンアイコンを登録
+                                mbMap.loadStyleUri(Style.STANDARD) {
+                                    // スタイルロード後に提供SVGを登録
                                     try {
-                                        mbMap.style?.addImage("pin-purple", createMapPin(android.graphics.Color.parseColor("#9C27B0")))
-                                        mbMap.style?.addImage("pin-red", createMapPin(android.graphics.Color.parseColor("#F44336")))
-                                        mbMap.style?.addImage("pin-green", createMapPin(android.graphics.Color.parseColor("#4CAF50")))
-                                        mbMap.style?.addImage("pin-blue", createMapPin(android.graphics.Color.parseColor("#2196F3")))
-                                        mbMap.style?.addImage("pin-purple-light", createMapPin(android.graphics.Color.parseColor("#BA68C8")))
-                                        mbMap.style?.addImage("pin-red-light", createMapPin(android.graphics.Color.parseColor("#EF5350")))
-                                        mbMap.style?.addImage("pin-green-light", createMapPin(android.graphics.Color.parseColor("#66BB6A")))
-                                        mbMap.style?.addImage("pin-blue-light", createMapPin(android.graphics.Color.parseColor("#42A5F5")))
-                                        mbMap.style?.addImage("pin-purple-dark", createMapPin(android.graphics.Color.parseColor("#7B1FA2")))
-                                        mbMap.style?.addImage("pin-red-dark", createMapPin(android.graphics.Color.parseColor("#D32F2F")))
-                                        mbMap.style?.addImage("pin-green-dark", createMapPin(android.graphics.Color.parseColor("#388E3C")))
-                                        mbMap.style?.addImage("pin-blue-dark", createMapPin(android.graphics.Color.parseColor("#1976D2")))
-                                        println("[MapScreen] Map pin icons registered")
+                                        val ctx = mapView.context
+                                        //ピンを登録
+                                        mbMap.style?.addImage("pin-post", bitmapFromVector(ctx, R.drawable.marker_blue))
+                                        mbMap.style?.addImage("pin-event", bitmapFromVector(ctx, R.drawable.marker_red))
+                                        mbMap.style?.addImage("pin-thread", bitmapFromVector(ctx, R.drawable.marker_yellow))
+                                        println("[MapScreen] Registered SVG pins: post/event/thread")
                                     } catch (e: Exception) {
-                                        println("[MapScreen] Failed to register pins: ${e.message}")
+                                        println("[MapScreen] Failed to register SVG pins: ${e.message}")
                                     }
                                     styleLoaded = true
                                 }
                             }
                         }
-                        MapEffect(LocationViewModel.locationState.location) { mapView ->
+                        //マップの視点が変わると現在地が地図上に表示されたり、パルスエフェクトが出たりする
+                        MapEffect(
+                            LocationViewModel.locationState.location
+                        ) { mapView ->
                             val plugin = mapView.location
                             plugin.updateSettings { enabled = true; pulsingEnabled = true }
                         }
                         // Disable map gestures while popup overlay is visible OR drawer is open OR item is selected
-                        MapEffect(Triple(showPopup, drawerState.currentValue, selectedPost != null || selectedThread != null || selectedEvent != null)) { mapView ->
+                        MapEffect(
+                            Triple(showPopup, drawerState.currentValue, selectedPost != null || selectedThread != null || selectedEvent != null)
+                        ) { mapView ->
+                            //ユーザーのタッチ操作を管理するGesturesPluginインスタンスを取得しようとしている
                             runCatching { mapView.gestures }
                                 .getOrNull()
                                 ?.updateSettings {
-                                    val allowMapGestures = !showPopup && 
+                                    //ジェスチャー許可を管理
+                                    val allowMapGestures = !showPopup &&
                                                           drawerState.currentValue != DrawerValue.Open &&
-                                                          selectedPost == null && 
-                                                          selectedThread == null && 
+                                                          selectedPost == null &&
+                                                          selectedThread == null &&
                                                           selectedEvent == null
                                     scrollEnabled = allowMapGestures
                                     pinchToZoomEnabled = allowMapGestures
@@ -218,21 +223,15 @@ fun MapScreen(
                                     ?.updateSettings { enabled = false }
                             }
                         }
-                        
-                        // 投稿マーカーをピンアイコンで表示
+
+                        // 投稿マーカーを表示
                         if (posts.isNotEmpty() && styleLoaded) {
                             PointAnnotationGroup(
                                 annotations = posts.map { post ->
                                     PointAnnotationOptions()
                                         .withPoint(Point.fromLngLat(post.coordinate.lng, post.coordinate.lat))
-                                        .withIconImage(when (post.category.lowercase()) {
-                                            "entertainment" -> "pin-purple"
-                                            "disaster" -> "pin-red"
-                                            "community" -> "pin-green"
-                                            else -> "pin-blue"
-                                        })
-                                        .withIconSize(0.4)
-                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
+                                        .withIconImage("pin-post")
+                                        .withIconSize(1.0)
                                 },
                                 onClick = { annotation ->
                                     // マーカークリック時の処理
@@ -247,20 +246,15 @@ fun MapScreen(
                             )
                         }
                         
-                        // スレッドマーカーをピンアイコンで表示
+                        // スレッドマーカー（提供SVG）を表示
                         if (threads.isNotEmpty() && styleLoaded) {
                             PointAnnotationGroup(
                                 annotations = threads.map { thread ->
                                     PointAnnotationOptions()
                                         .withPoint(Point.fromLngLat(thread.coordinate.lng, thread.coordinate.lat))
-                                        .withIconImage(when (thread.category.lowercase()) {
-                                            "entertainment" -> "pin-purple-light"
-                                            "disaster" -> "pin-red-light"
-                                            "community" -> "pin-green-light"
-                                            else -> "pin-blue-light"
-                                        })
-                                        .withIconSize(0.4)
-                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
+                                        .withIconImage("pin-thread")
+                                        .withIconSize(1.0)
+//                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
                                 },
                                 onClick = { annotation ->
                                     val clickedThread = threads.find { thread ->
@@ -273,20 +267,15 @@ fun MapScreen(
                             )
                         }
                         
-                        // イベントマーカーをピンアイコンで表示
+                        // イベントマーカー（提供SVG）を表示
                         if (events.isNotEmpty() && styleLoaded) {
                             PointAnnotationGroup(
                                 annotations = events.map { event ->
                                     PointAnnotationOptions()
                                         .withPoint(Point.fromLngLat(event.coordinate.lng, event.coordinate.lat))
-                                        .withIconImage(when (event.category.lowercase()) {
-                                            "entertainment" -> "pin-purple-dark"
-                                            "disaster" -> "pin-red-dark"
-                                            "community" -> "pin-green-dark"
-                                            else -> "pin-blue-dark"
-                                        })
-                                        .withIconSize(0.4)
-                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
+                                        .withIconImage("pin-event")
+                                        .withIconSize(1.0)
+//                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
                                 },
                                 onClick = { annotation ->
                                     val clickedEvent = events.find { event ->
@@ -423,68 +412,15 @@ fun MapScreen(
  * @param color ピンの色
  * @return ビットマップ画像
  */
-fun createMapPin(color: Int): Bitmap {
-    val width = 100
-    val height = 140
+// VectorDrawable(SVG) → Bitmap 変換
+private fun bitmapFromVector(context: Context, drawableResId: Int): Bitmap {
+    val drawable: Drawable = requireNotNull(AppCompatResources.getDrawable(context, drawableResId))
+    val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 96
+    val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 96
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    
-    val paint = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.FILL
-        this.color = color
-    }
-    
-    val strokePaint = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.STROKE
-        strokeWidth = 6f
-        this.color = android.graphics.Color.WHITE
-    }
-    
-    val centerX = width / 2f
-    val radius = 35f
-    val circleY = 40f
-    
-    // ピンの外形パスを作成
-    val pinPath = Path().apply {
-        // 上部の円形部分を楕円として追加
-        val ovalTop = RectF(centerX - radius, circleY - radius, centerX + radius, circleY + radius)
-        addOval(ovalTop, Path.Direction.CW)
-        
-        // 下部の尖った部分（涙型）
-        moveTo(centerX - radius, circleY)
-        
-        // 左側のカーブ
-        cubicTo(
-            centerX - radius, circleY + radius * 0.8f,  // コントロールポイント1
-            centerX - radius * 0.3f, height - 20f,      // コントロールポイント2
-            centerX, height - 10f                        // 終点（先端）
-        )
-        
-        // 右側のカーブ
-        cubicTo(
-            centerX + radius * 0.3f, height - 20f,      // コントロールポイント1
-            centerX + radius, circleY + radius * 0.8f,  // コントロールポイント2
-            centerX + radius, circleY                    // 終点
-        )
-        
-        close()
-    }
-    
-    // 枠線を先に描画（下レイヤー）
-    canvas.drawPath(pinPath, strokePaint)
-    // 塗りつぶしを後に描画（上レイヤー）
-    canvas.drawPath(pinPath, paint)
-    
-    // 中央の穴（オプション：画像のようにドーナツ型にする場合）
-    val holePaint = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.FILL
-        this.color = android.graphics.Color.WHITE
-    }
-    canvas.drawCircle(centerX, circleY, radius * 0.4f, holePaint)
-    
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
     return bitmap
 }
 

@@ -86,6 +86,9 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.material3)
 
+    // AppCompat (for AppCompatResources)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+
     // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
