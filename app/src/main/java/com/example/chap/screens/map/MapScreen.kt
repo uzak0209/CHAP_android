@@ -215,7 +215,7 @@ fun MapScreen(
                                     pitchEnabled = allowMapGestures
                                 }
                         }
-                        // Permanently disable ScaleBar after style is loaded
+
                         MapEffect(styleLoaded) { mapView ->
                             if (styleLoaded) {
                                 runCatching { mapView.scalebar }
@@ -224,8 +224,9 @@ fun MapScreen(
                             }
                         }
 
-                        // 投稿マーカーを表示
+                        // ポストマーカーを表示
                         if (posts.isNotEmpty() && styleLoaded) {
+                            println("[MapScreen] Created post")
                             PointAnnotationGroup(
                                 annotations = posts.map { post ->
                                     PointAnnotationOptions()
@@ -246,8 +247,9 @@ fun MapScreen(
                             )
                         }
                         
-                        // スレッドマーカー（提供SVG）を表示
+                        // スレッドマーカーを表示
                         if (threads.isNotEmpty() && styleLoaded) {
+                            println("[MapScreen] Created thread")
                             PointAnnotationGroup(
                                 annotations = threads.map { thread ->
                                     PointAnnotationOptions()
@@ -267,8 +269,9 @@ fun MapScreen(
                             )
                         }
                         
-                        // イベントマーカー（提供SVG）を表示
+                        // イベントマーカーを表示
                         if (events.isNotEmpty() && styleLoaded) {
+                            println("[MapScreen] Created event")
                             PointAnnotationGroup(
                                 annotations = events.map { event ->
                                     PointAnnotationOptions()
@@ -317,6 +320,7 @@ fun MapScreen(
                             }
                         ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
                     }
+                    //投稿作成ボタン
                     FloatingActionButton(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
