@@ -11,21 +11,21 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.chap.screens.event.EventViewModel
-import com.example.chap.screens.event.EventViewModelFactory
 import com.example.chap.screens.post.PostViewModel
-import com.example.chap.screens.post.PostViewModelFactory
 import com.example.chap.screens.thread.ThreadViewModel
-import com.example.chap.screens.thread.ThreadViewModelFactory
 import com.example.chap.screens.comment.CommentViewModel
-import com.example.chap.screens.comment.CommentViewModelFactory
 import com.example.chap.repository.CommentRepositoryImpl
 import com.example.chap.repository.EventRepositoryImpl
 import com.example.chap.repository.PostRepositoryImpl
 import com.example.chap.repository.ThreadRepositoryImpl
-import com.example.chap.libs.GetLocation
-import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
+import com.example.chap.location.DefaultLocationProvider
+import com.example.chap.location.LOCATION_PERMISSION_REQUEST_CODE
+import com.example.chap.screens.login.LoginViewModel
+import com.example.chap.screens.map.LocationViewModel
 import com.example.chap.ui.theme.CHAPTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 object AppContextHolder {
     lateinit var appContext: Context
@@ -34,38 +34,36 @@ object AppContextHolder {
     }
 }
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val postViewModel: PostViewModel by viewModels {
-        PostViewModelFactory(PostRepositoryImpl())
-    }
-    private val threadViewModel: ThreadViewModel by viewModels {
-        ThreadViewModelFactory(ThreadRepositoryImpl())
-    }
-    private val eventViewModel: EventViewModel by viewModels {
-        EventViewModelFactory(EventRepositoryImpl())
-    }
-    private val commentViewModel: CommentViewModel by viewModels {
-        CommentViewModelFactory(CommentRepositoryImpl())
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        GetLocation(this, LOCATION_PERMISSION_REQUEST_CODE)
         enableEdgeToEdge()
         AppContextHolder.init(this)
-        postViewModel.getAllPosts()
-        threadViewModel.getAllThreads()
-        eventViewModel.getAllEvents()
         setContent {
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            val postViewModel: PostViewModel = hiltViewModel()
+            val threadViewModel: ThreadViewModel = hiltViewModel()
+            val eventViewModel: EventViewModel = hiltViewModel()
+            val commentViewModel: CommentViewModel = hiltViewModel()
+            val locationViewModel: LocationViewModel = hiltViewModel()
             CHAPTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                postViewModel.getPosts()
+                threadViewModel.getThreads()
+                eventViewModel.getEvents()
+                locationViewModel.getSpots()
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Navigation(
                         postViewModel = postViewModel,
                         threadViewModel = threadViewModel,
                         eventViewModel = eventViewModel,
-                        commentViewModel = commentViewModel
+                        commentViewModel = commentViewModel,
+                        locationViewModel = locationViewModel,
+                        loginViewModel = loginViewModel
                     )
                 }
             }

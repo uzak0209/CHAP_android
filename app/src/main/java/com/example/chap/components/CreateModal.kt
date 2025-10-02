@@ -51,15 +51,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.chap.models.Coordinate
 import com.example.chap.screens.event.EventViewModel
 import kotlinx.coroutines.launch
 import com.example.chap.screens.post.PostViewModel
-import com.example.chap.screens.map.Status
 import com.example.chap.screens.thread.ThreadViewModel
 import com.example.chap.models.CreateKind
 import com.example.chap.models.PostCategory
 import com.example.chap.models.PostCreateRequest
+import com.example.chap.models.Status
 import com.example.chap.screens.map.LocationViewModel
+import androidx.compose.runtime.collectAsState
 
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
 
@@ -71,11 +73,12 @@ fun CreateDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
     selectedKind: CreateKind,
-    locationViewModel: LocationViewModel//ViewModelの疎結合のため。できればエラーハンドリングしておきたい
+    locationViewModel: LocationViewModel,
+    coordinate: Coordinate?
 ) {
 
     if (!isOpen) return
-    val locationState = locationViewModel.locationState
+    val locationState = coordinate
     val scope = rememberCoroutineScope()
     // 未定義だった ViewModel をローカルで取得
     var content by remember { mutableStateOf("") }
@@ -257,7 +260,7 @@ fun CreateDialog(
                 Spacer(Modifier.height(16.dp))
 
                 // 位置情報
-                if (locationState.status == Status.LOADED) {
+                if (locationViewModel.locationState.collectAsState().value.status == Status.LOADED) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -268,7 +271,7 @@ fun CreateDialog(
                         Icon(Icons.Default.Place, contentDescription = null, tint = Color(0xFF666666))
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            "現在地: ${"%.4f".format(locationState.location?.lat)}, ${"%.4f".format(locationState.location?.lng)}",
+                            "現在地: ${"%.4f".format(coordinate?.lat)}, ${"%.4f".format(coordinate?.lng)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color(0xFF555555)
                         )
@@ -294,9 +297,9 @@ fun CreateDialog(
                     }
                     Button(
                         onClick = {
-                            if (locationState.status == Status.LOADED) {
+                            if (locationViewModel.locationState.value.status == Status.LOADED) {
                                 val createObject = PostCreateRequest(
-                                    coordinate = locationState.location!!,
+                                    coordinate = locationViewModel.locationState.value.location!!,
                                     content = content.trim(),
                                     category = category.toString(),
                                     valid = true,
@@ -336,7 +339,7 @@ fun CreateDialog(
                         modifier = Modifier.weight(1f),
                         enabled = content.isNotBlank() &&
                                 !loading &&
-                                locationState.status == Status.LOADED
+                                locationViewModel.locationState.collectAsState().value.status == Status.LOADED
                     ) {
                         Text(if (loading) "投稿中..." else "投稿する")
                     }

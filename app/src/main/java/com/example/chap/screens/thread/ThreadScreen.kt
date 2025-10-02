@@ -122,13 +122,6 @@ fun ThreadScreen(
             }
         }
     }
-
-    CreateDialog(
-        isOpen = showCreate,
-        onClose = { showCreate = false },
-        selectedKind = CreateKind.THREAD,
-        threadViewModel = threadViewModel,
-    )
 }
 
 @Composable

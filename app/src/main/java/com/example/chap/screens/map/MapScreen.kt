@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.models.CreateKind
+import dagger.hilt.android.EntryPointAccessors
 import com.example.chap.components.CreateDialog
 import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.ToggleDimension
@@ -41,8 +42,6 @@ import com.example.chap.components.map.ThreadMarker
 import com.example.chap.components.map.ThreadPopup
 import com.example.chap.components.map.EventMarker
 import com.example.chap.components.map.EventPopup
-import com.example.chap.libs.GetLocation
-import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
@@ -101,6 +100,7 @@ fun MapScreen(
     val posts by locationViewModel.posts.collectAsState()
     val threads by locationViewModel.threads.collectAsState()
     val events by locationViewModel.events.collectAsState()
+    val locationState by locationViewModel.locationState.collectAsState()
 
     // デバッグログ
     LaunchedEffect(posts.size) {
@@ -115,22 +115,20 @@ fun MapScreen(
     var selectedThread by remember { mutableStateOf<Thread?>(null) }
     var selectedEvent by remember { mutableStateOf<EventModel?>(null) }
 
-    // 位置情報を取得
+    // 位置情報を取得（ViewModel 経由）
     LaunchedEffect(Unit) {
-        if (this is ComponentActivity) {
-            GetLocation(this, LOCATION_PERMISSION_REQUEST_CODE)
-        }
+        locationViewModel.fetchAndUpdateLocation()
     }
 
     // Mapbox カメラ状態
     val viewportState = rememberMapViewportState {
-        println("Camera position: ${locationViewModel.locationState.location}")
+        println("Camera position: ${locationViewModel.locationState.value.location}")
         setCameraOptions {
             zoom(16.5)
             center(
                 Point.fromLngLat(
-                    locationViewModel.locationState.location?.lng ?: 0.0,
-                    locationViewModel.locationState.location?.lat ?: 0.0
+                    locationState.location?.lng ?: 0.0,
+                    locationState.location?.lat ?: 0.0
                 )
             )
             pitch(0.0)
@@ -185,10 +183,8 @@ fun MapScreen(
                                 }
                             }
                         }
-                        //マップの視点が変わると現在地が地図上に表示されたり、パルスエフェクトが出たりする
-                        MapEffect(
-                            locationViewModel.locationState.location
-                        ) { mapView ->
+                        // 位置情報プラグインを有効化（1回で十分）
+                        MapEffect(Unit) { mapView ->
                             val plugin = mapView.location
                             plugin.updateSettings { enabled = true; pulsingEnabled = true }
                         }
@@ -307,7 +303,11 @@ fun MapScreen(
                             containerColor = BrandBlue,
                             onClick = {
                                 is3D = !is3D
-                                ToggleDimension(viewportState, is3D)
+                                ToggleDimension(
+                                    viewportState,
+                                    is3D,
+                                    coordinate = locationState.location
+                                    )
                             }
                         ) { Text(text = if (is3D) "2D" else "3D", color = Color.White) }
                         FloatingActionButton(
@@ -335,7 +335,8 @@ fun MapScreen(
                         isOpen = showCreate,
                         onClose = { showCreate = false },
                         selectedKind = createKind,
-                        locationViewModel = locationViewModel
+                        locationViewModel = locationViewModel,
+                        coordinate = locationState.location
                     )
 
                     SelectPopupOverlay(
@@ -438,7 +439,7 @@ fun returnMyLocation(
     scope: kotlinx.coroutines.CoroutineScope,
     locationViewModel: LocationViewModel
 ) {
-    val currentLocation = locationViewModel.locationState.location
+    val currentLocation = locationViewModel.locationState.value.location
     
     if (currentLocation == null) {
         println("[ReturnMyLocation] 現在地が取得できていません")

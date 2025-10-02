@@ -40,52 +40,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.screens.login.LoginViewModel
 import com.example.chap.components.TextInput
+import com.example.chap.models.LoginTab
 
 private val PrimaryColor = Color(0xFF4A4AFF)
 private val BackgroundGray = Color(0xFFF8F8F8)
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit) {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    loginViewModel: LoginViewModel
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(LoginTab.Login) }
     var displayName by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    MainBody(
-        email = email,
-        password = password,
-        onEmailChange = { email = it },
-        onPasswordChange = { password = it },
-        selectedTab = selectedTab,
-        onTabChange = { selectedTab = it },
-        displayName = displayName,
-        onDisplayNameChange = { displayName = it },
-    onLoginSuccess = onLoginSuccess,
-    errorMessage = errorMessage,
-    onErrorMessageChange = { errorMessage = it }
-    )
-}
-
-enum class LoginTab {
-    Login, SignUp
-}
-
-@Composable
-fun MainBody(
-    selectedTab: LoginTab,
-    email: String,
-    password: String,
-    displayName: String,
-    onDisplayNameChange: (String) -> Unit,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onTabChange: (LoginTab) -> Unit,
-    onLoginSuccess: () -> Unit,
-    errorMessage: String?,
-    onErrorMessageChange: (String?) -> Unit
-
-) {
 
     Card(
         modifier = Modifier
@@ -106,13 +76,13 @@ fun MainBody(
             Spacer(modifier = Modifier.height(50.dp))
 
             // 🔹 タブバー部分を別Composableに
-            LoginTabBar(selectedTab = selectedTab, onTabChange = onTabChange)
+            LoginTabBar(selectedTab = selectedTab, onTabChange = {selectedTab = it})
             if (selectedTab == LoginTab.SignUp) {
                 Spacer(modifier = Modifier.height(24.dp))
                 TextInput(
                     title = "表示名",
                     value = displayName,
-                    onChange = onDisplayNameChange,
+                    onChange = {displayName = it},
                     placeholder = "表示名を入力してください"
                 )
             }
@@ -120,14 +90,14 @@ fun MainBody(
             TextInput(
                 title = "メールアドレス",
                 value = email,
-                onChange = onEmailChange,
+                onChange = { email = it },
                 placeholder = "example@example.com"
             )
             Spacer(modifier = Modifier.height(24.dp))
             TextInput(
                 title = "パスワード",
                 value = password,
-                onChange = onPasswordChange,
+                onChange = {password  = it},
                 placeholder = "パスワードを入力してください"
             )
             if (selectedTab == LoginTab.Login) {
@@ -138,25 +108,24 @@ fun MainBody(
             val context = LocalContext.current
             Button(
                 onClick = {
-                    onErrorMessageChange(null)
                     when (selectedTab) {
                         LoginTab.Login -> {
-                            LoginViewModel.login(
+                            loginViewModel.login(
                                 email = email,
                                 password = password,
                                 context = context,
                                 onSuccess = { onLoginSuccess() },
-                                onError = { onErrorMessageChange(it.message ?: "ログインに失敗しました") }
+                                onError = { it.message ?: "ログインに失敗しました" }
                             )
                         }
                         LoginTab.SignUp -> {
-                            LoginViewModel.register(
+                            loginViewModel.register(
                                 email = email,
                                 password = password,
                                 displayName = displayName,
                                 context = context,
                                 onSuccess = { onLoginSuccess() },
-                                onError = { onErrorMessageChange(it.message ?: "登録に失敗しました") }
+                                onError = { it.message ?: "登録に失敗しました" }
                             )
                         }
                     }

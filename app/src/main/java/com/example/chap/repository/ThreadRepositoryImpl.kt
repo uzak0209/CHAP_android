@@ -4,10 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.chap.api.ApiClient
 import com.example.chap.api.ApiEndpoints
-import com.example.chap.screens.map.LocationViewModel
+import com.example.chap.location.LocationProvider
 import com.example.chap.models.Coordinate
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Thread
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
@@ -15,18 +16,19 @@ import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-class ThreadRepositoryImpl : ThreadRepository {
+class ThreadRepositoryImpl @Inject constructor(private val locationProvider: LocationProvider) : ThreadRepository {
     private val _threads = MutableStateFlow<List<Thread>>(emptyList())
     override val threads: StateFlow<List<Thread>> = _threads
 
     override suspend fun getAll(): Result<List<Thread>> {
         return try {
+            val coordinate = locationProvider.current()
             val response = ApiClient.request(
                 url = ApiEndpoints.Threads.LIST,
                 method = "THREAD",
                 body = mapOf(
-                    "lat" to LocationViewModel.locationState.location?.lat.toString(),
-                    "lng" to LocationViewModel.locationState.location?.lng.toString()
+                    "lat" to (coordinate?.lat?.toString() ?: ""),
+                    "lng" to (coordinate?.lng?.toString() ?: "")
                 )
             )
             val threadList = parseThreads(response)

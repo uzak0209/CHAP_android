@@ -129,12 +129,6 @@ fun PostTimelineTemplate(
             }
         }
     }
-    CreateDialog(
-        isOpen = showCreate,
-        onClose = { showCreate = false },
-        selectedKind = CreateKind.POST,
-        postViewModel = postViewModel,
-    )
 }
 
 @Composable

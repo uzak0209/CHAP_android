@@ -4,10 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.chap.api.ApiClient
 import com.example.chap.api.ApiEndpoints
-import com.example.chap.screens.map.LocationViewModel
+import com.example.chap.location.LocationProvider
 import com.example.chap.models.Coordinate
 import com.example.chap.models.Event
 import com.example.chap.models.PostCreateRequest
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
@@ -15,18 +16,19 @@ import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-class EventRepositoryImpl : EventRepository {
+class EventRepositoryImpl @Inject constructor(private val locationProvider: LocationProvider) : EventRepository {
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     override val events: StateFlow<List<Event>> = _events
 
     override suspend fun getAll(): Result<List<Event>> {
         return try {
+            val coordinate = locationProvider.current()
             val response = ApiClient.request(
                 url = ApiEndpoints.Events.LIST,
                 method = "POST",
                 body = mapOf(
-                    "lat" to LocationViewModel.locationState.location?.lat.toString(),
-                    "lng" to LocationViewModel.locationState.location?.lng.toString()
+                    "lat" to (coordinate?.lat?.toString() ?: ""),
+                    "lng" to (coordinate?.lng?.toString() ?: "")
                 )
             )
 

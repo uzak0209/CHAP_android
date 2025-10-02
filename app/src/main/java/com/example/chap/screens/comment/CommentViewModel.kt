@@ -8,14 +8,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.chap.models.Comment
 import com.example.chap.models.RequestComment
 import com.example.chap.repository.CommentRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CommentViewModel(
+@HiltViewModel
+class CommentViewModel @Inject constructor(
     private val commentRepository: CommentRepositoryImpl
-) : ViewModel() {
+): ViewModel() {
 
     private val _comments = MutableStateFlow<List<Comment>>(emptyList())
     val comments: StateFlow<List<Comment>> = _comments
@@ -81,12 +84,3 @@ class CommentViewModel(
     fun refresh(threadId: Long) = load(threadId)
 }
 
-class CommentViewModelFactory(private val commentRepository: CommentRepositoryImpl) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CommentViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return CommentViewModel(commentRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

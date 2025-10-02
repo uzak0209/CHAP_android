@@ -7,9 +7,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chap.repository.AuthRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-object LoginViewModel: ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(): ViewModel() {
     private val authRepository = AuthRepositoryImpl()
 
     fun login(

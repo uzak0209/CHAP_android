@@ -5,6 +5,7 @@ import com.example.chap.api.ApiEndpoints
 import com.example.chap.models.Comment
 import com.example.chap.models.RequestComment
 import com.example.chap.models.Coordinate
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
-class CommentRepositoryImpl : CommentRepository {
+class CommentRepositoryImpl @Inject constructor() : CommentRepository {
 	private val _comments = MutableStateFlow<List<Comment>>(emptyList())
 	override val comments: StateFlow<List<Comment>> = _comments.asStateFlow()
 

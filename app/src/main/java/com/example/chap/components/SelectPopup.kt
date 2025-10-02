@@ -31,11 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.R
-
-// 状態種別
-enum class LoadStatus { IDLE, LOADING, LOADED, ERROR }
-data class LocationState(val lat: LoadStatus, val lng: Double, val status: LoadStatus)
-
 private data class FabAction(
     val label: String,
     val iconRes: Int,

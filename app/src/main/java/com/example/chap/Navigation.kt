@@ -17,6 +17,8 @@ import com.example.chap.screens.post.PostViewModel
 import com.example.chap.screens.thread.ThreadViewModel
 import com.example.chap.screens.event.EventScreen
 import com.example.chap.screens.login.LoginScreen
+import com.example.chap.screens.login.LoginViewModel
+import com.example.chap.screens.map.LocationViewModel
 import com.example.chap.screens.map.MapScreen
 import com.example.chap.screens.post.PostTimelineTemplate
 import com.example.chap.screens.thread.ThreadScreen
@@ -25,10 +27,12 @@ import com.example.chap.screens.thread.ThreadScreen
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(
+    loginViewModel: LoginViewModel,
     postViewModel: PostViewModel,
     threadViewModel: ThreadViewModel,
     eventViewModel: EventViewModel,
     commentViewModel: CommentViewModel,
+    locationViewModel: LocationViewModel
 ) {
     val navController = rememberNavController()
 
@@ -42,7 +46,8 @@ fun Navigation(
                     navController.navigate("map") {
                         popUpTo("login") { inclusive = true } // ログイン画面を履歴から削除
                     }
-                }
+                },
+                loginViewModel = loginViewModel
             )
         }
         composable("map") {
@@ -50,9 +55,7 @@ fun Navigation(
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
                 onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
-                postViewModel = postViewModel,
-                threadViewModel = threadViewModel,
-                eventViewModel = eventViewModel
+                locationViewModel = locationViewModel
             )
         }
         composable("home"){

@@ -8,17 +8,19 @@ import androidx.lifecycle.viewModelScope
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Thread
 import com.example.chap.repository.ThreadRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import javax.inject.Inject
 
-
-class ThreadViewModel(
+@HiltViewModel
+class ThreadViewModel @Inject constructor(
     private val threadRepository: ThreadRepositoryImpl
-) : ViewModel() {
 
+) : ViewModel() {
     private val _threads = MutableStateFlow<List<Thread>>(emptyList())
     val threads: StateFlow<List<Thread>> = _threads
 
@@ -60,12 +62,3 @@ class ThreadViewModel(
     fun refresh() = load()
 }
 
-class ThreadViewModelFactory(private val threadRepository: ThreadRepositoryImpl) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ThreadViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ThreadViewModel(threadRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

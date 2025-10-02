@@ -6,13 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.chap.models.Event
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.repository.EventRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import javax.inject.Inject
 
-class EventViewModel(
+@HiltViewModel
+class EventViewModel @Inject constructor(
     private val eventRepository: EventRepositoryImpl
 ) : ViewModel() {
 
@@ -51,12 +54,3 @@ class EventViewModel(
     fun refresh() = load()
 }
 
-class EventViewModelFactory(private val eventRepository: EventRepositoryImpl) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(EventViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return EventViewModel(eventRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.chap.api.ApiClient
 import com.example.chap.api.ApiEndpoints
+import com.example.chap.location.LocationProvider
 import com.example.chap.models.Coordinate
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Spot
@@ -14,19 +15,22 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class MapRepositoryImpl: MapRepository {
+
+class MapRepositoryImpl  @Inject constructor(private val locationProvider: LocationProvider) :MapRepository {
     private val _spots = MutableStateFlow<List<Spot>>(emptyList())
-    val spots: StateFlow<List<Spot>> get() = _spots
+    override val spots: StateFlow<List<Spot>> get() = _spots
 
     override suspend fun getSpotAll(): Result<List<Spot>> {
+        val coordinate = locationProvider.current()
         return try {
             val response = ApiClient.request(
                 url = ApiEndpoints.Spots.LIST,
                 method = "SPOT",
                 body = mapOf(
-                    "lat" to LocationViewModel.locationState.location?.lat.toString(),
-                    "lng" to LocationViewModel.locationState.location?.lng.toString()
+                    "lat" to (coordinate?.lat?.toString() ?:""),
+                    "lng" to (coordinate?.lng?.toString() ?:"")
                 )
             )
             // レスポンスをパースしてSpotリストに変換し、_postsにセット

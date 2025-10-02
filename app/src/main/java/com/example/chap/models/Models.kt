@@ -4,6 +4,10 @@ data class Coordinate(
     val lat: Double,
     val lng: Double
 )
+
+enum class LoginTab {
+    Login, SignUp
+}
 enum class CreateKind{
     POST,THREAD,EVENT,SPOT;
 }
@@ -155,4 +159,10 @@ data class RequestComment(
     val valid:Boolean,
     val thread_id: Long
 )
-// ヒートマップポイント
+enum class Status{
+    LOADING,LOADED,ERROR
+}
+data class LocationState(
+    var location: Coordinate?,
+    var status: Status
+)

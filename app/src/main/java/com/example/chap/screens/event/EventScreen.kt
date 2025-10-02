@@ -119,13 +119,6 @@ fun EventScreen(
             }
         }
     }
-
-    CreateDialog(
-        isOpen = showCreate,
-        onClose = { showCreate = false },
-        selectedKind = CreateKind.EVENT,
-        eventViewModel = eventViewModel
-    )
 }
 
 @Composable

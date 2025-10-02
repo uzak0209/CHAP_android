@@ -1,12 +1,15 @@
 package com.example.chap.components
 
+import com.example.chap.models.Coordinate
 import com.example.chap.screens.map.LocationViewModel
 import com.mapbox.geojson.Point
+import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 
 
 fun ToggleDimension(
-    viewportState: com.mapbox.maps.extension.compose.animation.viewport.MapViewportState,
+    viewportState: MapViewportState,
     is3D: Boolean,
+    coordinate: Coordinate?
 ) {
     // カメラオプション更新: ピッチとベアリングをトグル
     viewportState.setCameraOptions {
@@ -14,7 +17,7 @@ fun ToggleDimension(
         bearing(if (is3D) 45.0 else 0.0)
 
         // 位置が取れている場合はそこへフォーカス (未取得なら現状維持)
-        LocationViewModel.locationState.location?.let { loc ->
+        coordinate?.let { loc ->
             center(Point.fromLngLat(loc.lng,loc.lat))
 
             if (is3D) {
