@@ -40,43 +40,6 @@ class ThreadViewModel(
     // Added helper to fetch a thread by id from current cache
     fun getThreadById(id: Long): Thread? = threadRepository.threads.value.firstOrNull { it.id == id }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun createThread(thread: PostCreateRequest) {
-        viewModelScope.launch {
-            val result = threadRepository.create(thread)
-            result.onSuccess { response ->
-                println("スレッド作成成功: $response")
-                try {
-                    val json = JSONObject(response)
-                    val created = Thread(
-                        id = json.optLong("id", 0L),
-                        type = json.optString("type", ""),
-                        created_at = json.optString("created_at", ""),
-                        updated_at = json.optString("updated_at", ""),
-                        deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
-                        user_id = json.optString("user_id", ""),
-                        username = json.optString("username", ""),
-                        coordinate = com.example.chap.models.Coordinate(
-                            lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
-                            lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
-                        ),
-                        content = json.optString("content", ""),
-                        category = json.optString("category", ""),
-                        valid = json.optBoolean("valid", true),
-                        like = json.optInt("like", 0),
-                        tags = emptyList() // backend が tags 配列を返すなら parse へ拡張
-                    )
-                    _threads.value = (listOf(created) + _threads.value.filterNot { it.id == created.id })
-                    println("[PostViewModel] Post added to StateFlow with ID: ${created.id}")
-                } catch (e: Exception) {
-                    println("[PostViewModel] Failed to parse response JSON: ${e.message}")
-                    e.printStackTrace()
-                }
-            }.onFailure { e ->
-                println("エラー: ${e.message}")
-            }
-        }
-    }
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()

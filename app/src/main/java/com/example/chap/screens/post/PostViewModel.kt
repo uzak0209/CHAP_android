@@ -68,47 +68,6 @@ class PostViewModel(
             }
         }
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun createPost(post: PostCreateRequest) {
-        println("[PostViewModel] Starting post creation...")
-        viewModelScope.launch {
-            val result = postRepository.create(post)
-            result.onSuccess { response ->
-                println("[PostViewModel] 投稿成功: $response")
-                // レスポンスJSONをPostにパースしてStateFlowへ即時反映
-                try {
-                    val json = JSONObject(response)
-                    val created = Post(
-                        id = json.optLong("id", 0L),
-                        type = json.optString("type", ""),
-                        created_at = json.optString("created_at", ""),
-                        updated_at = json.optString("updated_at", ""),
-                        deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
-                        user_id = json.optString("user_id", ""),
-                        username = json.optString("username", ""),
-                        coordinate = com.example.chap.models.Coordinate(
-                            lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
-                            lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
-                        ),
-                        content = json.optString("content", ""),
-                        category = json.optString("category", ""),
-                        valid = json.optBoolean("valid", true),
-                        like = json.optInt("like", 0),
-                        tags = emptyList() // backend が tags 配列を返すなら parse へ拡張
-                    )
-                    _posts.value = (listOf(created) + _posts.value.filterNot { it.id == created.id })
-                    println("[PostViewModel] Post added to StateFlow with ID: ${created.id}")
-                } catch (e: Exception) {
-                    println("[PostViewModel] Failed to parse response JSON: ${e.message}")
-                    e.printStackTrace()
-                }
-            }.onFailure { e ->
-                println("[PostViewModel] 投稿エラー: ${e.message}")
-                e.printStackTrace()
-            }
-        }
-    }
 }
 
 class PostViewModelFactory(private val postRepository: PostRepositoryImpl) : ViewModelProvider.Factory {

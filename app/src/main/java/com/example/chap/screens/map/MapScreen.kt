@@ -314,7 +314,11 @@ fun MapScreen(
                             modifier = Modifier,
                             containerColor = BrandBlue,
                             onClick = {
-                                returnMyLocation(viewportState, scope)
+                                returnMyLocation(
+                                    viewportState,
+                                    scope,
+                                    locationViewModel
+                                )
                             }
                         ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
                     }
@@ -331,7 +335,7 @@ fun MapScreen(
                         isOpen = showCreate,
                         onClose = { showCreate = false },
                         selectedKind = createKind,
-                        locationViewModel
+                        locationViewModel = locationViewModel
                     )
 
                     SelectPopupOverlay(
@@ -431,9 +435,10 @@ private fun bitmapFromVector(context: Context, drawableResId: Int): Bitmap {
  */
 fun returnMyLocation(
     viewportState: MapViewportState,
-    scope: kotlinx.coroutines.CoroutineScope
+    scope: kotlinx.coroutines.CoroutineScope,
+    locationViewModel: LocationViewModel
 ) {
-    val currentLocation = LocationViewModel.locationState.location
+    val currentLocation = locationViewModel.locationState.location
     
     if (currentLocation == null) {
         println("[ReturnMyLocation] 現在地が取得できていません")
