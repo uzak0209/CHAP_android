@@ -125,7 +125,8 @@ fun SelectPopupOverlay(
     onReloadEvents: (lat: Double, lng: Double) -> Unit = { _, _ -> },
     onPostCreated: () -> Unit = {},
     onThreadCreated: () -> Unit = {},
-    onEventCreated: () -> Unit = {}
+    onEventCreated: () -> Unit = {},
+    registerLocation: () -> Unit = {}
 ) {
     if (!visible) return
 
@@ -144,7 +145,13 @@ fun SelectPopupOverlay(
             label = "イベント作成",
             iconRes = R.drawable.outline_calendar_today_24,
             containerColor = Color(0xFFF97316)
-        ) { onDismiss();onEventCreated() }
+        ) { onDismiss();onEventCreated() },
+        FabAction(
+            label = "地点登録",
+            iconRes = R.drawable.location_on_24px,
+            containerColor = Color(0xFFF91616)
+        ) { onDismiss();registerLocation() }
+
     )
 
     Box(

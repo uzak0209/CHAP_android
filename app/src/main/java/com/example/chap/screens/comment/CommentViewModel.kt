@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chap.models.Comment
 import com.example.chap.models.RequestComment
-import com.example.chap.domain.repository.CommentRepositoryImpl
+import com.example.chap.repository.CommentRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

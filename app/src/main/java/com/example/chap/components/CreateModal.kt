@@ -51,21 +51,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chap.screens.event.EventViewModel
-import com.example.chap.screens.event.EventViewModelFactory
 import kotlinx.coroutines.launch
-import com.example.chap.screens.map.LocationViewModel.locationState
 import com.example.chap.screens.post.PostViewModel
 import com.example.chap.screens.map.Status
 import com.example.chap.screens.thread.ThreadViewModel
-import com.example.chap.screens.thread.ThreadViewModelFactory
 import com.example.chap.models.CreateKind
 import com.example.chap.models.PostCategory
 import com.example.chap.models.PostCreateRequest
-import com.example.chap.domain.repository.EventRepositoryImpl
+import com.example.chap.screens.map.LocationViewModel
+
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
-import com.example.chap.domain.repository.ThreadRepositoryImpl
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -75,13 +71,11 @@ fun CreateDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
     selectedKind: CreateKind,
-    postViewModel: PostViewModel? = null,
-    threadViewModel: ThreadViewModel? = null,
-    eventViewModel: EventViewModel? = null, //ViewModelの疎結合のため。できればエラーハンドリングしておきたい
+    locationViewModel: LocationViewModel//ViewModelの疎結合のため。できればエラーハンドリングしておきたい
 ) {
 
     if (!isOpen) return
-    val locationState = locationState
+    val locationState = locationViewModel.locationState
     val scope = rememberCoroutineScope()
     // 未定義だった ViewModel をローカルで取得
     var content by remember { mutableStateOf("") }
@@ -315,13 +309,16 @@ fun CreateDialog(
                                     try {
                                         when(selectedKind) {
                                             CreateKind.POST -> {
-                                                postViewModel?.createPost(createObject)
+                                                locationViewModel.createPost(createObject)
                                             }
                                             CreateKind.EVENT -> {
-                                                eventViewModel?.createEvent(createObject)
+                                                locationViewModel.createEvent(createObject)
                                             }
                                             CreateKind.THREAD -> {
-                                                threadViewModel?.createThread(createObject)
+                                                locationViewModel.createThread(createObject)
+                                            }
+                                            CreateKind.SPOT -> {
+
                                             }
                                         }
                                         // 投稿成功時の処理

@@ -19,10 +19,10 @@ import com.example.chap.screens.thread.ThreadViewModel
 import com.example.chap.screens.thread.ThreadViewModelFactory
 import com.example.chap.screens.comment.CommentViewModel
 import com.example.chap.screens.comment.CommentViewModelFactory
-import com.example.chap.domain.repository.CommentRepositoryImpl
-import com.example.chap.domain.repository.EventRepositoryImpl
-import com.example.chap.domain.repository.PostRepositoryImpl
-import com.example.chap.domain.repository.ThreadRepositoryImpl
+import com.example.chap.repository.CommentRepositoryImpl
+import com.example.chap.repository.EventRepositoryImpl
+import com.example.chap.repository.PostRepositoryImpl
+import com.example.chap.repository.ThreadRepositoryImpl
 import com.example.chap.libs.GetLocation
 import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.ui.theme.CHAPTheme

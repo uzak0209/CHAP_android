@@ -1,4 +1,4 @@
-package com.example.chap.domain.repository
+package com.example.chap.repository
 
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Thread

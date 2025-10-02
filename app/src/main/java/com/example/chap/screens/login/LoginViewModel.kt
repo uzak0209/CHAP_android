@@ -6,7 +6,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chap.domain.repository.AuthRepositoryImpl
+import com.example.chap.repository.AuthRepositoryImpl
 import kotlinx.coroutines.launch
 
 object LoginViewModel: ViewModel() {

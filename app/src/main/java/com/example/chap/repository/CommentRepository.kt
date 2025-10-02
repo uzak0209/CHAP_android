@@ -1,4 +1,4 @@
-package com.example.chap.domain.repository
+package com.example.chap.repository
 
 import com.example.chap.models.Comment
 import com.example.chap.models.RequestComment

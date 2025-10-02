@@ -1,4 +1,4 @@
-package com.example.chap.domain.repository
+package com.example.chap.repository
 
 // API連携用の実装クラス
 
@@ -17,13 +17,6 @@ import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-interface PostRepository {
-    suspend fun getAll(): Result<List<Post>>
-
-    suspend fun create(
-        request: PostCreateRequest
-    ): Result<String>
-}
 
 
 class PostRepositoryImpl : PostRepository {

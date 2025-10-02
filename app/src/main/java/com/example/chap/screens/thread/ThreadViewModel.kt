@@ -7,8 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Thread
-import com.example.chap.domain.repository.ThreadRepositoryImpl
-import com.example.chap.models.Post
+import com.example.chap.repository.ThreadRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

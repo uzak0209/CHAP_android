@@ -50,6 +50,14 @@ object ApiEndpoints {
     object Social {
         const val HEATMAP = "$BASE/api/v1/social-sensing/heatmap"
     }
+    object Spots {
+        const val LIST = "$BASE/api/v1/getall/spot"
+        fun get(id: String) = "$BASE/api/v1/spot/$id"
+        const val CREATE = "$BASE/api/v1/create/spot"
+        fun update(ts: Long) = "$BASE/api/v1/update/spot/$ts"
+        fun edit(id: String) = "$BASE/api/v1/edit/spot/$id"
+        fun delete(id: String) = "$BASE/api/v1/delete/spot/$id"
+    }
 }
 
 // 2. 共通APIクライアント（apiClient風）

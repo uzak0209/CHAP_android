@@ -1,4 +1,4 @@
-package com.example.chap.domain.repository
+package com.example.chap.repository
 
 import com.example.chap.api.ApiClient
 import com.example.chap.api.ApiEndpoints

@@ -88,9 +88,7 @@ fun MapScreen(
     onNavigateHome: () -> Unit,
     onNavigateEvent: () -> Unit,
     onNavigateThread: () -> Unit,
-    postViewModel: PostViewModel,
-    threadViewModel: ThreadViewModel,
-    eventViewModel: EventViewModel
+    locationViewModel: LocationViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
     var is3D by remember { mutableStateOf(true) }
@@ -100,9 +98,9 @@ fun MapScreen(
     var createKind by remember { mutableStateOf(CreateKind.POST) }
 
     // ViewModelからデータを監視
-    val posts by postViewModel.posts.collectAsState()
-    val threads by threadViewModel.threads.collectAsState()
-    val events by eventViewModel.events.collectAsState()
+    val posts by locationViewModel.posts.collectAsState()
+    val threads by locationViewModel.threads.collectAsState()
+    val events by locationViewModel.events.collectAsState()
 
     // デバッグログ
     LaunchedEffect(posts.size) {
@@ -126,13 +124,13 @@ fun MapScreen(
 
     // Mapbox カメラ状態
     val viewportState = rememberMapViewportState {
-        println("Camera position: ${LocationViewModel.locationState.location}")
+        println("Camera position: ${locationViewModel.locationState.location}")
         setCameraOptions {
             zoom(16.5)
             center(
                 Point.fromLngLat(
-                    LocationViewModel.locationState.location?.lng ?: 0.0,
-                    LocationViewModel.locationState.location?.lat ?: 0.0
+                    locationViewModel.locationState.location?.lng ?: 0.0,
+                    locationViewModel.locationState.location?.lat ?: 0.0
                 )
             )
             pitch(0.0)
@@ -189,7 +187,7 @@ fun MapScreen(
                         }
                         //マップの視点が変わると現在地が地図上に表示されたり、パルスエフェクトが出たりする
                         MapEffect(
-                            LocationViewModel.locationState.location
+                            locationViewModel.locationState.location
                         ) { mapView ->
                             val plugin = mapView.location
                             plugin.updateSettings { enabled = true; pulsingEnabled = true }
@@ -333,9 +331,7 @@ fun MapScreen(
                         isOpen = showCreate,
                         onClose = { showCreate = false },
                         selectedKind = createKind,
-                        postViewModel = postViewModel,
-                        threadViewModel = threadViewModel,
-                        eventViewModel = eventViewModel
+                        locationViewModel
                     )
 
                     SelectPopupOverlay(
@@ -349,7 +345,10 @@ fun MapScreen(
                         },
                         onEventCreated = {
                             showPopup = false; createKind = CreateKind.EVENT; showCreate = true
-                        }
+                        },
+                        registerLocation = {/*
+                        カーソルが右クリックした地点にピンをさす、そしてデータベースにその地点を登録する、あとでバックエンド同実装したか聞く
+                        */}
                     )
                     
                     // 選択された投稿のポップアップ
@@ -416,7 +415,6 @@ fun MapScreen(
  * @param color ピンの色
  * @return ビットマップ画像
  */
-// VectorDrawable(SVG) → Bitmap 変換
 private fun bitmapFromVector(context: Context, drawableResId: Int): Bitmap {
     val drawable: Drawable = requireNotNull(AppCompatResources.getDrawable(context, drawableResId))
     val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 96
@@ -430,8 +428,6 @@ private fun bitmapFromVector(context: Context, drawableResId: Int): Bitmap {
 
 /**
  * 地図の視点を現在地に戻す関数
- * @param viewportState Mapboxのビューポート状態
- * @param scope コルーチンスコープ
  */
 fun returnMyLocation(
     viewportState: MapViewportState,

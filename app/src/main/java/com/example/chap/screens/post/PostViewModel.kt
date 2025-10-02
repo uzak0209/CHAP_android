@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Post
 import org.json.JSONObject
-import com.example.chap.domain.repository.PostRepositoryImpl
+import com.example.chap.repository.PostRepositoryImpl
 import com.example.chap.screens.map.LocationViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -110,7 +110,6 @@ class PostViewModel(
         }
     }
 }
-
 
 class PostViewModelFactory(private val postRepository: PostRepositoryImpl) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

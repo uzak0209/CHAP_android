@@ -1,4 +1,4 @@
-package com.example.chap.domain.repository
+package com.example.chap.repository
 
 import android.content.Context
 import com.example.chap.auth.TokenManager

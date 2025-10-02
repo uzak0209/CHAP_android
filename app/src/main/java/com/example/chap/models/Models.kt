@@ -5,9 +5,9 @@ data class Coordinate(
     val lng: Double
 )
 enum class CreateKind{
-    POST,THREAD,EVENT;
+    POST,THREAD,EVENT,SPOT;
 }
-// 投稿作成リクエスト DTO (UI -> API)
+// 投稿作成リクエスト DTO (UI -> API)(ここでのPostは投稿って意味)
 data class PostCreateRequest(
     val content: String,
     val category: String,
@@ -45,6 +45,7 @@ data class User(
 )
 
 // 投稿
+
 data class Post(
     val id: Long,
     val type: String,
@@ -106,6 +107,22 @@ data class Event(
     val coordinate: Coordinate,
     val category: String,
     val content: String,
+    val valid: Boolean,
+    val like: Int,
+    val tags: List<String>
+)
+
+data class Spot(
+    val id: Long,
+    val type: String,
+    val created_at: String,
+    val updated_at: String,
+    val deleted_at: String?,
+    val user_id: String,
+    val username: String,
+    val coordinate: Coordinate,
+    val content: String,
+    val category: String,
     val valid: Boolean,
     val like: Int,
     val tags: List<String>

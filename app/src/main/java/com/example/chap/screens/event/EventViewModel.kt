@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chap.models.Event
 import com.example.chap.models.PostCreateRequest
-import com.example.chap.domain.repository.EventRepositoryImpl
-import com.example.chap.models.Post
+import com.example.chap.repository.EventRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
