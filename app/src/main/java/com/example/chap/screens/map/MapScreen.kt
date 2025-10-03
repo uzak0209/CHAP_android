@@ -69,6 +69,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.Menu
 import com.example.chap.components.map.SpotPopup
+import com.example.chap.models.Coordinate
 import com.example.chap.models.Event
 import com.example.chap.models.Spot
 import com.example.chap.screens.event.EventViewModel
@@ -151,6 +152,15 @@ fun MapScreen(
                 onNavigateHome = onNavigateHome,
                 onNavigateEvent = onNavigateEvent,
                 onNavigateThread = onNavigateThread,
+                spots = spots,
+                onSpotClick = { spot ->
+                    moveViewPoint(
+                        viewportState,
+                        scope,
+                        spot.coordinate,
+                        locationViewModel
+                    )
+                }
             )
         }
     ) {
@@ -346,10 +356,11 @@ fun MapScreen(
                             modifier = Modifier,
                             containerColor = BrandBlue,
                             onClick = {
-                                returnMyLocation(
+                                moveViewPoint(
                                     viewportState,
                                     scope,
-                                    locationViewModel
+                                    locationViewModel.locationState.value.location,
+                                    locationViewModel,
                                 )
                             }
                         ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
@@ -481,25 +492,26 @@ private fun bitmapFromVector(context: Context, drawableResId: Int): Bitmap {
 /**
  * 地図の視点を現在地に戻す関数
  */
-fun returnMyLocation(
+
+fun moveViewPoint(
     viewportState: MapViewportState,
     scope: kotlinx.coroutines.CoroutineScope,
+    location: Coordinate?,
     locationViewModel: LocationViewModel
 ) {
-    val currentLocation = locationViewModel.locationState.value.location
     
-    if (currentLocation == null) {
+    if (location == null) {
         println("[ReturnMyLocation] 現在地が取得できていません")
         return
     }
     
-    println("[ReturnMyLocation] カメラを現在地に移動: lat=${currentLocation.lat}, lng=${currentLocation.lng}")
+    println("[ReturnMyLocation] カメラを現在地に移動: lat=${location.lat}, lng=${location.lng}")
     
     // カメラを現在地にアニメーションで移動
     scope.launch {
         viewportState.flyTo(
             cameraOptions = com.mapbox.maps.CameraOptions.Builder()
-                .center(Point.fromLngLat(currentLocation.lng, currentLocation.lat))
+                .center(Point.fromLngLat(location.lng, location.lat))
                 .zoom(16.5)
                 .pitch(0.0)
                 .bearing(0.0)
