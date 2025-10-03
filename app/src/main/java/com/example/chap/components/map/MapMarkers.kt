@@ -234,26 +234,15 @@ fun SpotPopup(
                 text = "SPOT: ${spot.category.uppercase()}",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = when (spot.category.lowercase()) {
-                    "entertainment" -> Color(0xFF9C27B0)
-                    "disaster" -> Color(0xFFF44336)
-                    "community" -> Color(0xFF4CAF50)
-                    else -> Color(0xFF2196F3)
-                },
+                color = Color(0xFF9C27B0),
                 modifier = Modifier
                     .background(
-                        when (spot.category.lowercase()) {
-                            "entertainment" -> Color(0xFFE1BEE7)
-                            "disaster" -> Color(0xFFFFCDD2)
-                            "community" -> Color(0xFFC8E6C9)
-                            else -> Color(0xFFBBDEFB)
-                        },
+                        Color(0xFFE1BEE7),
                         RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
 
-            Text(text = "by ${spot.username}", fontSize = 12.sp, color = Color.Gray)
             Text(
                 text = spot.content,
                 fontSize = 14.sp,

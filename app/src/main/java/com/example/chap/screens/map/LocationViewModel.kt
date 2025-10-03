@@ -197,9 +197,9 @@ class LocationViewModel @Inject constructor(
     }
 
 
-    fun createSpot(event: PostCreateRequest) {
+    fun createSpot(spot: PostCreateRequest) {
         viewModelScope.launch {
-            val result = mapRepository.createSpot(event)
+            val result = mapRepository.createSpot(spot)
             result.onSuccess { response ->
                 // 投稿成功時の処理
                 try {
@@ -230,7 +230,7 @@ class LocationViewModel @Inject constructor(
                     e.printStackTrace()
                 }
             }.onFailure { e ->
-                // エラー処理
+                println("[LocationViewModel] createSpot failed: ${e.message}")
             }
         }
     }

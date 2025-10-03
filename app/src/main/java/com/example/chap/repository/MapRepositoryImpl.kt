@@ -26,8 +26,8 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
         val coordinate = locationProvider.current()
         return try {
             val response = ApiClient.request(
-                url = ApiEndpoints.Spots.LIST,
-                method = "SPOT",
+                url = ApiEndpoints.Posts.LIST,
+                method = "POST",
                 body = mapOf(
                     "lat" to (coordinate?.lat?.toString() ?:""),
                     "lng" to (coordinate?.lng?.toString() ?:"")
@@ -62,8 +62,8 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
             )
             println("[SpotRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(
-                url = ApiEndpoints.Spots.CREATE,
-                method = "SPOT",
+                url = ApiEndpoints.Posts.CREATE,
+                method = "POST",
                 body = requestBody
             )
             println("[SpotRepository] API response: $response")
@@ -90,24 +90,26 @@ private fun parseSpots(response: Any?): List<Spot> {
             is String -> JSONArray(response)
             else -> JSONArray(response.toString())
         }
-        List(jsonArray.length()) { i ->
-            val obj = jsonArray.getJSONObject(i)
-            Spot(
-                id = obj.optLong("id", 0L),
-                type = obj.optString("type", ""),
-                created_at = obj.optString("created_at", ""),
-                updated_at = obj.optString("updated_at", ""),
-                deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
-                user_id = obj.optString("user_id", ""),
-                username = obj.optString("username", ""),
-                coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
-                content = obj.optString("content", ""),
-                category = obj.optString("category", ""),
-                valid = obj.optBoolean("valid", true),
-                like = obj.optInt("like", 0),
-                tags = parseTags(obj.optJSONArray("tags")),
-            )
-        }
+        val all = List(jsonArray.length()) { i -> jsonArray.getJSONObject(i) }
+        all
+            .filter { it.optString("type", "") == "spot" }
+            .map { obj ->
+                Spot(
+                    id = obj.optLong("id", 0L),
+                    type = obj.optString("type", ""),
+                    created_at = obj.optString("created_at", ""),
+                    updated_at = obj.optString("updated_at", ""),
+                    deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
+                    user_id = obj.optString("user_id", ""),
+                    username = obj.optString("username", ""),
+                    coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+                    content = obj.optString("content", ""),
+                    category = obj.optString("category", ""),
+                    valid = obj.optBoolean("valid", true),
+                    like = obj.optInt("like", 0),
+                    tags = parseTags(obj.optJSONArray("tags")),
+                )
+            }
     } catch (e: Exception) {
         emptyList()
     }

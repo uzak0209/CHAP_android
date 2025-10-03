@@ -321,7 +321,7 @@ fun CreateDialog(
                                                 locationViewModel.createThread(createObject)
                                             }
                                             CreateKind.SPOT -> {
-
+                                                locationViewModel.createSpot(createObject)
                                             }
                                         }
                                         // 投稿成功時の処理

@@ -38,9 +38,7 @@ import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.ToggleDimension
 import com.example.chap.components.map.SlidBar
 import com.example.chap.components.map.PostPopup
-import com.example.chap.components.map.ThreadMarker
 import com.example.chap.components.map.ThreadPopup
-import com.example.chap.components.map.EventMarker
 import com.example.chap.components.map.EventPopup
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
@@ -70,6 +68,7 @@ import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.Menu
+import com.example.chap.components.map.SpotPopup
 import com.example.chap.models.Event
 import com.example.chap.models.Spot
 import com.example.chap.screens.event.EventViewModel

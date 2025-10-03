@@ -95,6 +95,10 @@ object ApiClient {
         println("[ApiClient] Response code: ${response.code}")
         println("[ApiClient] Response body: $responseBody")
         
+        if (!response.isSuccessful) {
+            throw IllegalStateException("HTTP ${response.code}: $responseBody")
+        }
+        
         responseBody
 
     }
