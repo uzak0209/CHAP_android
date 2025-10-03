@@ -18,6 +18,8 @@ fun TextInput(title: String,value: String, onChange: (String) -> Unit,placeholde
         onValueChange = onChange,
         placeholder = { Text(placeholder) },
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        singleLine = true,
+        maxLines = 1
     )
 }

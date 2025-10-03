@@ -4,6 +4,7 @@ import Logo
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.screens.login.LoginViewModel
 import com.example.chap.components.TextInput
+import com.example.chap.auth.TokenManager
 import com.example.chap.models.LoginTab
 
 private val PrimaryColor = Color(0xFF4A4AFF)
@@ -57,14 +60,18 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
 
-    Card(
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        val token = TokenManager(context).getToken()
+        if (!token.isNullOrBlank()) {
+            onLoginSuccess()
+            return@LaunchedEffect
+        }
+    }
+
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.9f)
-            .padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+            .fillMaxSize(),
     ) {
         Column(
             modifier = Modifier
