@@ -21,82 +21,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.models.Post
+import com.example.chap.models.Spot
 import com.example.chap.models.Thread
-import com.example.chap.models.Event as EventModel
+import com.example.chap.models.Event
 import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 
-/**
- * マップ上に投稿マーカーを表示するコンポーネント
- */
 
-/**
- * マップ上にスレッドマーカーを表示するコンポーネント
- */
-@Composable
-fun ThreadMarker(
-    thread: Thread,
-    onClick: (Thread) -> Unit
-) {
-    val markerColor = when (thread.category.lowercase()) {
-        "entertainment" -> Color(0xFF9C27B0)
-        "disaster" -> Color(0xFFF44336)
-        "community" -> Color(0xFF4CAF50)
-        else -> Color(0xFF2196F3)
-    }
-
-    Box(
-        modifier = Modifier
-            .size(32.dp)
-            .background(markerColor, CircleShape)
-            .clickable { onClick(thread) },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "T",
-            color = Color.White,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-/**
- * マップ上にイベントマーカーを表示するコンポーネント
- */
-@Composable
-fun EventMarker(
-    event: EventModel,
-    onClick: (EventModel) -> Unit
-) {
-    val markerColor = when (event.category.lowercase()) {
-        "entertainment" -> Color(0xFF9C27B0)
-        "disaster" -> Color(0xFFF44336)
-        "community" -> Color(0xFF4CAF50)
-        else -> Color(0xFF2196F3)
-    }
-
-    Box(
-        modifier = Modifier
-            .size(32.dp)
-            .background(markerColor, CircleShape)
-            .clickable { onClick(event) },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "E",
-            color = Color.White,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-/**
- * 投稿の詳細ポップアップ
- */
 @Composable
 fun PostPopup(
     post: Post,
@@ -230,7 +163,7 @@ fun ThreadPopup(
  */
 @Composable
 fun EventPopup(
-    event: EventModel,
+    event: Event,
     onDismiss: () -> Unit
 ) {
     Card(
@@ -271,6 +204,58 @@ fun EventPopup(
             Text(text = "by ${event.username}", fontSize = 12.sp, color = Color.Gray)
             Text(
                 text = event.content,
+                fontSize = 14.sp,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                color = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+fun SpotPopup(
+    spot: Spot,
+    onDismiss: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .width(250.dp)
+            .clickable { onDismiss() },
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "SPOT: ${spot.category.uppercase()}",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = when (spot.category.lowercase()) {
+                    "entertainment" -> Color(0xFF9C27B0)
+                    "disaster" -> Color(0xFFF44336)
+                    "community" -> Color(0xFF4CAF50)
+                    else -> Color(0xFF2196F3)
+                },
+                modifier = Modifier
+                    .background(
+                        when (spot.category.lowercase()) {
+                            "entertainment" -> Color(0xFFE1BEE7)
+                            "disaster" -> Color(0xFFFFCDD2)
+                            "community" -> Color(0xFFC8E6C9)
+                            else -> Color(0xFFBBDEFB)
+                        },
+                        RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+
+            Text(text = "by ${spot.username}", fontSize = 12.sp, color = Color.Gray)
+            Text(
+                text = spot.content,
                 fontSize = 14.sp,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,

@@ -195,6 +195,45 @@ class LocationViewModel @Inject constructor(
             }
         }
     }
+
+
+    fun createSpot(event: PostCreateRequest) {
+        viewModelScope.launch {
+            val result = mapRepository.createSpot(event)
+            result.onSuccess { response ->
+                // 投稿成功時の処理
+                try {
+                    val json = JSONObject(response)
+                    val created = Spot(
+                        id = json.optLong("id", 0L),
+                        type = json.optString("type", ""),
+                        created_at = json.optString("created_at", ""),
+                        updated_at = json.optString("updated_at", ""),
+                        deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
+                        user_id = json.optString("user_id", ""),
+                        username = json.optString("username", ""),
+                        coordinate = com.example.chap.models.Coordinate(
+                            lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
+                            lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
+                        ),
+                        content = json.optString("content", ""),
+                        category = json.optString("category", ""),
+                        valid = json.optBoolean("valid", true),
+                        like = json.optInt("like", 0),
+                        tags = emptyList()
+                    )
+                    _spots.value =
+                        (listOf(created) + _spots.value.filterNot { it.id == created.id })
+                    println(" Event added to StateFlow with ID: ${created.id}")
+                } catch (e: Exception) {
+                    println("Event Failed to parse response JSON: ${e.message}")
+                    e.printStackTrace()
+                }
+            }.onFailure { e ->
+                // エラー処理
+            }
+        }
+    }
     fun load() {
         if (_isLoading.value) return
         viewModelScope.launch {

@@ -28,7 +28,12 @@ class AuthRepositoryImpl : AuthRepository {
     }
 
 
-    override suspend fun register(email: String, password: String, displayName: String, context: Context): Result<String> {
+    override suspend fun register(
+        email: String,
+        password: String,
+        displayName: String,
+        context: Context
+    ): Result<String> {
         return try {
             val response = ApiClient.request(
                 url = ApiEndpoints.Auth.REGISTER,

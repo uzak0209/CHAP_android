@@ -63,7 +63,6 @@ import android.graphics.Path
 import android.graphics.RectF
 import com.example.chap.models.Post
 import com.example.chap.models.Thread
-import com.example.chap.models.Event as EventModel
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.maps.plugin.gestures.gestures
@@ -71,6 +70,8 @@ import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.Menu
+import com.example.chap.models.Event
+import com.example.chap.models.Spot
 import com.example.chap.screens.event.EventViewModel
 import com.example.chap.screens.post.PostViewModel
 import com.example.chap.screens.thread.ThreadViewModel
@@ -100,6 +101,7 @@ fun MapScreen(
     val posts by locationViewModel.posts.collectAsState()
     val threads by locationViewModel.threads.collectAsState()
     val events by locationViewModel.events.collectAsState()
+    val spots by locationViewModel.spots.collectAsState()
     val locationState by locationViewModel.locationState.collectAsState()
 
     // デバッグログ
@@ -113,7 +115,8 @@ fun MapScreen(
     // 選択されたアイテムとポップアップ表示状態
     var selectedPost by remember { mutableStateOf<Post?>(null) }
     var selectedThread by remember { mutableStateOf<Thread?>(null) }
-    var selectedEvent by remember { mutableStateOf<EventModel?>(null) }
+    var selectedEvent by remember { mutableStateOf<Event?>(null) }
+    var selectedSpot by remember { mutableStateOf<Spot?>(null) }
 
     // 位置情報を取得（ViewModel 経由）
     LaunchedEffect(Unit) {
@@ -176,6 +179,7 @@ fun MapScreen(
                                         mbMap.style?.addImage("pin-post", bitmapFromVector(ctx, R.drawable.marker_blue))
                                         mbMap.style?.addImage("pin-event", bitmapFromVector(ctx, R.drawable.marker_red))
                                         mbMap.style?.addImage("pin-thread", bitmapFromVector(ctx, R.drawable.marker_yellow))
+                                        mbMap.style?.addImage("pin-spot", bitmapFromVector(ctx, R.drawable.pin_red))
                                         println("[MapScreen] Registered SVG pins: post/event/thread")
                                     } catch (e: Exception) {
                                         println("[MapScreen] Failed to register SVG pins: ${e.message}")
@@ -291,6 +295,28 @@ fun MapScreen(
                         }else{
                             println("まだイベントはロードされてません")
                         }
+                        if (spots.isNotEmpty() && styleLoaded) {
+                            println("[MapScreen] Created spot")
+                            PointAnnotationGroup(
+                                annotations = spots.map { spot ->
+                                    PointAnnotationOptions()
+                                        .withPoint(Point.fromLngLat(spot.coordinate.lng, spot.coordinate.lat))
+                                        .withIconImage("pin-spot")
+                                        .withIconSize(1.0)
+//                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
+                                },
+                                onClick = { annotation ->
+                                    val clickedSpot = spots.find { spot ->
+                                        annotation.point.latitude() == spot.coordinate.lat &&
+                                                annotation.point.longitude() == spot.coordinate.lng
+                                    }
+                                    selectedSpot = clickedSpot
+                                    true
+                                }
+                            )
+                        }else{
+                            println("まだスポットはロードされてません")
+                        }
                     }
                     Column(
                         modifier = Modifier
@@ -358,9 +384,9 @@ fun MapScreen(
                         onEventCreated = {
                             showPopup = false; createKind = CreateKind.EVENT; showCreate = true
                         },
-                        registerLocation = {/*
-                        カーソルが右クリックした地点にピンをさす、そしてデータベースにその地点を登録する、あとでバックエンド同実装したか聞く
-                        */}
+                        registerLocation = {
+                            showPopup = false; createKind = CreateKind.SPOT; showCreate = true
+                        }
                     )
                     
                     // 選択された投稿のポップアップ
@@ -407,6 +433,21 @@ fun MapScreen(
                             EventPopup(
                                 event = event,
                                 onDismiss = { selectedEvent = null }
+                            )
+                        }
+                    }
+                    // 選択されたスポットのポップアップ
+                    selectedSpot?.let { spot ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.5f))
+                                .clickable { selectedSpot = null },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            SpotPopup(
+                                spot= spot,
+                                onDismiss = { selectedSpot = null }
                             )
                         }
                     }

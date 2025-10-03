@@ -25,7 +25,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
             val coordinate = locationProvider.current()
             val response = ApiClient.request(
                 url = ApiEndpoints.Threads.LIST,
-                method = "THREAD",
+                method = "POST",
                 body = mapOf(
                     "lat" to (coordinate?.lat?.toString() ?: ""),
                     "lng" to (coordinate?.lng?.toString() ?: "")
