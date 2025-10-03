@@ -105,20 +105,6 @@ fun ThreadScreen(
                         Divider(color = Color(0xFFE8ECF0))
                     }
                 }
-
-                FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(12.dp),
-                    onClick = { showCreate = true },
-                    containerColor = Color(0xFFFFF59D)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_comment_24),
-                        contentDescription = "Create thread",
-                        tint = Color(0xFF1F2933)
-                    )
-                }
             }
         }
     }

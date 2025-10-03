@@ -15,8 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.Divider
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,18 +25,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chap.R
-import com.example.chap.components.CreateDialog
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.BottomDestination
 import com.example.chap.components.ui.AppHeader
 import com.example.chap.components.ui.SearchBar
-import com.example.chap.models.CreateKind
 import com.example.chap.ui.theme.BrandBlue
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -112,19 +106,6 @@ fun PostTimelineTemplate(
                         )
                         Divider(color = Color(0xFFE8ECF0))
                     }
-                }
-                FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(12.dp),
-                    onClick = { showCreate = true },
-                    containerColor = BrandBlue
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.chat_bubble_24px),
-                        contentDescription = "Create post",
-                        tint = Color.White
-                    )
                 }
             }
         }

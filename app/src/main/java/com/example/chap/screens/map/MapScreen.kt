@@ -118,6 +118,7 @@ fun MapScreen(
     // 位置情報を取得（ViewModel 経由）
     LaunchedEffect(Unit) {
         locationViewModel.fetchAndUpdateLocation()
+        locationViewModel.load()
     }
 
     // Mapbox カメラ状態
@@ -239,6 +240,8 @@ fun MapScreen(
                                     true
                                 }
                             )
+                        }else{
+                            println("まだポストはロードされてません")
                         }
                         
                         // スレッドマーカーを表示
@@ -261,6 +264,8 @@ fun MapScreen(
                                     true
                                 }
                             )
+                        }else{
+                            println("まだスレッドはロードされてません")
                         }
                         
                         // イベントマーカーを表示
@@ -283,6 +288,8 @@ fun MapScreen(
                                     true
                                 }
                             )
+                        }else{
+                            println("まだイベントはロードされてません")
                         }
                     }
                     Column(

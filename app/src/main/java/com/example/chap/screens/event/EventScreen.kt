@@ -102,20 +102,6 @@ fun EventScreen(
                         Divider(color = Color(0xFFE8ECF0))
                     }
                 }
-
-                FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(12.dp),
-                    onClick = { showCreate = true },
-                    containerColor = BrandRed
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_calendar_today_24),
-                        contentDescription = "Create event",
-                        tint = Color.White
-                    )
-                }
             }
         }
     }

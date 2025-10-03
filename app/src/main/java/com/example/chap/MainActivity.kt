@@ -50,10 +50,10 @@ class MainActivity : ComponentActivity() {
             val commentViewModel: CommentViewModel = hiltViewModel()
             val locationViewModel: LocationViewModel = hiltViewModel()
             CHAPTheme {
-                postViewModel.getPosts()
-                threadViewModel.getThreads()
-                eventViewModel.getEvents()
-                locationViewModel.getSpots()
+                postViewModel.load()
+                threadViewModel.load()
+                eventViewModel.load()
+                locationViewModel.load()
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
