@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ThreadRepository {
     val threads: StateFlow<List<Thread>>
-    suspend fun getAll(): Result<List<Thread>>
+    suspend fun getAllThreads(): Result<List<Thread>>
 
-    suspend fun create(thread: PostCreateRequest): Result<String>
+    suspend fun createThread(thread: PostCreateRequest): Result<String>
     suspend fun getThreadById(id: String): Result<Thread>
 
 

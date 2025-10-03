@@ -22,7 +22,7 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
     private val _spots = MutableStateFlow<List<Spot>>(emptyList())
     override val spots: StateFlow<List<Spot>> get() = _spots
 
-    override suspend fun getSpotAll(): Result<List<Spot>> {
+    override suspend fun getAllSpots(): Result<List<Spot>> {
         val coordinate = locationProvider.current()
         return try {
             val response = ApiClient.request(

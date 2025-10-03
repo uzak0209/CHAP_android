@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface MapRepository {
     val spots: StateFlow<List<Spot>>
-    suspend fun getSpotAll(): Result<List<Spot>>
+    suspend fun getAllSpots(): Result<List<Spot>>
 
     suspend fun createSpot(
         request: PostCreateRequest

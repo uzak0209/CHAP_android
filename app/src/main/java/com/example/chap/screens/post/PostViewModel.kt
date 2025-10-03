@@ -55,7 +55,7 @@ class PostViewModel @Inject constructor(
                 _isLoading.value = false
                 return@launch
             }
-            postRepository.getAll().onSuccess { list ->
+            postRepository.getAllPosts().onSuccess { list ->
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _posts.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
@@ -69,7 +69,7 @@ class PostViewModel @Inject constructor(
 
     fun getAllPosts() {
         viewModelScope.launch {
-            val result = postRepository.getAll()
+            val result = postRepository.getAllPosts()
             result.onSuccess { response ->
                 println("投稿一覧取得成功: $response")
 

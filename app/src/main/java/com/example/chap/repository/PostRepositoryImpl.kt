@@ -24,7 +24,7 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
     private val _posts = MutableStateFlow<List<Post>>(emptyList())
     val posts: StateFlow<List<Post>> get() = _posts
 
-    override suspend fun getAll(): Result<List<Post>> {
+    override suspend fun getAllPosts(): Result<List<Post>> {
         return try {
             val coordinate = locationProvider.current()
             val response = ApiClient.request(
@@ -93,7 +93,7 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun create(request: PostCreateRequest): Result<String> {
+    override suspend fun createPost(request: PostCreateRequest): Result<String> {
         return try {
             val coordinateMap = mapOf(
                 "lat" to request.coordinate.lat,

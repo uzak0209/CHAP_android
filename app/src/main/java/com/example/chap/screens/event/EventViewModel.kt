@@ -26,7 +26,7 @@ class EventViewModel @Inject constructor(
 
     fun getAllEvents() {
         viewModelScope.launch {
-            val result = eventRepository.getAll()
+            val result = eventRepository.getAllEvents()
             result.onSuccess { response ->
                 println("投稿成功: $response")
             }.onFailure { e ->
@@ -42,7 +42,7 @@ class EventViewModel @Inject constructor(
         if (_isLoading.value) return
         viewModelScope.launch {
             _isLoading.value = true
-            eventRepository.getAll().onSuccess { list ->
+            eventRepository.getAllEvents().onSuccess { list ->
                 _events.value = list
             }.onFailure {
                 // TODO: error handling (log/report)

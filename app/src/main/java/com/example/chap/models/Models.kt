@@ -36,10 +36,10 @@ enum class PostCategory{
 }
 // ユーザー
 data class User(
-    val id: String,
+    val id: Long,
     val name: String,
     val image: String?,
-    val email: String,
+    val email: String, //データベースにメールがない？
     val created_at: String,
     val valid: Boolean,
     val password: String,
@@ -96,7 +96,7 @@ data class Thread(
     val content: String,
     val valid: Boolean,
     val like: Int,
-    val tags: List<String>
+    val tags: List<String>,
 )
 
 // イベント

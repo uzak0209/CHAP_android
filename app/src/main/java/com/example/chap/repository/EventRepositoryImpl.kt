@@ -20,7 +20,7 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
     private val _events = MutableStateFlow<List<Event>>(emptyList())
     override val events: StateFlow<List<Event>> = _events
 
-    override suspend fun getAll(): Result<List<Event>> {
+    override suspend fun getAllEvents(): Result<List<Event>> {
         return try {
             val coordinate = locationProvider.current()
             val response = ApiClient.request(
@@ -87,7 +87,7 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun create(request: PostCreateRequest): Result<String> {
+    override suspend fun createEvent(request: PostCreateRequest): Result<String> {
         return try {
             val coordinateMap = mapOf(
                 "lat" to request.coordinate.lat,

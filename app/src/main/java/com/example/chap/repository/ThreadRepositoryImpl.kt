@@ -20,7 +20,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
     private val _threads = MutableStateFlow<List<Thread>>(emptyList())
     override val threads: StateFlow<List<Thread>> = _threads
 
-    override suspend fun getAll(): Result<List<Thread>> {
+    override suspend fun getAllThreads(): Result<List<Thread>> {
         return try {
             val coordinate = locationProvider.current()
             val response = ApiClient.request(
@@ -86,7 +86,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun create(thread: PostCreateRequest): Result<String> {
+    override suspend fun createThread(thread: PostCreateRequest): Result<String> {
         return try {
             val coordinateMap = mapOf(
                 "lat" to thread.coordinate.lat,

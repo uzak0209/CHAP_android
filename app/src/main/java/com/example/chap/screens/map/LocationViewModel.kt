@@ -73,7 +73,7 @@ class LocationViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun createPost(post: PostCreateRequest) {
         viewModelScope.launch {
-            val result = postRepository.create(post)
+            val result = postRepository.createPost(post)
             result.onSuccess { response ->
                 println("[PostViewModel] 投稿成功: $response")
                 // レスポンスJSONをPostにパースしてStateFlowへ即時反映
@@ -118,7 +118,7 @@ class LocationViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun createThread(thread: PostCreateRequest) {
         viewModelScope.launch {
-            val result = threadRepository.create(thread)
+            val result = threadRepository.createThread(thread)
             result.onSuccess { response ->
                 println("スレッド作成成功: $response")
                 try {
@@ -160,7 +160,7 @@ class LocationViewModel @Inject constructor(
 
     fun createEvent(event: PostCreateRequest) {
         viewModelScope.launch {
-            val result = eventRepository.create(event)
+            val result = eventRepository.createEvent(event)
             result.onSuccess { response ->
                 // 投稿成功時の処理
                 try {
@@ -206,7 +206,7 @@ class LocationViewModel @Inject constructor(
                 _isLoading.value = false
                 return@launch
             }
-            mapRepository.getSpotAll().onSuccess { list ->
+            mapRepository.getAllSpots().onSuccess { list ->
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _spots.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
@@ -214,7 +214,7 @@ class LocationViewModel @Inject constructor(
             }.onFailure {
                 // TODO: error handling (log/report)
             }
-            postRepository.getAll().onSuccess { list ->
+            postRepository.getAllPosts().onSuccess { list ->
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _posts.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
@@ -222,7 +222,7 @@ class LocationViewModel @Inject constructor(
             }.onFailure {
                 // TODO: error handling (log/report)
             }
-            threadRepository.getAll().onSuccess { list ->
+            threadRepository.getAllThreads().onSuccess { list ->
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _threads.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
@@ -230,7 +230,7 @@ class LocationViewModel @Inject constructor(
             }.onFailure {
                 // TODO: error handling (log/report)
             }
-            eventRepository.getAll().onSuccess { list ->
+            eventRepository.getAllEvents().onSuccess { list ->
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _events.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }

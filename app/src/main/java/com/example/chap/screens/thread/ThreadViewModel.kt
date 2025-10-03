@@ -29,7 +29,7 @@ class ThreadViewModel @Inject constructor(
     }
     fun getAllThreads() {
         viewModelScope.launch {
-            val result = threadRepository.getAll()
+            val result = threadRepository.getAllThreads()
             result.onSuccess { response ->
                 println("スレッド一覧取得成功: $response")
                 // _threadsの更新はRepository側で行われる
@@ -50,7 +50,7 @@ class ThreadViewModel @Inject constructor(
         if (_isLoading.value) return
         viewModelScope.launch {
             _isLoading.value = true
-            threadRepository.getAll().onSuccess { list ->
+            threadRepository.getAllThreads().onSuccess { list ->
                 _threads.value = list
             }.onFailure {
                 // TODO: error handling (log/report)

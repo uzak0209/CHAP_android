@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface EventRepository {
     val events: StateFlow<List<Event>>
-    suspend fun getAll(): Result<List<Event>>
-    suspend fun create(request: PostCreateRequest): Result<String>
+    suspend fun getAllEvents(): Result<List<Event>>
+    suspend fun createEvent(request: PostCreateRequest): Result<String>
 }

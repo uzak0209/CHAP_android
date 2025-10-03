@@ -4,9 +4,9 @@ import com.example.chap.models.Post
 import com.example.chap.models.PostCreateRequest
 
 interface PostRepository {
-    suspend fun getAll(): Result<List<Post>>
+    suspend fun getAllPosts(): Result<List<Post>>
 
-    suspend fun create(
+    suspend fun createPost(
         request: PostCreateRequest
     ): Result<String>
 }
