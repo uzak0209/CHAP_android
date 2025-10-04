@@ -74,7 +74,8 @@ fun CreateDialog(
     onClose: () -> Unit,
     selectedKind: CreateKind,
     locationViewModel: LocationViewModel,
-    coordinate: Coordinate?
+    coordinate: Coordinate?,
+    onRequestEventLocation: ((content: String, category: PostCategory, tags: List<String>) -> Unit)? = null
 ) {
 
     if (!isOpen) return
@@ -259,8 +260,8 @@ fun CreateDialog(
 
                 Spacer(Modifier.height(16.dp))
 
-                // 位置情報
-                if (locationViewModel.locationState.collectAsState().value.status == Status.LOADED) {
+                // 位置情報（選択済みの座標を優先して表示）
+                if (coordinate != null || locationViewModel.locationState.collectAsState().value.status == Status.LOADED) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -297,6 +298,12 @@ fun CreateDialog(
                     }
                     Button(
                         onClick = {
+                            if (selectedKind == CreateKind.EVENT && onRequestEventLocation != null) {
+                                onRequestEventLocation(content.trim(), category, tags)
+                                reset()
+                                onClose()
+                                return@Button
+                            }
                             if (locationViewModel.locationState.value.status == Status.LOADED) {
                                 val createObject = PostCreateRequest(
                                     coordinate = locationViewModel.locationState.value.location!!,

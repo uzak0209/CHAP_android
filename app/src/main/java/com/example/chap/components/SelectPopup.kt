@@ -85,29 +85,6 @@ private fun AnimatedActionButton(
     }
 }
 
-@Composable
-private fun SimpleModal(
-    title: String,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("ここに入力UIを配置してください。")
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) { Text("作成") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("閉じる") }
-        }
-    )
-}
-
 /**
  * 既存画面側の FAB クリックで呼び出して即座にアクション候補を表示したい場合に使うオーバーレイ。
  * visible=true の間だけ下端右寄せで 3 つのアクション + 必要なモーダルを表示。

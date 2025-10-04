@@ -86,20 +86,23 @@ fun PostPopup(
                 overflow = TextOverflow.Ellipsis,
                 color = Color.Black
             )
-            
-            // いいね数
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "❤️", fontSize = 14.sp)
-                Text(
-                    text = "${post.like}",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
         }
+    }
+}
+
+@Composable
+fun SpeechBubble(
+    bubbleColor: Color = Color.White,
+    arrowWidth: androidx.compose.ui.unit.Dp = 12.dp,
+    arrowHeight: androidx.compose.ui.unit.Dp = 8.dp,
+    lift: androidx.compose.ui.unit.Dp = 50.dp,
+    content: @Composable () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        content()
+        Spacer(modifier = Modifier.height(lift))
     }
 }
 
