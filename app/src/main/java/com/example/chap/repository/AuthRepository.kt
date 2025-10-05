@@ -9,6 +9,8 @@ import org.json.JSONObject
 interface AuthRepository {
     suspend fun login(email: String, password: String, context: Context): Result<String>
     suspend fun register(email: String, password: String, displayName: String, context: Context): Result<String>
+
+    suspend fun logOut(context: Context)
 }
 
 

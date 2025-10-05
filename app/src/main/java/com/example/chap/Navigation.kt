@@ -21,6 +21,8 @@ import com.example.chap.screens.login.LoginViewModel
 import com.example.chap.screens.map.LocationViewModel
 import com.example.chap.screens.map.MapScreen
 import com.example.chap.screens.post.PostTimelineTemplate
+import com.example.chap.screens.setting.SettingScreen
+import com.example.chap.screens.setting.SettingViewModel
 import com.example.chap.screens.thread.ThreadScreen
 
 
@@ -32,7 +34,8 @@ fun Navigation(
     threadViewModel: ThreadViewModel,
     eventViewModel: EventViewModel,
     commentViewModel: CommentViewModel,
-    locationViewModel: LocationViewModel
+    locationViewModel: LocationViewModel,
+    settingViewModel: SettingViewModel
 ) {
     val navController = rememberNavController()
 
@@ -55,6 +58,7 @@ fun Navigation(
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
                 onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
+                onNavigateSetting = { navController.navigate("setting"){ launchSingleTop = true } },
                 locationViewModel = locationViewModel
             )
         }
@@ -99,6 +103,12 @@ fun Navigation(
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
                 onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
+            )
+        }
+        composable("setting"){
+            SettingScreen(
+                settingViewModel = settingViewModel,
+                onNavigateLogin = { navController.navigate("login") { launchSingleTop = true } },
             )
         }
 

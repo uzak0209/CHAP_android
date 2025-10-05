@@ -51,4 +51,11 @@ class AuthRepositoryImpl : AuthRepository {
             Result.failure(e)
         }
     }
+
+    override suspend fun logOut(context: Context) {
+        // TokenManagerを使ってJWTトークンを削除
+        TokenManager(context).clearToken()
+        // ApiClientのメモリ上のトークンもクリア
+        ApiClient.token = null
+    }
 }

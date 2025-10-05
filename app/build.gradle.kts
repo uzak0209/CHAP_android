@@ -45,8 +45,6 @@ android {
 dependencies {
     // AndroidX
     implementation("com.mapbox.maps:android:11.14.2")
-
-
     implementation("com.mapbox.extension:maps-compose:11.14.2")
 
 

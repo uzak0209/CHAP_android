@@ -24,6 +24,7 @@ import com.example.chap.location.DefaultLocationProvider
 import com.example.chap.location.LOCATION_PERMISSION_REQUEST_CODE
 import com.example.chap.screens.login.LoginViewModel
 import com.example.chap.screens.map.LocationViewModel
+import com.example.chap.screens.setting.SettingViewModel
 import com.example.chap.ui.theme.CHAPTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
             val eventViewModel: EventViewModel = hiltViewModel()
             val commentViewModel: CommentViewModel = hiltViewModel()
             val locationViewModel: LocationViewModel = hiltViewModel()
+            val settingViewModel: SettingViewModel = hiltViewModel()
             CHAPTheme {
                 postViewModel.load()
                 threadViewModel.load()
@@ -63,7 +65,8 @@ class MainActivity : ComponentActivity() {
                         eventViewModel = eventViewModel,
                         commentViewModel = commentViewModel,
                         locationViewModel = locationViewModel,
-                        loginViewModel = loginViewModel
+                        loginViewModel = loginViewModel,
+                        settingViewModel = settingViewModel
                     )
                 }
             }

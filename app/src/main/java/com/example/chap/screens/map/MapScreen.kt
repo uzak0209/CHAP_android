@@ -87,6 +87,7 @@ import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
  
+ 
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -95,6 +96,7 @@ fun MapScreen(
     onNavigateHome: () -> Unit,
     onNavigateEvent: () -> Unit,
     onNavigateThread: () -> Unit,
+    onNavigateSetting: ()-> Unit,
     locationViewModel: LocationViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
@@ -186,7 +188,10 @@ fun MapScreen(
                     MapboxMap(
                         modifier = Modifier.fillMaxSize(),
                         mapViewportState = viewportState,
-                        style = { Style.STANDARD }
+                        style = {
+                            // Mapbox Standard スタイルは自動的に端末の言語でラベルを表示
+                            Style.STANDARD
+                        }
                     ) {
                         
                         MapEffect(Unit) { mapView ->
@@ -252,9 +257,9 @@ fun MapScreen(
 
                         MapEffect(styleLoaded) { mapView ->
                             if (styleLoaded) {
-                                runCatching { mapView.scalebar }
-                                    .getOrNull()
-                                    ?.updateSettings { enabled = false }
+                                try {
+                                    mapView.scalebar.updateSettings { enabled = false }
+                                } catch (_: Exception) {}
                             }
                         }
 
@@ -495,6 +500,13 @@ fun MapScreen(
                                         locationViewModel.locationState.value.location,
                                         locationViewModel,
                                     )
+                                }
+                            ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
+                            FloatingActionButton(
+                                modifier = Modifier,
+                                containerColor = BrandBlue,
+                                onClick = {
+                                    onNavigateSetting()
                                 }
                             ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
                         }
