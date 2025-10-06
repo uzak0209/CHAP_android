@@ -104,6 +104,8 @@ fun MapScreen(
     onNavigateEvent: () -> Unit,
     onNavigateThread: () -> Unit,
     onNavigateSetting: ()-> Unit,
+    onNavigateTimeline: () -> Unit = {},
+    onNavigateRecord: () -> Unit = {},
     locationViewModel: LocationViewModel
 ) {
     // Compose で ViewModel の位置情報を監視
@@ -420,6 +422,20 @@ fun MapScreen(
                                 containerColor = BrandBlue,
                                 onClick = {
                                     onNavigateSetting()
+                                }
+                            ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
+                            FloatingActionButton(
+                                modifier = Modifier,
+                                containerColor = BrandBlue,
+                                onClick = {
+                                    onNavigateTimeline()
+                                }
+                            ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
+                            FloatingActionButton(
+                                modifier = Modifier,
+                                containerColor = BrandBlue,
+                                onClick = {
+                                    onNavigateRecord()
                                 }
                             ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
                         }

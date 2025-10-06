@@ -21,9 +21,13 @@ import com.example.chap.screens.login.LoginViewModel
 import com.example.chap.screens.map.LocationViewModel
 import com.example.chap.screens.map.MapScreen
 import com.example.chap.screens.post.PostTimelineTemplate
+import com.example.chap.screens.record.RecordScreen
+import com.example.chap.screens.record.RecordViewModel
 import com.example.chap.screens.setting.SettingScreen
 import com.example.chap.screens.setting.SettingViewModel
 import com.example.chap.screens.thread.ThreadScreen
+import com.example.chap.screens.timeline.TimelineViewModel
+import com.example.chap.screens.timeline.TimelineScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -35,7 +39,9 @@ fun Navigation(
     eventViewModel: EventViewModel,
     commentViewModel: CommentViewModel,
     locationViewModel: LocationViewModel,
-    settingViewModel: SettingViewModel
+    settingViewModel: SettingViewModel,
+    timelineViewModel: TimelineViewModel,
+    recordViewModel : RecordViewModel,
 ) {
     val navController = rememberNavController()
 
@@ -59,6 +65,8 @@ fun Navigation(
                 onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
                 onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
                 onNavigateSetting = { navController.navigate("setting"){ launchSingleTop = true } },
+                onNavigateTimeline = { navController.navigate("timeline"){ launchSingleTop = true } },
+                onNavigateRecord = { navController.navigate("record"){ launchSingleTop = true } },
                 locationViewModel = locationViewModel
             )
         }
@@ -105,10 +113,28 @@ fun Navigation(
                 onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
             )
         }
+
         composable("setting"){
             SettingScreen(
                 settingViewModel = settingViewModel,
                 onNavigateLogin = { navController.navigate("login") { launchSingleTop = true } },
+            )
+        }
+
+        composable("timeline"){
+            TimelineScreen(
+                timelineViewModel = timelineViewModel,
+                onNavigateRecord = { navController.navigate("record") { launchSingleTop = true } },
+                onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateSetting = { navController.navigate("setting") { launchSingleTop = true } },
+            )
+        }
+        composable("record"){
+            RecordScreen(
+                recordViewModel = recordViewModel,
+                onNavigateTimeline = { navController.navigate("timeline") { launchSingleTop = true } },
+                onNavigateSetting = { navController.navigate("setting") { launchSingleTop = true } },
+                onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
             )
         }
 
