@@ -35,7 +35,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material3.RadioButton
 import com.example.chap.models.Spot
-import com.example.chap.screens.map.moveViewPoint
 import com.example.chap.ui.theme.BrandBlue
 
 @Composable

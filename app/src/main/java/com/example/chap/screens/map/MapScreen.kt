@@ -70,7 +70,11 @@ import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.Menu
+import com.example.chap.components.AnnotationMarkers
+import com.example.chap.components.map.MappableItemPopup
 import com.example.chap.components.map.SpotPopup
+import com.example.chap.components.map.bitmapFromVector
+import com.example.chap.components.map.moveViewPoint
 import com.example.chap.models.Coordinate
 import com.example.chap.models.Event
 import com.example.chap.models.Spot
@@ -86,9 +90,12 @@ import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
- 
- 
+import com.example.chap.models.Mappable
 
+
+/**
+ * Mappableアイテムのポップアップを表示するヘルパーComposable
+ */
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -172,7 +179,6 @@ fun MapScreen(
                         viewportState,
                         scope,
                         spot.coordinate,
-                        locationViewModel
                     )
                 }
             )
@@ -289,102 +295,46 @@ fun MapScreen(
                             }
                         }
 
-                        
-
                         // ポストマーカーを表示
-                        if (posts.isNotEmpty() && styleLoaded) {
-                            println("[MapScreen] Created post")
-                            PointAnnotationGroup(
-                                annotations = posts.map { post ->
-                                    PointAnnotationOptions()
-                                        .withPoint(Point.fromLngLat(post.coordinate.lng, post.coordinate.lat))
-                                        .withIconImage("pin-post")
-                                        .withIconSize(1.0)
-                                },
-                                onClick = { annotation ->
-                                    // マーカークリック時の処理
-                                    val clickedPost = posts.find { post ->
-                                        annotation.point.latitude() == post.coordinate.lat &&
-                                        annotation.point.longitude() == post.coordinate.lng
-                                    }
-                                    selectedPost = clickedPost
-                                    println("[MapScreen] Clicked post: ${clickedPost?.content}")
-                                    true
-                                }
-                            )
-                        }else{
-                            println("まだポストはロードされてません")
-                        }
+                        AnnotationMarkers(
+                            items = posts,
+                            styleLoaded = styleLoaded,
+                            iconImageName = "pin-post",
+                            onItemClick = { clickedPost : Post->
+                                selectedPost = clickedPost
+                                println("[MapScreen] Post marker clicked: $clickedPost")
+                            }
+                        )
                         
                         // スレッドマーカーを表示
-                        if (threads.isNotEmpty() && styleLoaded) {
-                            println("[MapScreen] Created thread")
-                            PointAnnotationGroup(
-                                annotations = threads.map { thread ->
-                                    PointAnnotationOptions()
-                                        .withPoint(Point.fromLngLat(thread.coordinate.lng, thread.coordinate.lat))
-                                        .withIconImage("pin-thread")
-                                        .withIconSize(1.0)
-//                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
-                                },
-                                onClick = { annotation ->
-                                    val clickedThread = threads.find { thread ->
-                                        annotation.point.latitude() == thread.coordinate.lat &&
-                                        annotation.point.longitude() == thread.coordinate.lng
-                                    }
-                                    selectedThread = clickedThread
-                                    true
-                                }
-                            )
-                        }else{
-                            println("まだスレッドはロードされてません")
-                        }
-                        
-                        // イベントマーカーを表示
-                        if (events.isNotEmpty() && styleLoaded) {
-                            println("[MapScreen] Created event")
-                            PointAnnotationGroup(
-                                annotations = events.map { event ->
-                                    PointAnnotationOptions()
-                                        .withPoint(Point.fromLngLat(event.coordinate.lng, event.coordinate.lat))
-                                        .withIconImage("pin-event")
-                                        .withIconSize(1.0)
-//                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
-                                },
-                                onClick = { annotation ->
-                                    val clickedEvent = events.find { event ->
-                                        annotation.point.latitude() == event.coordinate.lat &&
-                                        annotation.point.longitude() == event.coordinate.lng
-                                    }
-                                    selectedEvent = clickedEvent
-                                    true
-                                }
-                            )
-                        }else{
-                            println("まだイベントはロードされてません")
-                        }
-                        if (spots.isNotEmpty() && styleLoaded) {
-                            println("[MapScreen] Created spot")
-                            PointAnnotationGroup(
-                                annotations = spots.map { spot ->
-                                    PointAnnotationOptions()
-                                        .withPoint(Point.fromLngLat(spot.coordinate.lng, spot.coordinate.lat))
-                                        .withIconImage("pin-spot")
-                                        .withIconSize(1.0)
-//                                        .withIconAnchor(com.mapbox.maps.plugin.annotation.generated.IconAnchor.BOTTOM)
-                                },
-                                onClick = { annotation ->
-                                    val clickedSpot = spots.find { spot ->
-                                        annotation.point.latitude() == spot.coordinate.lat &&
-                                                annotation.point.longitude() == spot.coordinate.lng
-                                    }
-                                    selectedSpot = clickedSpot
-                                    true
-                                }
-                            )
-                        }else{
-                            println("まだスポットはロードされてません")
-                        }
+                        AnnotationMarkers(
+                            items = threads,
+                            styleLoaded = styleLoaded,
+                            iconImageName = "pin-thread",
+                            onItemClick = { clickedThread : Thread->
+                                selectedThread = clickedThread
+                                println("[MapScreen] Thread marker clicked: $clickedThread")
+                            }
+                        )
+
+                        AnnotationMarkers(
+                            items = events,
+                            styleLoaded = styleLoaded,
+                            iconImageName = "pin-event",
+                            onItemClick = { clickedEvent : Event->
+                                selectedEvent = clickedEvent
+                                println("[MapScreen] Event marker clicked: $clickedEvent")
+                            }
+                        )
+                        AnnotationMarkers(
+                            items = spots,
+                            styleLoaded = styleLoaded,
+                            iconImageName = "pin-spot",
+                            onItemClick = { clickedSpot : Spot->
+                                selectedSpot = clickedSpot
+                                println("[MapScreen] Spot marker clicked: $clickedSpot")
+                            }
+                        )
 
                         // 一時マーカー（イベント位置選択中）
                         if (pendingEventDraft != null && pendingTapCoordinate != null && styleLoaded) {
@@ -400,68 +350,32 @@ fun MapScreen(
                         }
 
                         // --- ViewAnnotation based popups anchored to selected items ---
-                        selectedPost?.let { post ->
-                            ViewAnnotation(
-                                options = viewAnnotationOptions {
-                                    geometry(Point.fromLngLat(post.coordinate.lng, post.coordinate.lat))
-                                    allowOverlap(true)
-                                }
-                            ) {
-                                SpeechBubble(bubbleColor = Color.White, lift = 0.dp) {
-                                    PostPopup(
-                                        post = post,
-                                        onDismiss = { selectedPost = null }
-                                    )
-                                }
-                            }
+                        MappableItemPopup(selectedPost) { post ->
+                            PostPopup(
+                                post = post,
+                                onDismiss = { selectedPost = null }
+                            )
                         }
 
-                        selectedThread?.let { thread ->
-                            ViewAnnotation(
-                                options = viewAnnotationOptions {
-                                    geometry(Point.fromLngLat(thread.coordinate.lng, thread.coordinate.lat))
-                                    allowOverlap(true)
-                                }
-                            ) {
-                                SpeechBubble(bubbleColor = Color.White, lift = 0.dp) {
-                                    ThreadPopup(
-                                        thread = thread,
-                                        onDismiss = { selectedThread = null }
-                                    )
-                                }
-                            }
+                        MappableItemPopup(selectedThread) { thread ->
+                            ThreadPopup(
+                                thread = thread,
+                                onDismiss = { selectedThread = null }
+                            )
                         }
 
-                        selectedEvent?.let { event ->
-                            ViewAnnotation(
-                                options = viewAnnotationOptions {
-                                    geometry(Point.fromLngLat(event.coordinate.lng, event.coordinate.lat))
-                                    allowOverlap(true)
-                                }
-                            ) {
-                                SpeechBubble(bubbleColor = Color.White, lift = 0.dp) {
-                                    EventPopup(
-                                        event = event,
-                                        onDismiss = { selectedEvent = null }
-                                    )
-                                }
-                            }
+                        MappableItemPopup(selectedEvent) { event ->
+                            EventPopup(
+                                event = event,
+                                onDismiss = { selectedEvent = null }
+                            )
                         }
 
-                        selectedSpot?.let { spot ->
-                            ViewAnnotation(
-                                options = viewAnnotationOptions {
-                                    geometry(Point.fromLngLat(spot.coordinate.lng, spot.coordinate.lat))
-                                    allowOverlap(true)
-                                }
-                            ) {
-                                SpeechBubble(bubbleColor = Color.White, lift = 0.dp) {
-                                    SpotPopup(
-                                        spot = spot,
-                                        onDismiss = { selectedSpot = null }
-                                    )
-                                }
-                            }
+                        MappableItemPopup(selectedSpot) { spot ->
+                            SpotPopup(
+                                spot = spot,
+                                onDismiss = { selectedSpot = null }
+                            )
                         }
                     }
                     if (pendingEventDraft == null) {
@@ -498,7 +412,6 @@ fun MapScreen(
                                         viewportState,
                                         scope,
                                         locationViewModel.locationState.value.location,
-                                        locationViewModel,
                                     )
                                 }
                             ) { Icon(Icons.Default.LocationSearching, contentDescription = "Return to my location", tint = Color.White) }
@@ -619,52 +532,4 @@ fun MapScreen(
     }
 }
 
-/**
- * 地図ピンアイコンを生成する関数（画像の形状に準拠）
- * @param color ピンの色
- * @return ビットマップ画像
- */
-private fun bitmapFromVector(context: Context, drawableResId: Int): Bitmap {
-    val drawable: Drawable = requireNotNull(AppCompatResources.getDrawable(context, drawableResId))
-    val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 96
-    val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 96
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    drawable.setBounds(0, 0, canvas.width, canvas.height)
-    drawable.draw(canvas)
-    return bitmap
-}
 
-/**
- * 地図の視点を現在地に戻す関数
- */
-
-fun moveViewPoint(
-    viewportState: MapViewportState,
-    scope: kotlinx.coroutines.CoroutineScope,
-    location: Coordinate?,
-    locationViewModel: LocationViewModel
-) {
-    
-    if (location == null) {
-        println("[ReturnMyLocation] 現在地が取得できていません")
-        return
-    }
-    
-    println("[ReturnMyLocation] カメラを現在地に移動: lat=${location.lat}, lng=${location.lng}")
-    
-    // カメラを現在地にアニメーションで移動
-    scope.launch {
-        viewportState.flyTo(
-            cameraOptions = com.mapbox.maps.CameraOptions.Builder()
-                .center(Point.fromLngLat(location.lng, location.lat))
-                .zoom(16.5)
-                .pitch(0.0)
-                .bearing(0.0)
-                .build(),
-            animationOptions = MapAnimationOptions.mapAnimationOptions {
-                duration(1000) // 1秒のアニメーション
-            }
-        )
-    }
-}

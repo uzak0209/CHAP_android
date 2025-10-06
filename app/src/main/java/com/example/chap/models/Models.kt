@@ -5,6 +5,10 @@ data class Coordinate(
     val lng: Double
 )
 
+interface Mappable {
+    val coordinate: Coordinate
+}
+
 enum class LoginTab {
     Login, SignUp
 }
@@ -58,13 +62,13 @@ data class Post(
     val deleted_at: String?,
     val user_id: String,
     val username: String,
-    val coordinate: Coordinate,
+    override val coordinate: Coordinate,
     val content: String,
     val category: String,
     val valid: Boolean,
     val like: Int,
     val tags: List<String>
-)
+) : Mappable
 
 // コメント
 data class Comment(
@@ -91,13 +95,13 @@ data class Thread(
     val deleted_at: String?,
     val username: String,
     val user_id: String,
-    val coordinate: Coordinate,
+    override val coordinate: Coordinate,
     val category: String,
     val content: String,
     val valid: Boolean,
     val like: Int,
     val tags: List<String>,
-)
+) : Mappable
 
 // イベント
 data class Event(
@@ -108,13 +112,13 @@ data class Event(
     val deleted_at: String?,
     val username: String,
     val user_id: String,
-    val coordinate: Coordinate,
+    override val coordinate: Coordinate,
     val category: String,
     val content: String,
     val valid: Boolean,
     val like: Int,
     val tags: List<String>
-)
+) : Mappable
 
 data class Spot(
     val id: Long,
@@ -124,13 +128,13 @@ data class Spot(
     val deleted_at: String?,
     val user_id: String,
     val username: String,
-    val coordinate: Coordinate,
+    override val coordinate: Coordinate,
     val content: String,
     val category: String,
     val valid: Boolean,
     val like: Int,
     val tags: List<String>
-)
+) : Mappable
 
 
 
