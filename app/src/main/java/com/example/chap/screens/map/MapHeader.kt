@@ -37,7 +37,7 @@ fun MapHeader(
             .fillMaxWidth()
             .height(70.dp)
             .background(
-                color = Color.White,
+                color = Color.White.copy(alpha = 0.9f),
                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
             )
     ) {

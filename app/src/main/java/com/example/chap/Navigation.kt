@@ -5,11 +5,16 @@ import androidx.annotation.RequiresApi
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chap.auth.TokenManager
 import com.example.chap.screens.comment.CommentScreen
 import com.example.chap.screens.comment.CommentViewModel
 import com.example.chap.screens.event.EventViewModel
@@ -44,10 +49,23 @@ fun Navigation(
     recordViewModel : RecordViewModel,
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val startDestinationState = remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        val token = TokenManager(context).getToken()
+        startDestinationState.value = if (!token.isNullOrBlank()) "map" else "login"
+    }
+
+    val startDestination = startDestinationState.value
+    if (startDestination == null) {
+        // ローディング中は何も表示しない（瞬間的）
+        return
+    }
 
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = startDestination
     ) {
         composable("login") {
             LoginScreen(
@@ -125,17 +143,13 @@ fun Navigation(
         composable("timeline"){
             TimelineScreen(
                 timelineViewModel = timelineViewModel,
-                onNavigateRecord = { navController.navigate("record") { launchSingleTop = true } },
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
-                onNavigateSetting = { navController.navigate("setting") { launchSingleTop = true } },
             )
         }
 
         composable("record"){
             RecordScreen(
                 recordViewModel = recordViewModel,
-                onNavigateTimeline = { navController.navigate("timeline") { launchSingleTop = true } },
-                onNavigateSetting = { navController.navigate("setting") { launchSingleTop = true } },
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
             )
         }

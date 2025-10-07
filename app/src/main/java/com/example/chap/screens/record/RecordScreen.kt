@@ -30,8 +30,6 @@ import com.example.chap.models.Post
 @Composable
 fun RecordScreen(
     recordViewModel: RecordViewModel,
-    onNavigateTimeline: () -> Unit,
-    onNavigateSetting: () -> Unit,
     onNavigateMap: () -> Unit,
 ) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -67,8 +65,6 @@ fun RecordScreen(
         ) {
             RecordTopBar(
                 onNavigateMap = onNavigateMap,
-                onNavigateSetting = onNavigateSetting,
-                onNavigateTimeline = onNavigateTimeline
             )
             // プロフィールセクション
             Row(
@@ -136,8 +132,6 @@ fun RecordScreen(
 @Composable
 fun RecordTopBar(
     onNavigateMap: () -> Unit,
-    onNavigateSetting: () -> Unit,
-    onNavigateTimeline: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -146,65 +140,29 @@ fun RecordTopBar(
         color = Color.White,
         shadowElevation = 1.dp
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .padding(horizontal = 4.dp)
         ) {
-            // 左側：アイコン2つ
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
-            ){
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    IconButton(onClick = { onNavigateMap }) {
-                        Icon(
-                            imageVector = Icons.Default.Map,
-                            contentDescription = "map",
-                            tint = Color.Black
-                        )
-                    }
-                    IconButton(onClick = onNavigateTimeline) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Home",
-                            tint = Color.Black
-                        )
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier.weight(2f),
-                contentAlignment = Alignment.Center
-            ){
-                // 中央：履歴テキスト
-                Text(
-                    text = "履歴",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
+            IconButton(
+                onClick = onNavigateMap,
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Map,
+                    contentDescription = "map",
+                    tint = Color.Black
                 )
             }
 
-            Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.Center
-            ){
-                // 右側：設定アイコン
-                IconButton(onClick = onNavigateSetting) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "Settings",
-                        tint = Color.Black
-                    )
-                }
-
-            }
+            Text(
+                text = "履歴",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
 }
