@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ViewSidebar
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -18,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -28,7 +28,10 @@ import com.example.chap.ui.theme.BrandBlue
  * マップヘッダー
  */
 @Composable
-fun MapHeader() {
+fun MapHeader(
+    onMenuClick: () -> Unit,
+    onRecordClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,16 +41,22 @@ fun MapHeader() {
                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
             )
     ) {
-        // 左上のアイコン
-        LeftHeaderIcons()
-        
-        // 中央ロゴ
+        // 中央ロゴ（背面）
         CenterLogo()
+
+        // 左上のアイコン（前面）
+        LeftHeaderIcons(
+            onMenuClick,
+            onRecordClick
+        )
     }
 }
 
 @Composable
-private fun BoxScope.LeftHeaderIcons() {
+private fun BoxScope.LeftHeaderIcons(
+    onMenuClick: () -> Unit,
+    onRecordClick: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .align(Alignment.TopStart)
@@ -61,10 +70,10 @@ private fun BoxScope.LeftHeaderIcons() {
                 .size(48.dp),
             shape = CircleShape,
             containerColor = BrandBlue,
-            onClick = { /* TODO: 地図関連の機能 */ }
+            onClick = onMenuClick,
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ViewSidebar,
+                painter = painterResource(id = R.drawable.dock_to_left_24px),
                 contentDescription = "Map",
                 tint = Color.White
             )
@@ -75,10 +84,10 @@ private fun BoxScope.LeftHeaderIcons() {
             modifier = Modifier.size(48.dp),
             containerColor = Color(0xFF7E57C2),
             shape = CircleShape,
-            onClick = { /* TODO: グローバル機能 */ }
+            onClick = onRecordClick
         ) {
             Icon(
-                imageVector = Icons.Default.Public,
+                imageVector = Icons.Default.Person,
                 contentDescription = "Global",
                 tint = Color.White
             )

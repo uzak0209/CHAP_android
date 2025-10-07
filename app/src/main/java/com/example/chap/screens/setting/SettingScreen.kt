@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,18 +27,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingScreen(
     settingViewModel: SettingViewModel,
-    onNavigateLogin: () -> Unit
+    onNavigateLogin: () -> Unit,
+    onNavigateMap: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var userName by remember { mutableStateOf("遠藤裕人") }
     var showNameDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            SettingTopBar()
-        }
-    ) { padding ->
+    Scaffold { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -48,6 +46,9 @@ fun SettingScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                SettingTopBar(
+                    onNavigateMap
+                )
                 // 波模様の背景エリア
                 Box(
                     modifier = Modifier
@@ -201,7 +202,9 @@ fun SettingScreen(
 }
 
 @Composable
-fun SettingTopBar() {
+fun SettingTopBar(
+    onNavigateMap: () -> Unit
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -209,40 +212,32 @@ fun SettingTopBar() {
         color = Color.White,
         shadowElevation = 1.dp
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // 左側：メニューアイコン
-            IconButton(onClick = { /* TODO: メニュー処理 */ }) {
+            IconButton(
+                modifier = Modifier
+					.align(Alignment.CenterStart),
+				onClick = onNavigateMap
+            ) {
                 Icon(
-                    imageVector = Icons.Default.Menu,
+                    imageVector = Icons.Default.Map,
                     contentDescription = "Menu",
                     tint = Color.Black
                 )
             }
-            
-            // 中央：小さいプロフィール画像
-            Image(
-                painter = painterResource(id = R.drawable.chap_android),
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-            
-            // 右側：設定テキスト
-            Text(
-                text = "設定",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.padding(end = 8.dp)
-            )
+
+			Text(
+				modifier = Modifier
+					.align(Alignment.Center),
+				text = "設定",
+				fontSize = 18.sp,
+				fontWeight = FontWeight.Bold,
+				color = Color.Black
+			)
         }
     }
 }

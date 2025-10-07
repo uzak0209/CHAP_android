@@ -71,6 +71,9 @@ fun MapScreen(
                 onNavigateHome = onNavigateHome,
                 onNavigateEvent = onNavigateEvent,
                 onNavigateThread = onNavigateThread,
+                onNavigateSetting = onNavigateSetting,
+                onNavigateRecord = onNavigateRecord,
+                onNavigateTimeline = onNavigateTimeline,
                 spots = spots,
                 onSpotClick = { spot ->
                     moveViewPoint(viewportState, scope, spot.coordinate)
@@ -136,7 +139,10 @@ fun MapScreen(
                     }
                     // ヘッダー（最前面）
                     if (state.pendingEventDraft == null) {
-                        MapHeader()
+                        MapHeader(
+                            onMenuClick = { scope.launch { drawerState.open() } },
+                            onRecordClick = onNavigateRecord
+                        )
                     }
 
                     // オーバーレイUI（地図の上に重ねる）
@@ -146,7 +152,6 @@ fun MapScreen(
                         scope = scope,
                         locationViewModel = locationViewModel,
                         is3D = state.is3D,
-                        onMenuClick = { scope.launch { drawerState.open() } },
                         onToggleDimension = {
                             state.is3D = !state.is3D
                             ToggleDimension(viewportState, state.is3D, locationState.location)

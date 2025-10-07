@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.MoreVert
@@ -57,20 +58,18 @@ fun RecordScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            RecordTopBar(
-                onNavigateMap = onNavigateMap,
-                onNavigateSetting = onNavigateSetting
-            )
-        }
-    ) { padding ->
+    Scaffold{ padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .background(Color.White)
         ) {
+            RecordTopBar(
+                onNavigateMap = onNavigateMap,
+                onNavigateSetting = onNavigateSetting,
+                onNavigateTimeline = onNavigateTimeline
+            )
             // プロフィールセクション
             Row(
                 modifier = Modifier
@@ -137,7 +136,8 @@ fun RecordScreen(
 @Composable
 fun RecordTopBar(
     onNavigateMap: () -> Unit,
-    onNavigateSetting: () -> Unit
+    onNavigateSetting: () -> Unit,
+    onNavigateTimeline: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -149,45 +149,61 @@ fun RecordTopBar(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             // 左側：アイコン2つ
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                IconButton(onClick = { /* TODO: メニュー処理 */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menu",
-                        tint = Color.Black
-                    )
-                }
-                IconButton(onClick = onNavigateMap) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Home",
-                        tint = Color.Black
-                    )
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center
+            ){
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    IconButton(onClick = { onNavigateMap }) {
+                        Icon(
+                            imageVector = Icons.Default.Map,
+                            contentDescription = "map",
+                            tint = Color.Black
+                        )
+                    }
+                    IconButton(onClick = onNavigateTimeline) {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Home",
+                            tint = Color.Black
+                        )
+                    }
                 }
             }
-            
-            // 中央：履歴テキスト
-            Text(
-                text = "履歴",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            
-            // 右側：設定アイコン
-            IconButton(onClick = onNavigateSetting) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = Color.Black
+
+            Box(
+                modifier = Modifier.weight(2f),
+                contentAlignment = Alignment.Center
+            ){
+                // 中央：履歴テキスト
+                Text(
+                    text = "履歴",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
+            }
+
+            Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+            ){
+                // 右側：設定アイコン
+                IconButton(onClick = onNavigateSetting) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        tint = Color.Black
+                    )
+                }
+
             }
         }
     }

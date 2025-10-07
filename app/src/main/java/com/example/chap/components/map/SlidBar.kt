@@ -33,6 +33,8 @@ import com.example.chap.R
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.AddLocationAlt
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.RadioButton
 import com.example.chap.models.Spot
 import com.example.chap.ui.theme.BrandBlue
@@ -43,6 +45,9 @@ fun SlidBar(
     onNavigateHome: () -> Unit,
     onNavigateEvent: () -> Unit,
     onNavigateThread: () -> Unit,
+    onNavigateSetting: () -> Unit,
+    onNavigateRecord: () -> Unit,
+    onNavigateTimeline: () -> Unit,
     isChatChecked: Boolean = true,
     isCommunityChecked: Boolean = false,
     isDisasterChecked: Boolean = false,
@@ -103,6 +108,24 @@ fun SlidBar(
             selected = false,
             onClick = onNavigateEvent,
             icon = { Icon(Icons.Default.Event, contentDescription = null) }
+        )
+        NavigationDrawerItem(
+            label = { Text("履歴") },
+            selected = false,
+            onClick = onNavigateRecord,
+            icon = { Icon(Icons.Default.Person, contentDescription = null) }
+        )
+        NavigationDrawerItem(
+            label = { Text("タイムライン") },
+            selected = false,
+            onClick = onNavigateTimeline,
+            icon = { Icon(Icons.Default.Forum, contentDescription = null) }
+        )
+        NavigationDrawerItem(
+            label = { Text("設定") },
+            selected = false,
+            onClick = onNavigateSetting,
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) }
         )
 
         Divider(modifier = Modifier.padding(top = 8.dp))

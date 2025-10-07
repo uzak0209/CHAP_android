@@ -36,7 +36,7 @@ fun TimelineScreen(
     onNavigateSetting: () -> Unit,
 ) {
     var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("Posts", "Threads", "Events", "Spots")
+    val tabs = listOf("Posts", "Threads", "Events")
     
     // サンプルデータ（後でViewModelから取得）
     val samplePosts = remember {
@@ -59,25 +59,17 @@ fun TimelineScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TimelineTopBar(
-                onNavigateRecord = onNavigateRecord,
-                onNavigateMap = onNavigateMap,
-                onNavigateSetting = onNavigateSetting
-            )
-        }
-    ) { padding ->
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .background(Color.White)
         ) {
-            // プロフィールセクション
-            ProfileSection(
-                name = "Stas Neprokin",
-                imageRes = R.drawable.chap_android
+            TimelineTopBar(
+                onNavigateRecord = onNavigateRecord,
+                onNavigateMap = onNavigateMap,
+                onNavigateSetting = onNavigateSetting
             )
             
             // タブセクション
@@ -162,7 +154,7 @@ fun TimelineTopBar(
             // 中央：履歴ボタン
             TextButton(onClick = onNavigateRecord) {
                 Text(
-                    text = "履歴",
+                    text = "タイムライン",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -178,35 +170,6 @@ fun TimelineTopBar(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun ProfileSection(
-    name: String,
-    imageRes: Int
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = name,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
     }
 }
 

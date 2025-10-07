@@ -118,6 +118,7 @@ fun Navigation(
             SettingScreen(
                 settingViewModel = settingViewModel,
                 onNavigateLogin = { navController.navigate("login") { launchSingleTop = true } },
+                onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
             )
         }
 

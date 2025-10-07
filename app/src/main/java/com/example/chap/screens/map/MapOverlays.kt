@@ -52,7 +52,6 @@ fun MapOverlays(
     scope: CoroutineScope,
     locationViewModel: LocationViewModel,
     is3D: Boolean,
-    onMenuClick: () -> Unit,
     onToggleDimension: () -> Unit,
     onLocationClick: () -> Unit
 ) {
@@ -65,7 +64,6 @@ fun MapOverlays(
             // 右上のボタン群
             RightHeaderButtons(
                 is3D = is3D,
-                onMenuClick = onMenuClick,
                 onToggleDimension = onToggleDimension,
                 onLocationClick = onLocationClick
             )
@@ -241,7 +239,6 @@ private fun createEvent(
 @Composable
 private fun BoxScope.RightHeaderButtons(
     is3D: Boolean,
-    onMenuClick: () -> Unit,
     onToggleDimension: () -> Unit,
     onLocationClick: () -> Unit
 ) {
@@ -275,18 +272,18 @@ private fun BoxScope.RightHeaderButtons(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 // サイドドロワーを開くボタン
-                FloatingActionButton(
-                    modifier = Modifier.size(56.dp),
-                    containerColor = BrandBlue,
-                    onClick = onMenuClick,
-                    shape = CircleShape,
-                ) {
-                    Icon(
-                        Icons.Default.MenuOpen,
-                        contentDescription = "Open Menu",
-                        tint = Color.White
-                    )
-                }
+//                FloatingActionButton(
+//                    modifier = Modifier.size(56.dp),
+//                    containerColor = BrandBlue,
+//                    onClick = onMenuClick,
+//                    shape = CircleShape,
+//                ) {
+//                    Icon(
+//                        Icons.Default.MenuOpen,
+//                        contentDescription = "Open Menu",
+//                        tint = Color.White
+//                    )
+//                }
 
                 // 3D/2Dトグルボタン
                 FloatingActionButton(
