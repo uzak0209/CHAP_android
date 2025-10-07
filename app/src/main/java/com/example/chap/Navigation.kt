@@ -129,6 +129,7 @@ fun Navigation(
                 onNavigateSetting = { navController.navigate("setting") { launchSingleTop = true } },
             )
         }
+
         composable("record"){
             RecordScreen(
                 recordViewModel = recordViewModel,
@@ -137,7 +138,6 @@ fun Navigation(
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
             )
         }
-
     }
 }
 
