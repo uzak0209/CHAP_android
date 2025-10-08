@@ -21,6 +21,10 @@ object ApiEndpoints {
         const val LOGOUT = "$BASE/api/v1/auth/logout"
         const val VERIFY = "$BASE/api/v1/auth/me"
     }
+    object Users {
+        fun get(id: String) = "$BASE/api/v1/user/$id"
+        fun edit(id: String) = "$BASE/api/v1/edit/user/$id"
+    }
     object Threads {
         const val LIST = "$BASE/api/v1/getall/thread"
         fun get(id: String) = "$BASE/api/v1/thread/$id"

@@ -17,7 +17,7 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import kotlinx.coroutines.launch
 
-/**
+/*
  * メイン地図画面
  */
 @RequiresApi(Build.VERSION_CODES.O)
@@ -162,6 +162,13 @@ fun MapScreen(
                                 "event" -> {
                                     events.firstOrNull { it.id == focusId }?.let { e ->
                                         state.selectedEvent = e
+                                        moveViewPoint(viewportState, scope, e.coordinate)
+                                        focusHandled = true
+                                    }
+                                }
+                                "spot" -> {
+                                    spots.firstOrNull { it.id == focusId }?.let { e ->
+                                        state.selectedSpot = e
                                         moveViewPoint(viewportState, scope, e.coordinate)
                                         focusHandled = true
                                     }

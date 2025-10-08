@@ -154,6 +154,9 @@ fun Navigation(
             RecordScreen(
                 recordViewModel = recordViewModel,
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateMapFocus = { type, id ->
+                    navController.navigate("mapFocus/$type/$id") { launchSingleTop = true }
+                }
             )
         }
 

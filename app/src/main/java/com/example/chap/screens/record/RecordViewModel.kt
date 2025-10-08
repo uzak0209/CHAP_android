@@ -11,6 +11,7 @@ import com.example.chap.repository.EventRepositoryImpl
 import com.example.chap.repository.MapRepositoryImpl
 import com.example.chap.repository.PostRepositoryImpl
 import com.example.chap.repository.ThreadRepositoryImpl
+import com.example.chap.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,7 @@ class RecordViewModel @Inject constructor(
     private val eventRepository: EventRepositoryImpl,
     private val mapRepository : MapRepositoryImpl,
     private val locationProvider: LocationProvider,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
         private val _posts = MutableStateFlow<List<Post>>(emptyList())
         val posts: StateFlow<List<Post>> = _posts
@@ -39,10 +41,17 @@ class RecordViewModel @Inject constructor(
         private val _isLoading = MutableStateFlow(false)
         val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+        private val _currentUserId = MutableStateFlow<String?>(null)
+        val currentUserId: StateFlow<String?> = _currentUserId
+
         fun load() {
             if (_isLoading.value) return
             viewModelScope.launch {
                 _isLoading.value = true
+                // load current user id first
+                runCatching { userRepository.getCurrentUser() }.onSuccess { user ->
+                    _currentUserId.value = user?.id?.toString()
+                }
                 mapRepository.getAllSpots().onSuccess { list ->
                     // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                     val current = _spots.value.associateBy { it.id }
