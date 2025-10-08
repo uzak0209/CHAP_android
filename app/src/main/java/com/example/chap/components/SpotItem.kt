@@ -71,7 +71,7 @@ fun SpotItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "@... · ${spot.created_at}",
+                        text = spot.created_at.replace('T', ' ').take(16),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

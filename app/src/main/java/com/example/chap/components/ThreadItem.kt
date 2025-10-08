@@ -69,7 +69,7 @@ fun ThreadItem(thread: com.example.chap.models.Thread, onClick: (Thread) -> Unit
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "@... · ${thread.created_at}",
+                        text = thread.created_at.replace('T', ' ').take(16),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

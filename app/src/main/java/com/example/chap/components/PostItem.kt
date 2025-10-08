@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.R
 import com.example.chap.models.Post
+import kotlin.text.replace
 
 @Composable
 fun PostItem(post: Post, onClick: (Post) -> Unit) {
@@ -71,7 +72,7 @@ fun PostItem(post: Post, onClick: (Post) -> Unit) {
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "@Mo... · ${post.created_at}",
+                        text = post.created_at.replace('T', ' ').take(16),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

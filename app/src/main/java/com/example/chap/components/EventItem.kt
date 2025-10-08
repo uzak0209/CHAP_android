@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.R
 import com.example.chap.models.Event
+import kotlin.text.replace
 
 @Composable
 fun EventItem(event: Event, onClick: (Event) -> Unit) {
@@ -66,9 +67,9 @@ fun EventItem(event: Event, onClick: (Event) -> Unit) {
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "@... · ${event.created_at}",
+                        text = " ${event.created_at.replace('T', ' ').take(16)}",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
