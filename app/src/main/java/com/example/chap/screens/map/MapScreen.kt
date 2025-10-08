@@ -29,7 +29,9 @@ fun MapScreen(
     onNavigateSetting: () -> Unit,
     onNavigateTimeline: () -> Unit = {},
     onNavigateRecord: () -> Unit = {},
-    locationViewModel: LocationViewModel
+    locationViewModel: LocationViewModel,
+    focusType: String? = null,
+    focusId: Long? = null
 ) {
     // 状態管理
     val state = rememberMapState()
@@ -136,6 +138,36 @@ fun MapScreen(
                             onEventDismiss = { state.selectedEvent = null },
                             onSpotDismiss = { state.selectedSpot = null }
                         )
+                    }
+
+                    // タイムラインからのフォーカス要求を一度だけ処理
+                    var focusHandled by remember { mutableStateOf(false) }
+                    LaunchedEffect(focusType, focusId, posts, threads, events) {
+                        if (!focusHandled && focusType != null && focusId != null) {
+                            when (focusType) {
+                                "post" -> {
+                                    posts.firstOrNull { it.id == focusId }?.let { p ->
+                                        state.selectedPost = p
+                                        moveViewPoint(viewportState, scope, p.coordinate)
+                                        focusHandled = true
+                                    }
+                                }
+                                "thread" -> {
+                                    threads.firstOrNull { it.id == focusId }?.let { t ->
+                                        state.selectedThread = t
+                                        moveViewPoint(viewportState, scope, t.coordinate)
+                                        focusHandled = true
+                                    }
+                                }
+                                "event" -> {
+                                    events.firstOrNull { it.id == focusId }?.let { e ->
+                                        state.selectedEvent = e
+                                        moveViewPoint(viewportState, scope, e.coordinate)
+                                        focusHandled = true
+                                    }
+                                }
+                            }
+                        }
                     }
                     // ヘッダー（最前面）
                     if (state.pendingEventDraft == null) {

@@ -144,6 +144,9 @@ fun Navigation(
             TimelineScreen(
                 timelineViewModel = timelineViewModel,
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateMapFocus = { type, id ->
+                    navController.navigate("mapFocus/$type/$id") { launchSingleTop = true }
+                }
             )
         }
 
@@ -151,6 +154,28 @@ fun Navigation(
             RecordScreen(
                 recordViewModel = recordViewModel,
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+            )
+        }
+
+        composable(
+            route = "mapFocus/{type}/{id}",
+            arguments = listOf(
+                navArgument("type") { type = NavType.StringType },
+                navArgument("id") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val type = backStackEntry.arguments?.getString("type")
+            val id = backStackEntry.arguments?.getLong("id")
+            MapScreen(
+                onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
+                onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
+                onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
+                onNavigateSetting = { navController.navigate("setting"){ launchSingleTop = true } },
+                onNavigateTimeline = { navController.navigate("timeline"){ launchSingleTop = true } },
+                onNavigateRecord = { navController.navigate("record"){ launchSingleTop = true } },
+                locationViewModel = locationViewModel,
+                focusType = type,
+                focusId = id
             )
         }
     }

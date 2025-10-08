@@ -31,6 +31,7 @@ import com.example.chap.models.Event
 fun TimelineScreen(
     timelineViewModel: TimelineViewModel,
     onNavigateMap: () -> Unit,
+    onNavigateMapFocus: (String, Long) -> Unit = { _, _ -> },
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Posts", "Threads", "Events")
@@ -38,6 +39,12 @@ fun TimelineScreen(
     val posts by timelineViewModel.posts.collectAsState()
     val threads by timelineViewModel.threads.collectAsState()
     val events by timelineViewModel.events.collectAsState()
+
+    LaunchedEffect(
+        timelineViewModel
+    ) {
+        timelineViewModel.load()
+      }
 
     Scaffold { padding ->
         Column(
@@ -82,15 +89,24 @@ fun TimelineScreen(
             ) {
                 when (selectedTab) {
                     0 -> items(posts) { post ->
-                        PostItem(post = post)
+                        PostItem(
+                            post = post,
+                            onClick = { p -> onNavigateMapFocus("post", p.id) }
+                        )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
                     1 -> items(threads) { thread ->
-                        ThreadItem(thread = thread)
+                        ThreadItem(
+                            thread = thread,
+                            onClick = { t -> onNavigateMapFocus("thread", t.id) }
+                        )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
                     2 -> items(events) { event ->
-                        EventItem(event = event)
+                        EventItem(
+                            event = event,
+                            onClick = { e -> onNavigateMapFocus("event", e.id) }
+                        )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
                 }
@@ -145,11 +161,11 @@ fun TimelineTopBar(
 }
 
 @Composable
-fun PostItem(post: Post) {
+fun PostItem(post: Post, onClick: (Post) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle click */ }
+            .clickable { onClick(post) }
             .padding(16.dp)
     ) {
         // プロフィール画像
@@ -217,11 +233,11 @@ fun PostItem(post: Post) {
 }
 
 @Composable
-fun ThreadItem(thread: Thread) {
+fun ThreadItem(thread: Thread, onClick: (Thread) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable { onClick(thread) }
             .padding(16.dp)
     ) {
         Image(
@@ -285,11 +301,11 @@ fun ThreadItem(thread: Thread) {
 }
 
 @Composable
-fun EventItem(event: Event) {
+fun EventItem(event: Event, onClick: (Event) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable { onClick(event) }
             .padding(16.dp)
     ) {
         Image(
