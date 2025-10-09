@@ -46,7 +46,6 @@ import com.example.chap.auth.TokenManager
 import com.example.chap.models.LoginTab
 
 private val PrimaryColor = Color(0xFF4A4AFF)
-private val BackgroundGray = Color(0xFFF8F8F8)
 
 @Composable
 fun LoginScreen(
@@ -170,85 +169,7 @@ fun LoginScreen(
 }
 
 
-@Composable
-fun LoginTabBar(selectedTab: LoginTab, onTabChange: (LoginTab) -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        LoginTabButton(
-            text = "ログイン",
-            isSelected = selectedTab == LoginTab.Login,
-            onClick = { onTabChange(LoginTab.Login) }
-        )
-        LoginTabButton(
-            text = "新規登録",
-            isSelected = selectedTab == LoginTab.SignUp,
-            onClick = { onTabChange(LoginTab.SignUp) }
-        )
-    }
-}
 
-@Composable
-fun AgreementSection() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        AgreementItem(
-            icon = Icons.Default.Lock,
-            text = "ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。"
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        AgreementItem(
-            icon = Icons.Default.Place,
-            text = "位置情報の取得許可が必要です。"
-        )
-    }
-}
 
-@Composable
-fun AgreementItem(icon: ImageVector, text: String) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = Color.Gray,
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = text,
-            fontSize = 10.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
-        )
-    }
-}
 
-@Composable
-fun LoginTabButton(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = if (isSelected) Color.White else Color(0xFFF0F0F0),
-    contentColor: Color = if (isSelected) Color.Black else Color.Gray,
-    selectedBackgroundColor: Color = Color.Transparent
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .background(
-                color = if (isSelected) selectedBackgroundColor else backgroundColor,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = ButtonDefaults.textButtonColors(contentColor = contentColor)
-    ) {
-        Text(text, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
-    }
 
-}

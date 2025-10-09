@@ -144,6 +144,7 @@ fun Navigation(
             TimelineScreen(
                 timelineViewModel = timelineViewModel,
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateComment = { id -> navController.navigate("comment/$id") { launchSingleTop = true } },
                 onNavigateMapFocus = { type, id ->
                     navController.navigate("mapFocus/$type/$id") { launchSingleTop = true }
                 }
@@ -154,6 +155,7 @@ fun Navigation(
             RecordScreen(
                 recordViewModel = recordViewModel,
                 onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
+                onNavigateComment = { id -> navController.navigate("comment/$id") { launchSingleTop = true } },
                 onNavigateMapFocus = { type, id ->
                     navController.navigate("mapFocus/$type/$id") { launchSingleTop = true }
                 }

@@ -35,6 +35,7 @@ import com.example.chap.components.ThreadItem
 fun RecordScreen(
     recordViewModel: RecordViewModel,
     onNavigateMap: () -> Unit,
+    onNavigateComment: (String) -> Unit,
     onNavigateMapFocus: (String, Long) -> Unit = { _, _ -> },
 ) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -127,7 +128,8 @@ fun RecordScreen(
                     1 -> items(threads.filter { it.user_id == currentUserId }) { thread ->
                         ThreadItem(
                             thread = thread,
-                            onClick = { t -> onNavigateMapFocus("thread", t.id) }
+                            onClick = { t -> onNavigateMapFocus("thread", t.id) },
+                            onClickForum = {onNavigateComment(thread.id.toString()) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
@@ -147,44 +149,6 @@ fun RecordScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun RecordTopBar(
-    onNavigateMap: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        color = Color.White,
-        shadowElevation = 1.dp
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 4.dp)
-        ) {
-            IconButton(
-                onClick = onNavigateMap,
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Map,
-                    contentDescription = "map",
-                    tint = Color.Black
-                )
-            }
-
-            Text(
-                text = "履歴",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.align(Alignment.Center)
-            )
         }
     }
 }

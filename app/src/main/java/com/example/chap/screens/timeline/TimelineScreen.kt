@@ -34,6 +34,7 @@ import com.example.chap.models.Event
 fun TimelineScreen(
     timelineViewModel: TimelineViewModel,
     onNavigateMap: () -> Unit,
+    onNavigateComment: (String) -> Unit,
     onNavigateMapFocus: (String, Long) -> Unit = { _, _ -> },
 ) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -101,14 +102,15 @@ fun TimelineScreen(
                     1 -> items(threads) { thread ->
                         ThreadItem(
                             thread = thread,
-                            onClick = { t -> onNavigateMapFocus("thread", t.id) }
+                            onClick = { t -> onNavigateMapFocus("thread", t.id) },
+                            onClickForum = { onNavigateComment(thread.id.toString())}
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
                     2 -> items(events) { event ->
                         EventItem(
                             event = event,
-                            onClick = { e -> onNavigateMapFocus("event", e.id) }
+                            onClick = { e -> onNavigateMapFocus("event", e.id) },
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
@@ -118,47 +120,3 @@ fun TimelineScreen(
     }
 }
 
-@Composable
-fun TimelineTopBar(
-    onNavigateMap: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        color = Color.White,
-        shadowElevation = 1.dp
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp),
-        ) {
-            // 左側：ホームアイコン
-            IconButton(
-                modifier = Modifier
-                    .align(Alignment.CenterStart),
-                onClick = onNavigateMap
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = Color.Black
-                )
-            }
-            
-            // 中央：履歴ボタン
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Center)
-            ) {
-                Text(
-                    text = "タイムライン",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            }
-        }
-    }
-}

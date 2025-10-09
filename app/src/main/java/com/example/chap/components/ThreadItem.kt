@@ -32,7 +32,11 @@ import com.example.chap.R
 import com.example.chap.models.Thread
 
 @Composable
-fun ThreadItem(thread: com.example.chap.models.Thread, onClick: (Thread) -> Unit) {
+fun ThreadItem(
+    thread:Thread,
+    onClick: (Thread) -> Unit,
+    onClickForum: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,7 +80,7 @@ fun ThreadItem(thread: com.example.chap.models.Thread, onClick: (Thread) -> Unit
                 }
 
                 IconButton(
-                    onClick = { },
+                    onClick = onClickForum,
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
