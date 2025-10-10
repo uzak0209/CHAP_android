@@ -63,7 +63,7 @@ public fun CommentContent(
         ) {
             // スレッド本体 (番号1)
             items(comments) { item ->
-                val isOP = item.user_id == thread.user_id
+                val isOP = item.userId == thread.userId
                 CommentRow(comment = item, isOP = isOP)
             }
             if (comments.isEmpty()) {
@@ -88,10 +88,7 @@ public fun CommentContent(
                     onSubmit = {
                         val comment = RequestComment(
                             content = replyText.trim(),
-                            valid = true,
-                            thread_id = thread.id,
-                            like = 123,
-                            tags = emptyList(),
+                            threadId = thread.id,
                         )
                         commentViewModel.createComment(comment)
                         replyText = ""

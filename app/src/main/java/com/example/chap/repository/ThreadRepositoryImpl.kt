@@ -39,7 +39,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
         }
     }
 
-    // レスポンス(JSON)からList<Thread>へ変換する関数
+    // レスポンス(JSON)からList<Thread>へ変換（ドメインモデルにマッピング）
     private fun parseThreads(response: Any?): List<Thread> {
         if (response == null) return emptyList()
         return try {
@@ -49,21 +49,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
             }
             List(jsonArray.length()) { i ->
                 val obj = jsonArray.getJSONObject(i)
-                Thread(
-                    id = obj.optLong("id", 0L),
-                    type = obj.optString("type", ""),
-                    created_at = obj.optString("created_at", ""),
-                    updated_at = obj.optString("updated_at", ""),
-                    deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
-                    user_id = obj.optString("user_id", ""),
-                    username = obj.optString("username", ""),
-                    coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
-                    content = obj.optString("content", ""),
-                    category = obj.optString("category", ""),
-                    valid = obj.optBoolean("valid", true),
-                    like = obj.optInt("like", 0),
-                    tags = parseTags(obj.optJSONArray("tags"))
-                )
+                parseThreadObject(obj)
             }
         } catch (e: Exception) {
             emptyList()
@@ -79,14 +65,14 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
         )
     }
 
-    // tagsのパース
-    private fun parseTags(array: JSONArray?): List<String> {
+    // likes のパース
+    private fun parseLikes(array: JSONArray?): List<String> {
         if (array == null) return emptyList()
         return List(array.length()) { i -> array.optString(i, "") }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun createThread(thread: PostCreateRequest): Result<String> {
+    override suspend fun createThread(thread: PostCreateRequest): Result<Thread> {
         return try {
             val coordinateMap = mapOf(
                 "lat" to thread.coordinate.lat,
@@ -98,10 +84,8 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
                 "content" to thread.content,
                 "coordinate" to coordinateMap,
                 "created_at" to formatted,
-                "like" to 0,
-                "tags" to thread.tags,
                 "type" to "thread",
-                "valid" to true
+                "visible" to thread.visible,
             )
             println("[ThreadRepository] Creating thread with body: $requestBody")
 
@@ -110,7 +94,12 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
                 method = "POST",
                 body = requestBody
             )
-            Result.success(response.toString())
+            val json = when (response) {
+                is String -> JSONObject(response)
+                else -> JSONObject(response.toString())
+            }
+            val created = parseThreadObject(json)
+            Result.success(created)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -123,23 +112,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
 
             if (response != null) {
                 val threadObject = JSONObject(response).getJSONObject("thread")
-                val thread = Thread(
-                    id = threadObject.optLong("id", 0L),
-                    type = threadObject.optString("type", ""),
-                    created_at = threadObject.optString("created_at", ""),
-                    updated_at = threadObject.optString("updated_at", ""),
-                    deleted_at = if (threadObject.isNull("deleted_at")) null else threadObject.optString(
-                        "deleted_at"
-                    ),
-                    user_id = threadObject.optString("user_id", ""),
-                    username = threadObject.optString("username", ""),
-                    coordinate = parseCoordinate(threadObject.optJSONObject("coordinate")),
-                    content = threadObject.optString("content", ""),
-                    category = threadObject.optString("category", ""),
-                    valid = threadObject.optBoolean("valid", true),
-                    like = threadObject.optInt("like", 0),
-                    tags = parseTags(threadObject.optJSONArray("tags"))
-                )
+                val thread = parseThreadObject(threadObject)
                 return Result.success(thread)
             } else {
                return  Result.failure(Exception("Failed to fetch thread details"))
@@ -157,4 +130,18 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
         return DateTimeFormatter.ISO_INSTANT.format(now)
     }
 
+    private fun parseThreadObject(obj: JSONObject): Thread {
+        return Thread(
+            id = obj.optLong("id", 0L),
+            userId = obj.optString("user_id", ""),
+            createdAt = obj.optString("created_at", ""),
+            updatedAt = obj.optString("updated_at", ""),
+            userName = obj.optString("username", ""),
+            coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+            category = obj.optString("category", ""),
+            content = obj.optString("content", ""),
+            likeCount = obj.optLong("like", 0),
+            likes = parseLikes(obj.optJSONArray("likes"))
+        )
+    }
 }

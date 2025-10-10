@@ -31,7 +31,7 @@ public fun CommentRow(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                comment.username,
+                comment.userName,
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier
                     .background(
@@ -43,7 +43,7 @@ public fun CommentRow(
                 style = MaterialTheme.typography.labelSmall
             )
             Spacer(Modifier.width(8.dp))
-            Text(comment.created_at, color = Color.Gray, style = MaterialTheme.typography.labelSmall)
+            Text(comment.createdAt, color = Color.Gray, style = MaterialTheme.typography.labelSmall)
             if (isOP) {
                 Spacer(Modifier.width(8.dp))
                 Text("[スレ主]", color = Color(0xFFB80000), style = MaterialTheme.typography.labelSmall)

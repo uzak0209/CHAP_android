@@ -8,5 +8,5 @@ interface PostRepository {
 
     suspend fun createPost(
         request: PostCreateRequest
-    ): Result<String>
+    ): Result<Post>
 }

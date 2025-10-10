@@ -8,7 +8,7 @@ interface ThreadRepository {
     val threads: StateFlow<List<Thread>>
     suspend fun getAllThreads(): Result<List<Thread>>
 
-    suspend fun createThread(thread: PostCreateRequest): Result<String>
+    suspend fun createThread(thread: PostCreateRequest): Result<Thread>
     suspend fun getThreadById(id: String): Result<Thread>
 
 

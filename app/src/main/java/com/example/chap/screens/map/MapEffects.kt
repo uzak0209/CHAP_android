@@ -7,6 +7,7 @@ import com.example.chap.R
 import com.example.chap.components.map.bitmapFromVector
 import com.example.chap.models.Coordinate
 import com.example.chap.models.CreateKind
+import com.example.chap.models.PostCategory
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
@@ -121,7 +122,7 @@ private fun GestureControlEffect(
 @Composable
 private fun EventLocationPickerEffect(
     createKind: CreateKind,
-    pendingEventDraft: Triple<String, com.example.chap.models.PostCategory, List<String>>?,
+    pendingEventDraft: Pair<String, PostCategory>?,
     mapTapPickListener: OnMapClickListener?,
     onMapTapPickListenerChange: (OnMapClickListener?) -> Unit,
     onCoordinatePicked: (Coordinate) -> Unit

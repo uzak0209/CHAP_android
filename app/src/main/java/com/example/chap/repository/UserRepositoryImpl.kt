@@ -34,12 +34,9 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             name = userObj.optString("name", ""),
             image = if (userObj.isNull("image")) null else userObj.optString("image", null),
             email = userObj.optString("email", ""),
-            created_at = userObj.optString("created_at", ""),
-            valid = userObj.optBoolean("valid", true),
+            createdAt = userObj.optString("created_at", ""),
             password = userObj.optString("password", ""),
-            login_type = if (userObj.isNull("login_type")) null else userObj.optString("login_type", null),
-            updated_at = userObj.optString("updated_at", ""),
-            deleted_at = if (userObj.isNull("deleted_at")) null else userObj.optString("deleted_at", null)
+            updatedAt = userObj.optString("updated_at", ""),
         )
     }
 
@@ -57,12 +54,9 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             name = userObj.optString("name", ""),
             image = if (userObj.isNull("image")) null else userObj.optString("image", null),
             email = userObj.optString("email", ""),
-            created_at = userObj.optString("created_at", ""),
-            valid = userObj.optBoolean("valid", true),
+            createdAt = userObj.optString("created_at", ""),
             password = userObj.optString("password", ""),
-            login_type = if (userObj.isNull("login_type")) null else userObj.optString("login_type", null),
-            updated_at = userObj.optString("updated_at", ""),
-            deleted_at = if (userObj.isNull("deleted_at")) null else userObj.optString("deleted_at", null)
-        )
+            updatedAt = userObj.optString("updated_at", ""),
+            )
     }
 }

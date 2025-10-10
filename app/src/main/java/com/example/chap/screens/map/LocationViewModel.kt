@@ -74,38 +74,10 @@ class LocationViewModel @Inject constructor(
     fun createPost(post: PostCreateRequest) {
         viewModelScope.launch {
             val result = postRepository.createPost(post)
-            result.onSuccess { response ->
-                println("[PostViewModel] 投稿成功: $response")
-                // レスポンスJSONをPostにパースしてStateFlowへ即時反映
-                try {
-                    val json = JSONObject(response)
-                    val created = Post(
-                        id = json.optLong("id", 0L),
-                        type = json.optString("type", ""),
-                        created_at = json.optString("created_at", ""),
-                        updated_at = json.optString("updated_at", ""),
-                        deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
-                        user_id = json.optString("user_id", ""),
-                        username = json.optString("username", ""),
-                        coordinate = com.example.chap.models.Coordinate(
-                            lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
-                            lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
-                        ),
-                        content = json.optString("content", ""),
-                        category = json.optString("category", ""),
-                        valid = json.optBoolean("valid", true),
-                        like = json.optInt("like", 0),
-                        tags = emptyList()
-                    )
-                    _posts.value =
-                        (listOf(created) + _posts.value.filterNot { it.id == created.id })
-                    println("[PostViewModel] Post added to StateFlow with ID: ${created.id}")
-                } catch (e: Exception) {
-                    println("[PostViewModel] Failed to parse response JSON: ${e.message}")
-                    e.printStackTrace()
-                }
+            result.onSuccess { created ->
+                _posts.value = listOf(created) + _posts.value.filterNot { it.id == created.id }
             }.onFailure { e ->
-                println("[PostViewModel] 投稿エラー: ${e.message}")
+                println("[PostViewModel] 投稿エラー: ${'$'}{e.message}")
                 e.printStackTrace()
             }
         }
@@ -119,37 +91,10 @@ class LocationViewModel @Inject constructor(
     fun createThread(thread: PostCreateRequest) {
         viewModelScope.launch {
             val result = threadRepository.createThread(thread)
-            result.onSuccess { response ->
-                println("スレッド作成成功: $response")
-                try {
-                    val json = JSONObject(response)
-                    val created = Thread(
-                        id = json.optLong("id", 0L),
-                        type = json.optString("type", ""),
-                        created_at = json.optString("created_at", ""),
-                        updated_at = json.optString("updated_at", ""),
-                        deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
-                        user_id = json.optString("user_id", ""),
-                        username = json.optString("username", ""),
-                        coordinate = com.example.chap.models.Coordinate(
-                            lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
-                            lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
-                        ),
-                        content = json.optString("content", ""),
-                        category = json.optString("category", ""),
-                        valid = json.optBoolean("valid", true),
-                        like = json.optInt("like", 0),
-                        tags = emptyList() // backend が tags 配列を返すなら parse へ拡張
-                    )
-                    _threads.value =
-                        (listOf(created) + _threads.value.filterNot { it.id == created.id })
-                    println(" Thread added to StateFlow with ID: ${created.id}")
-                } catch (e: Exception) {
-                    println("Thread Failed to parse response JSON: ${e.message}")
-                    e.printStackTrace()
-                }
+            result.onSuccess { created ->
+                _threads.value = listOf(created) + _threads.value.filterNot { it.id == created.id }
             }.onFailure { e ->
-                println("エラー: ${e.message}")
+                println("[ThreadViewModel] 作成エラー: ${'$'}{e.message}")
             }
         }
     }
@@ -161,37 +106,10 @@ class LocationViewModel @Inject constructor(
     fun createEvent(event: PostCreateRequest) {
         viewModelScope.launch {
             val result = eventRepository.createEvent(event)
-            result.onSuccess { response ->
-                // 投稿成功時の処理
-                try {
-                    val json = JSONObject(response)
-                    val created = Event(
-                        id = json.optLong("id", 0L),
-                        type = json.optString("type", ""),
-                        created_at = json.optString("created_at", ""),
-                        updated_at = json.optString("updated_at", ""),
-                        deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
-                        user_id = json.optString("user_id", ""),
-                        username = json.optString("username", ""),
-                        coordinate = com.example.chap.models.Coordinate(
-                            lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
-                            lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
-                        ),
-                        content = json.optString("content", ""),
-                        category = json.optString("category", ""),
-                        valid = json.optBoolean("valid", true),
-                        like = json.optInt("like", 0),
-                        tags = emptyList()
-                    )
-                    _events.value =
-                        (listOf(created) + _events.value.filterNot { it.id == created.id })
-                    println(" Event added to StateFlow with ID: ${created.id}")
-                } catch (e: Exception) {
-                    println("Event Failed to parse response JSON: ${e.message}")
-                    e.printStackTrace()
-                }
-            }.onFailure { e ->
-                // エラー処理
+            result.onSuccess { created ->
+                _events.value = listOf(created) + _events.value.filterNot { it.id == created.id }
+            }.onFailure { _ ->
+                // TODO: handle error state
             }
         }
     }
@@ -200,37 +118,10 @@ class LocationViewModel @Inject constructor(
     fun createSpot(spot: PostCreateRequest) {
         viewModelScope.launch {
             val result = mapRepository.createSpot(spot)
-            result.onSuccess { response ->
-                // 投稿成功時の処理
-                try {
-                    val json = JSONObject(response)
-                    val created = Spot(
-                        id = json.optLong("id", 0L),
-                        type = json.optString("type", ""),
-                        created_at = json.optString("created_at", ""),
-                        updated_at = json.optString("updated_at", ""),
-                        deleted_at = if (json.isNull("deleted_at")) null else json.optString("deleted_at"),
-                        user_id = json.optString("user_id", ""),
-                        username = json.optString("username", ""),
-                        coordinate = com.example.chap.models.Coordinate(
-                            lat = json.optJSONObject("coordinate")?.optDouble("lat", 0.0) ?: 0.0,
-                            lng = json.optJSONObject("coordinate")?.optDouble("lng", 0.0) ?: 0.0,
-                        ),
-                        content = json.optString("content", ""),
-                        category = json.optString("category", ""),
-                        valid = json.optBoolean("valid", true),
-                        like = json.optInt("like", 0),
-                        tags = emptyList()
-                    )
-                    _spots.value =
-                        (listOf(created) + _spots.value.filterNot { it.id == created.id })
-                    println(" Event added to StateFlow with ID: ${created.id}")
-                } catch (e: Exception) {
-                    println("Event Failed to parse response JSON: ${e.message}")
-                    e.printStackTrace()
-                }
+            result.onSuccess { created ->
+                _spots.value = listOf(created) + _spots.value.filterNot { it.id == created.id }
             }.onFailure { e ->
-                println("[LocationViewModel] createSpot failed: ${e.message}")
+                println("[LocationViewModel] createSpot failed: ${'$'}{e.message}")
             }
         }
     }
@@ -249,7 +140,7 @@ class LocationViewModel @Inject constructor(
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _spots.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
-                _spots.value = merged.sortedByDescending { it.created_at }
+                _spots.value = merged.sortedByDescending { it.createdAt }
             }.onFailure {
                 // TODO: error handling (log/report)
             }
@@ -257,7 +148,7 @@ class LocationViewModel @Inject constructor(
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _posts.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
-                _posts.value = merged.sortedByDescending { it.created_at }
+                _posts.value = merged.sortedByDescending { it.createdAt }
             }.onFailure {
                 // TODO: error handling (log/report)
             }
@@ -265,7 +156,7 @@ class LocationViewModel @Inject constructor(
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _threads.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
-                _threads.value = merged.sortedByDescending { it.created_at }
+                _threads.value = merged.sortedByDescending { it.createdAt }
             }.onFailure {
                 // TODO: error handling (log/report)
             }
@@ -273,7 +164,7 @@ class LocationViewModel @Inject constructor(
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _events.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
-                _events.value = merged.sortedByDescending { it.created_at }
+                _events.value = merged.sortedByDescending { it.createdAt }
             }.onFailure {
                 // TODO: error handling (log/report)
             }

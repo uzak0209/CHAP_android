@@ -43,7 +43,7 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun createSpot(request: PostCreateRequest): Result<String> {
+    override suspend fun createSpot(request: PostCreateRequest): Result<Spot> {
         return try {
             val coordinateMap = mapOf(
                 "lat" to request.coordinate.lat,
@@ -51,14 +51,11 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
             )
             val formatted = getCurrentTimeISO()
             val requestBody = mapOf(
-                "category" to request.category,
                 "content" to request.content,
                 "coordinate" to coordinateMap,
                 "created_at" to formatted,
-                "like" to 0,
-                "tags" to request.tags,
                 "type" to "spot",
-                "valid" to true
+                "visible" to request.visible,
             )
             println("[SpotRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(
@@ -73,8 +70,13 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
                 println("[SpotRepository] Error in response: $bodyStr")
                 return Result.failure(IllegalStateException("Spot create failed: $bodyStr"))
             }
-            println("[SpotRepository] Spot created successfully")
-            Result.success(response.toString())
+            val json = when (response) {
+                is String -> JSONObject(response)
+                else -> JSONObject(response.toString())
+            }
+            val created = parseSpotObject(json)
+            println("[SpotRepository] Spot created successfully: id=${'$'}{created.id}")
+            Result.success(created)
         } catch (e: Exception) {
             println("[SpotRepository] Exception during post creation: ${e.message}")
             e.printStackTrace()
@@ -93,23 +95,7 @@ private fun parseSpots(response: Any?): List<Spot> {
         val all = List(jsonArray.length()) { i -> jsonArray.getJSONObject(i) }
         all
             .filter { it.optString("type", "") == "spot" }
-            .map { obj ->
-                Spot(
-                    id = obj.optLong("id", 0L),
-                    type = obj.optString("type", ""),
-                    created_at = obj.optString("created_at", ""),
-                    updated_at = obj.optString("updated_at", ""),
-                    deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
-                    user_id = obj.optString("user_id", ""),
-                    username = obj.optString("username", ""),
-                    coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
-                    content = obj.optString("content", ""),
-                    category = obj.optString("category", ""),
-                    valid = obj.optBoolean("valid", true),
-                    like = obj.optInt("like", 0),
-                    tags = parseTags(obj.optJSONArray("tags")),
-                )
-            }
+            .map { obj -> parseSpotObject(obj) }
     } catch (e: Exception) {
         emptyList()
     }
@@ -123,8 +109,8 @@ private fun parseCoordinate(obj: JSONObject?): Coordinate {
     )
 }
 
-// tagsのパース
-private fun parseTags(array: JSONArray?): List<String> {
+// likes のパース
+private fun parseLikes(array: JSONArray?): List<String> {
     if (array == null) return emptyList()
     return List(array.length()) { i -> array.optString(i, "") }
 }
@@ -133,4 +119,16 @@ private fun parseTags(array: JSONArray?): List<String> {
 private fun getCurrentTimeISO(): String {
     val now = Instant.now()
     return DateTimeFormatter.ISO_INSTANT.format(now)
+}
+
+private fun parseSpotObject(obj: JSONObject): Spot {
+    return Spot(
+        id = obj.optLong("id", 0L),
+        createdAt = obj.optString("created_at", ""),
+        updatedAt = obj.optString("updated_at", ""),
+        userId = obj.optString("user_id", ""),
+        userName = obj.optString("username", ""),
+        coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+        content = obj.optString("content", "")
+    )
 }

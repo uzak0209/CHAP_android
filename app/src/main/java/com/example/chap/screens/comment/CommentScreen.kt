@@ -54,10 +54,7 @@ import com.example.chap.screens.record.RecordTopBar
 fun CommentScreen(
     commentViewModel: CommentViewModel,
     thread: Thread,
-    onNavigateHome: () -> Unit,
-    onNavigateMap: () -> Unit,
-    onNavigateThread: () -> Unit,
-    onNavigateEvent: () -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
 
     val comments by commentViewModel.comments.collectAsState()

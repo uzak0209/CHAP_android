@@ -75,17 +75,14 @@ fun CreateDialog(
     selectedKind: CreateKind,
     locationViewModel: LocationViewModel,
     coordinate: Coordinate?,
-    onRequestEventLocation: ((content: String, category: PostCategory, tags: List<String>) -> Unit)? = null
+    onRequestEventLocation: ((content: String, category: PostCategory) -> Unit)? = null
 ) {
 
     if (!isOpen) return
-    val locationState = coordinate
     val scope = rememberCoroutineScope()
     // 未定義だった ViewModel をローカルで取得
     var content by remember { mutableStateOf("") }
     var category by remember { mutableStateOf(PostCategory.ENTERTAINMENT) }
-    var tags by remember { mutableStateOf(listOf<String>()) }
-    var tagInput by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
@@ -94,8 +91,6 @@ fun CreateDialog(
     fun reset() {
         content = ""
         category = PostCategory.ENTERTAINMENT
-        tags = emptyList()
-        tagInput = ""
     }
 
     Dialog(onDismissRequest = {
@@ -190,74 +185,6 @@ fun CreateDialog(
                         }
                     }
                 }
-
-                Spacer(Modifier.height(16.dp))
-
-                // タグ入力
-                Text("タグ（任意）", style = MaterialTheme.typography.labelMedium)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = tagInput,
-                        onValueChange = { tagInput = it },
-                        placeholder = { Text("タグを入力") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                if (tagInput.isNotBlank() && !tags.contains(tagInput.trim())) {
-                                    tags = tags + tagInput.trim()
-                                    tagInput = ""
-                                }
-                                focusManager.clearFocus()
-                            }
-                        )
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    OutlinedButton(
-                        onClick = {
-                            if (tagInput.isNotBlank() && !tags.contains(tagInput.trim())) {
-                                tags = tags + tagInput.trim()
-                                tagInput = ""
-                            }
-                        },
-                        enabled = tagInput.isNotBlank()
-                    ) {
-                        Text("#")
-                    }
-                }
-
-                if (tags.isNotEmpty()) {
-                    Spacer(Modifier.height(8.dp))
-                    FlowRow(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        tags.forEach { t ->
-                            AssistChip(
-                                onClick = {},
-                                label = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text("#$t", maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                        Spacer(Modifier.width(4.dp))
-                                        Text(
-                                            "×",
-                                            modifier = Modifier
-                                                .clickable {
-                                                    tags = tags.filterNot { it == t }
-                                                }
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-
                 Spacer(Modifier.height(16.dp))
 
                 // 位置情報（選択済みの座標を優先して表示）
@@ -299,7 +226,7 @@ fun CreateDialog(
                     Button(
                         onClick = {
                             if (selectedKind == CreateKind.EVENT && onRequestEventLocation != null) {
-                                onRequestEventLocation(content.trim(), category, tags)
+                                onRequestEventLocation(content.trim(), category)
                                 reset()
                                 onClose()
                                 return@Button
@@ -309,9 +236,7 @@ fun CreateDialog(
                                     coordinate = locationViewModel.locationState.value.location!!,
                                     content = content.trim(),
                                     category = category.toString(),
-                                    valid = true,
-                                    tags = tags,
-                                    visible = true
+                                    visible = true,
                                 )
                                 
                                 scope.launch {

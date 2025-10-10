@@ -100,9 +100,9 @@ fun PostTimelineTemplate(
                 ) {
                     items(posts) { item ->
                         MessageRow(
-                            title = item.username,
+                            title = item.userName,
                             subtitle = item.content,
-                            dateText = item.created_at.take(10)
+                            dateText = item.createdAt.take(10)
                         )
                         Divider(color = Color(0xFFE8ECF0))
                     }

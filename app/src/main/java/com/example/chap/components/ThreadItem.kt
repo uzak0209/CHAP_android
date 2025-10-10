@@ -66,14 +66,14 @@ fun ThreadItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = thread.username,
+                        text = thread.userName,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = thread.created_at.replace('T', ' ').take(16),
+                        text = thread.createdAt.replace('T', ' ').take(16),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

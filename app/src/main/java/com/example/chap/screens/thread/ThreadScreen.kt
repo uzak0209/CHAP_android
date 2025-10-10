@@ -128,13 +128,13 @@ private fun ThreadListRow(
             tint = Color(0xFF6B7280)
         )
         Text(
-            text = " ${thread.like}",
+            text = " ${thread.likes}",
             color = Color(0xFF6B7280),
             modifier = Modifier.padding(start = 4.dp, end = 12.dp)
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = thread.username,
+                text = thread.userName,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 color = Color(0xFF1F2933)
@@ -152,7 +152,7 @@ private fun ThreadListRow(
             )
         }
         Text(
-            text = thread.created_at.take(10),
+            text = thread.createdAt.take(10),
             color = Color(0xFF9AA1A9),
             fontSize = 12.sp
         )

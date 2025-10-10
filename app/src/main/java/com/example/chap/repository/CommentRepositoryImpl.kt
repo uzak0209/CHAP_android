@@ -41,12 +41,9 @@ class CommentRepositoryImpl @Inject constructor() : CommentRepository {
 
 	override suspend fun createComment(comment:RequestComment): Result<String> = withContext(Dispatchers.IO) {
 		return@withContext try {
-			val url = ApiEndpoints.Threads.reply(comment.thread_id.toString())
+			val url = ApiEndpoints.Threads.reply(comment.threadId.toString())
 			val body = mapOf(
 				"content" to comment.content,
-				"tags" to comment.tags,
-				"valid" to comment.valid,
-                "like" to comment.like
 			)
 			val response = ApiClient.request(url, method = "POST", body = body)
 			if (response != null) {
@@ -82,19 +79,18 @@ class CommentRepositoryImpl @Inject constructor() : CommentRepository {
                 }
             }
 
-            val comment = Comment(
+			val comment = Comment(
                 id = obj.optLong("id", 0L),
-                created_at = obj.optString("created_at", ""),
-                updated_at = obj.optString("updated_at", ""),
-                deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
-                user_id = obj.optString("user_id", ""),
-                username = obj.optString("username", ""),
+                createdAt = obj.optString("created_at", ""),
+                updatedAt = obj.optString("updated_at", ""),
+                userId = obj.optString("user_id", ""),
+                userName = obj.optString("username", ""),
                 coordinate = coordinate,
                 content = obj.optString("content", ""),
-                valid = obj.optBoolean("valid", true),
-                thread_id = obj.optLong("thread_id", 0L),
-                like = obj.optInt("like", 0),
-                tags = tags
+                threadId = obj.optLong("thread_id", 0L),
+                likeCount = obj.optLong("likeCount", 0),
+				likes = parseLikes(obj.optJSONArray("likes")),
+                image = obj.optString("image", ""),
             )
 
             comments.add(comment)
@@ -105,4 +101,8 @@ class CommentRepositoryImpl @Inject constructor() : CommentRepository {
         Result.failure(e)
     }
 }
+}
+private fun parseLikes(array: JSONArray?): List<String> {
+    if (array == null) return emptyList()
+    return List(array.length()) { i -> array.optString(i, "") }
 }

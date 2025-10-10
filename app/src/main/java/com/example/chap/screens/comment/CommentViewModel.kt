@@ -46,7 +46,7 @@ class CommentViewModel @Inject constructor(
             result.onSuccess { response ->
                 println("コメント投稿成功: $response")
                 // 投稿成功後にリロードしてUIを更新
-                commentRepository.getCommentsByThreadID(comment.thread_id.toString())
+                commentRepository.getCommentsByThreadID(comment.threadId.toString())
                     .onSuccess { list ->
                         _comments.value = list
                         _errorMessage.value = null

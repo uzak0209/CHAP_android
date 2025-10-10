@@ -116,10 +116,7 @@ fun Navigation(
                 CommentScreen(
                     commentViewModel = commentViewModel,
                     thread = t,
-                    onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
-                    onNavigateMap = { navController.navigate("map") { launchSingleTop = true } },
-                    onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
-                    onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
         }

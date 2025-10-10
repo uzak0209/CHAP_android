@@ -59,7 +59,7 @@ class PostViewModel @Inject constructor(
                 // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                 val current = _posts.value.associateBy { it.id }
                 val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
-                _posts.value = merged.sortedByDescending { it.created_at }
+                _posts.value = merged.sortedByDescending { it.createdAt }
             }.onFailure {
                 // TODO: error handling (log/report)
             }

@@ -62,14 +62,14 @@ fun EventItem(event: Event, onClick: (Event) -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = event.username,
+                        text = event.userName,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = " ${event.created_at.replace('T', ' ').take(16)}",
+                        text = " ${event.createdAt.replace('T', ' ').take(16)}",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

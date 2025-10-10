@@ -115,12 +115,12 @@ private fun EventListRow(event: Event) {
             .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val statusIcon = if (event.valid) Icons.Filled.EventAvailable else Icons.Filled.Cancel
-        val statusColor = if (event.valid) Color(0xFF22C55E) else Color(0xFFEF4444)
+        val statusIcon = Icons.Filled.EventAvailable
+        val statusColor =  Color(0xFFEF4444)
         Icon(imageVector = statusIcon, contentDescription = null, tint = statusColor)
 
         Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
-            Text(text = event.username, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF1F2933))
+            Text(text = event.userName, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF1F2933))
             Text(
                 text = event.content,
                 color = Color(0xFF6B7280),
@@ -130,9 +130,9 @@ private fun EventListRow(event: Event) {
         }
 
         Column(horizontalAlignment = Alignment.End) {
-            Text(text = event.created_at.take(10), color = Color(0xFF9AA1A9), fontSize = 12.sp)
+            Text(text = event.createdAt.take(10), color = Color(0xFF9AA1A9), fontSize = 12.sp)
             Text(
-                text = "開始: " + event.created_at.replace('T', ' ').take(16),
+                text = "開始: " + event.createdAt.replace('T', ' ').take(16),
                 color = BrandRed,
                 fontSize = 12.sp
             )

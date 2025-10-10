@@ -65,14 +65,14 @@ fun PostItem(post: Post, onClick: (Post) -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = post.username,
+                        text = post.userName,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = post.created_at.replace('T', ' ').take(16),
+                        text = post.createdAt.replace('T', ' ').take(16),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

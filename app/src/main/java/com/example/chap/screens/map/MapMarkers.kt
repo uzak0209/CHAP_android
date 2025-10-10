@@ -73,7 +73,7 @@ fun AllMapMarkers(
     )
 }
 
-/**
+/*
  * 汎用マーカー表示（型安全）
  */
 @Composable
@@ -134,19 +134,19 @@ fun AllMapPopups(
             PostPopup(post = post, onDismiss = onPostDismiss)
         }
     }
-    
+
     selectedThread?.let { thread ->
         MappableItemPopup(thread) {
             ThreadPopup(thread = thread, onDismiss = onThreadDismiss)
         }
     }
-    
+
     selectedEvent?.let { event ->
         MappableItemPopup(event) {
             EventPopup(event = event, onDismiss = onEventDismiss)
         }
     }
-    
+
     selectedSpot?.let { spot ->
         MappableItemPopup(spot) {
             SpotPopup(spot = spot, onDismiss = onSpotDismiss)

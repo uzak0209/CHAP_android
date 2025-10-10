@@ -19,10 +19,8 @@ enum class CreateKind{
 data class PostCreateRequest(
     val content: String,
     val category: String,
-    val tags: List<String>,
     val coordinate: Coordinate,
     val visible: Boolean,
-    val valid: Boolean
 )
 
 //data class CommentCreateRequest(
@@ -32,7 +30,7 @@ data class PostCreateRequest(
 //    val thread_id:Long
 //)
 enum class PostCategory{
-    ENTERTAINMENT,DISASTER,COMMUNITY;
+        ENTERTAINMENT,DISASTER,COMMUNITY;
 
     override fun toString(): String {
         return name.lowercase()
@@ -44,124 +42,83 @@ data class User(
     val name: String,
     val image: String?,
     val email: String, //データベースにメールがない？
-    val created_at: String,
-    val valid: Boolean,
+    val createdAt: String,
     val password: String,
-    val login_type: String?,
-    val updated_at: String,
-    val deleted_at: String?
+    val updatedAt: String,
 )
 
 // 投稿
 
 data class Post(
     val id: Long,
-    val type: String,
-    val created_at: String,
-    val updated_at: String,
-    val deleted_at: String?,
-    val user_id: String,
-    val username: String,
+    val userName: String,
+    val userId: String,
+    val userImage: String,
+    val createdAt: String,
+    val updatedAt: String,
     override val coordinate: Coordinate,
     val content: String,
     val category: String,
-    val valid: Boolean,
-    val like: Int,
-    val tags: List<String>
+    val likes: List<String>,
+    val likeCount: Long,
 ) : Mappable
 
 // コメント
 data class Comment(
     val id: Long,
-    val created_at: String,
-    val updated_at: String,
-    val deleted_at: String?,
-    val user_id: String,
-    val username: String,
+    val userId: String,
+    val userName: String,
+    val image: String,
+    val threadId: Long,
+    val createdAt: String,
+    val updatedAt: String,
     val coordinate: Coordinate,
     val content: String,
-    val valid: Boolean,
-    val thread_id: Long,
-    val like: Int,
-    val tags: List<String>
+    val likeCount: Long,
+    val likes: List<String>,
 )
 
 // スレッド
 data class Thread(
     val id: Long,
-    val type: String,
-    val created_at: String,
-    val updated_at: String,
-    val deleted_at: String?,
-    val username: String,
-    val user_id: String,
+    val userId: String,
+    val createdAt: String,
+    val updatedAt: String,
+    val userName: String,
     override val coordinate: Coordinate,
     val category: String,
     val content: String,
-    val valid: Boolean,
-    val like: Int,
-    val tags: List<String>,
+    val likeCount: Long,
+    val likes: List<String>,
 ) : Mappable
 
 // イベント
 data class Event(
     val id: Long,
-    val type: String,
-    val created_at: String,
-    val updated_at: String,
-    val deleted_at: String?,
-    val username: String,
-    val user_id: String,
+    val createdAt: String,
+    val updatedAt: String,
+    val userName: String,
+    val userId: String,
     override val coordinate: Coordinate,
     val category: String,
     val content: String,
-    val valid: Boolean,
-    val like: Int,
-    val tags: List<String>
+    val likes: List<String>,
+    val likeCount: Long,
 ) : Mappable
 
 data class Spot(
     val id: Long,
-    val type: String,
-    val created_at: String,
-    val updated_at: String,
-    val deleted_at: String?,
-    val user_id: String,
-    val username: String,
+    val createdAt: String,
+    val updatedAt: String,
+    val userId: String,
+    val userName: String,
     override val coordinate: Coordinate,
     val content: String,
-    val category: String,
-    val valid: Boolean,
-    val like: Int,
-    val tags: List<String>
 ) : Mappable
-
-
-
-// Email ログイン
-data class EmailLogin(
-    val user_id: String,
-    val user: User,
-    val email: String,
-    val password: String
-)
-
-// Google ログイン
-data class GoogleLogin(
-    val user_id: String,
-    val user: User,
-    val access_token: String,
-    val email: String,
-    val name: String
-)
-
 
 data class RequestComment(
     val content:String,
-    val like:Int,
-    val tags:List<String>,
-    val valid:Boolean,
-    val thread_id: Long
+    val threadId: Long
 )
 enum class Status{
     LOADING,LOADED,ERROR

@@ -64,14 +64,14 @@ fun SpotItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = spot.username,
+                        text = spot.userName,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = spot.created_at.replace('T', ' ').take(16),
+                        text = spot.createdAt.replace('T', ' ').take(16),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

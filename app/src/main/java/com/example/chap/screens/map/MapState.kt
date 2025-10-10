@@ -15,7 +15,7 @@ class MapState {
     var showCreate by mutableStateOf(false)
     var createKind by mutableStateOf(CreateKind.POST)
     var pendingTapCoordinate by mutableStateOf<Coordinate?>(null)
-    var pendingEventDraft by mutableStateOf<Triple<String, PostCategory, List<String>>?>(null)
+    var pendingEventDraft by mutableStateOf<Pair<String, PostCategory>?>(null)
     var selectedPost by mutableStateOf<Post?>(null)
     var selectedThread by mutableStateOf<Thread?>(null)
     var selectedEvent by mutableStateOf<Event?>(null)

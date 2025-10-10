@@ -44,7 +44,7 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
         }
     }
 
-    // レスポンス(JSON)からList<Post>へ変換する関数（簡易実装例）
+    // レスポンス(JSON)からList<Post>へ変換する関数（ドメインモデルにマッピング）
     private fun parsePosts(response: Any?): List<Post> {
         if (response == null) return emptyList()
         return try {
@@ -54,21 +54,7 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
             }
             List(jsonArray.length()) { i ->
                 val obj = jsonArray.getJSONObject(i)
-                Post(
-                    id = obj.optLong("id", 0L),
-                    type = obj.optString("type", ""),
-                    created_at = obj.optString("created_at", ""),
-                    updated_at = obj.optString("updated_at", ""),
-                    deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
-                    user_id = obj.optString("user_id", ""),
-                    username = obj.optString("username", ""),
-                    coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
-                    content = obj.optString("content", ""),
-                    category = obj.optString("category", ""),
-                    valid = obj.optBoolean("valid", true),
-                    like = obj.optInt("like", 0),
-                    tags = parseTags(obj.optJSONArray("tags")),
-                )
+                parsePostObject(obj)
             }
         } catch (e: Exception) {
             emptyList()
@@ -86,14 +72,14 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
         )
     }
 
-    // tagsのパース
-    private fun parseTags(array: JSONArray?): List<String> {
+    // likes のパース（API に配列がある場合）
+    private fun parseLikes(array: JSONArray?): List<String> {
         if (array == null) return emptyList()
         return List(array.length()) { i -> array.optString(i, "") }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun createPost(request: PostCreateRequest): Result<String> {
+    override suspend fun createPost(request: PostCreateRequest): Result<Post> {
         return try {
             val coordinateMap = mapOf(
                 "lat" to request.coordinate.lat,
@@ -105,10 +91,8 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
                 "content" to request.content,
                 "coordinate" to coordinateMap,
                 "created_at" to formatted,
-                "like" to 0,
-                "tags" to request.tags,
                 "type" to "post",
-                "valid" to true
+                "visible" to request.visible,
             )
             println("[PostRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(
@@ -116,17 +100,20 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
                 method = "POST",
                 body = requestBody
             )
-            println("[PostRepository] API response: $response")
-            // サーバーがエラー時にも200と {"error":"..."} を返すケース対策
             val bodyStr = response ?: ""
             if (bodyStr.contains("\"error\"")) {
                 println("[PostRepository] Error in response: $bodyStr")
                 return Result.failure(IllegalStateException("Post create failed: $bodyStr"))
             }
-            println("[PostRepository] Post created successfully")
-            Result.success(response.toString())
+            val json = when (response) {
+                is String -> JSONObject(response)
+                else -> JSONObject(response.toString())
+            }
+            val created = parsePostObject(json)
+            println("[PostRepository] Post created successfully: id=${'$'}{created.id}")
+            Result.success(created)
         } catch (e: Exception) {
-            println("[PostRepository] Exception during post creation: ${e.message}")
+            println("[PostRepository] Exception during post creation: ${'$'}{e.message}")
             e.printStackTrace()
             Result.failure(e)
         }
@@ -136,5 +123,21 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
     private fun getCurrentTimeISO(): String {
         val now = Instant.now()
         return DateTimeFormatter.ISO_INSTANT.format(now)
+    }
+
+    private fun parsePostObject(obj: JSONObject): Post {
+        return Post(
+            id = obj.optLong("id", 0L),
+            userName = obj.optString("username", ""),
+            userId = obj.optString("user_id", ""),
+            userImage = obj.optString("image", ""),
+            createdAt = obj.optString("created_at", ""),
+            updatedAt = obj.optString("updated_at", ""),
+            coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+            content = obj.optString("content", ""),
+            category = obj.optString("category", ""),
+            likes = parseLikes(obj.optJSONArray("likes")),
+            likeCount = obj.optLong("like", 0)
+        )
     }
 }

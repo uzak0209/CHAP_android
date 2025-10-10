@@ -118,14 +118,14 @@ fun RecordScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 when (selectedTab) {
-                    0 -> items(posts.filter { it.user_id == currentUserId }) { post ->
+                    0 -> items(posts.filter { it.userId == currentUserId }) { post ->
                         PostItem(
                             post = post,
                             onClick = { p -> onNavigateMapFocus("post", p.id) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
-                    1 -> items(threads.filter { it.user_id == currentUserId }) { thread ->
+                    1 -> items(threads.filter { it.userId == currentUserId }) { thread ->
                         ThreadItem(
                             thread = thread,
                             onClick = { t -> onNavigateMapFocus("thread", t.id) },
@@ -133,14 +133,14 @@ fun RecordScreen(
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
-                    2 -> items(events.filter { it.user_id == currentUserId }) { event ->
+                    2 -> items(events.filter { it.userId == currentUserId }) { event ->
                         EventItem(
                             event = event,
                             onClick = { e -> onNavigateMapFocus("event", e.id) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
-                    3 -> items(spots.filter { it.user_id == currentUserId }) { spot ->
+                    3 -> items(spots.filter { it.userId == currentUserId }) { spot ->
                         SpotItem(
                             spot = spot,
                             onClick = { s -> onNavigateMapFocus("spot", s.id) }

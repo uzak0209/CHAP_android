@@ -41,7 +41,7 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
     }
     
 
-    // レスポンス(JSON)からList<Event>へ変換する関数（簡易実装例）
+    // レスポンス(JSON)からList<Event>へ変換（ドメインモデルにマッピング）
     private fun parseEvents(response: Any?): List<Event> {
         if (response == null) return emptyList()
         return try {
@@ -51,21 +51,7 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
             }
             List(jsonArray.length()) { i ->
                 val obj = jsonArray.getJSONObject(i)
-                Event(
-                    id = obj.optLong("id", 0L),
-                    type = obj.optString("type", ""),
-                    created_at = obj.optString("created_at", ""),
-                    updated_at = obj.optString("updated_at", ""),
-                    deleted_at = if (obj.isNull("deleted_at")) null else obj.optString("deleted_at"),
-                    user_id = obj.optString("user_id", ""),
-                    username = obj.optString("username", ""),
-                    coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
-                    content = obj.optString("content", ""),
-                    category = obj.optString("category", ""),
-                    valid = obj.optBoolean("valid", true),
-                    like = obj.optInt("like", 0),
-                    tags = parseTags(obj.optJSONArray("tags"))
-                )
+                parseEventObject(obj)
             }
         } catch (e: Exception) {
             emptyList()
@@ -80,14 +66,14 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
         )
     }
 
-    // tagsのパース
-    private fun parseTags(array: JSONArray?): List<String> {
+    // likes のパース
+    private fun parseLikes(array: JSONArray?): List<String> {
         if (array == null) return emptyList()
         return List(array.length()) { i -> array.optString(i, "") }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun createEvent(request: PostCreateRequest): Result<String> {
+    override suspend fun createEvent(request: PostCreateRequest): Result<Event> {
         return try {
             val coordinateMap = mapOf(
                 "lat" to request.coordinate.lat,
@@ -99,10 +85,8 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
                 "content" to request.content,
                 "coordinate" to coordinateMap,
                 "created_at" to formatted,
-                "like" to 0,
-                "tags" to request.tags,
                 "type" to "event",
-                "valid" to true
+                "visible" to request.visible,
             )
             println("[EventRepository] Creating event with body: $requestBody")
 
@@ -111,7 +95,12 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
                 method = "POST",
                 body = requestBody
             )
-            Result.success(response.toString())
+            val json = when (response) {
+                is String -> JSONObject(response)
+                else -> JSONObject(response.toString())
+            }
+            val created = parseEventObject(json)
+            Result.success(created)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -123,4 +112,18 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
         return DateTimeFormatter.ISO_INSTANT.format(now)
     }
     
+    private fun parseEventObject(obj: JSONObject): Event {
+        return Event(
+            id = obj.optLong("id", 0L),
+            createdAt = obj.optString("created_at", ""),
+            updatedAt = obj.optString("updated_at", ""),
+            userName = obj.optString("username", ""),
+            userId = obj.optString("user_id", ""),
+            coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+            category = obj.optString("category", ""),
+            content = obj.optString("content", ""),
+            likes = parseLikes(obj.optJSONArray("likes")),
+            likeCount = obj.optLong("like", 0)
+        )
+    }
 }

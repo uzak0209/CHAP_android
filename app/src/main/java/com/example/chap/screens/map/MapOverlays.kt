@@ -119,8 +119,8 @@ fun MapOverlays(
             locationViewModel = locationViewModel,
             coordinate = if (state.createKind == CreateKind.EVENT) 
                 state.pendingTapCoordinate else locationState.location,
-            onRequestEventLocation = { content, category, tags ->
-                state.pendingEventDraft = Triple(content, category, tags)
+            onRequestEventLocation = { content, category ->
+                state.pendingEventDraft = Pair(content, category)
             }
         )
 
@@ -214,24 +214,19 @@ private fun createEvent(
 ) {
     val draft = state.pendingEventDraft
     val coord = state.pendingTapCoordinate
-    if (draft != null && coord != null) {
-        val (content, category, tags) = draft
+    if (coord != null && draft != null) {
+        val (content, category) = draft
         val createObject = PostCreateRequest(
             coordinate = coord,
             content = content,
             category = category.toString(),
-            valid = true,
-            tags = tags,
-            visible = true
+            visible = true,
         )
         scope.launch {
             try {
                 locationViewModel.createEvent(createObject)
             } catch (e: Exception) {
                 e.printStackTrace()
-            } finally {
-                state.pendingEventDraft = null
-                state.pendingTapCoordinate = null
             }
         }
     }

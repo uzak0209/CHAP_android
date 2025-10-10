@@ -11,6 +11,6 @@ interface MapRepository {
 
     suspend fun createSpot(
         request: PostCreateRequest
-    ): Result<String>
+    ): Result<Spot>
 }
 

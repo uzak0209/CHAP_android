@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CommentTopBar(
-    onNavigateMap: () -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -36,12 +36,12 @@ fun CommentTopBar(
                 .padding(horizontal = 4.dp)
         ) {
             IconButton(
-                onClick = onNavigateMap,
+                onClick = onNavigateBack,
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
                 Icon(
                     imageVector = Icons.Default.Map,
-                    contentDescription = "map",
+                    contentDescription = "back",
                     tint = Color.Black
                 )
             }
