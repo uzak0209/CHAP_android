@@ -35,7 +35,7 @@ fun TimelineScreen(
     timelineViewModel: TimelineViewModel,
     onNavigateMap: () -> Unit,
     onNavigateComment: (String) -> Unit,
-    onNavigateMapFocus: (String, Long) -> Unit = { _, _ -> },
+    onNavigateMapFocus: (String, String) -> Unit = { _, _ -> },
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Posts", "Threads", "Events")
@@ -95,7 +95,7 @@ fun TimelineScreen(
                     0 -> items(posts) { post ->
                         PostItem(
                             post = post,
-                            onClick = { p -> onNavigateMapFocus("post", p.id) }
+                            onClick = { p -> onNavigateMapFocus("post", p.id.toString()) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
@@ -110,7 +110,7 @@ fun TimelineScreen(
                     2 -> items(events) { event ->
                         EventItem(
                             event = event,
-                            onClick = { e -> onNavigateMapFocus("event", e.id) },
+                            onClick = { e -> onNavigateMapFocus("event", e.id.toString()) },
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }

@@ -46,7 +46,7 @@ class CommentViewModel @Inject constructor(
             result.onSuccess { response ->
                 println("コメント投稿成功: $response")
                 // 投稿成功後にリロードしてUIを更新
-                commentRepository.getCommentsByThreadID(comment.threadId.toString())
+                commentRepository.getCommentsByThreadID(comment.threadId)
                     .onSuccess { list ->
                         _comments.value = list
                         _errorMessage.value = null
@@ -65,11 +65,11 @@ class CommentViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun load(threadId: Long) {
+    fun load(threadId: String) {
         if (_isLoading.value) return
         viewModelScope.launch {
             _isLoading.value = true
-            commentRepository.getCommentsByThreadID(threadId.toString())
+            commentRepository.getCommentsByThreadID(threadId)
                 .onSuccess { list ->
                     _comments.value = list
                     _errorMessage.value = null
@@ -80,7 +80,5 @@ class CommentViewModel @Inject constructor(
             _isLoading.value = false
         }
     }
-
-    fun refresh(threadId: Long) = load(threadId)
 }
 

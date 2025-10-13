@@ -2,6 +2,7 @@ package com.example.chap.repository
 
 import com.example.chap.api.ApiClient
 import com.example.chap.api.ApiEndpoints
+import com.example.chap.location.LocationProvider
 import com.example.chap.models.Comment
 import com.example.chap.models.RequestComment
 import com.example.chap.models.Coordinate
@@ -14,20 +15,27 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
-class CommentRepositoryImpl @Inject constructor() : CommentRepository {
+class CommentRepositoryImpl @Inject constructor(private val locationProvider: LocationProvider) : CommentRepository {
 	private val _comments = MutableStateFlow<List<Comment>>(emptyList())
 	override val comments: StateFlow<List<Comment>> = _comments.asStateFlow()
 
 
-    override suspend fun getCommentsByThreadID(threadID: String): Result<List<Comment>> = withContext(Dispatchers.IO) {
-		return@withContext try {
-			val url = ApiEndpoints.Threads.details(threadID)
-			val response = ApiClient.request(url)
+    override suspend fun getCommentsByThreadID(threadID: String): Result<List<Comment>>  {
+        val coordinate = locationProvider.current()
+		return try {
+			val response = ApiClient.request(
+                url = ApiEndpoints.Comments.getCommentsByThread(threadID),
+                method = "GET",
+                body = mapOf(
+                    "threadId" to threadID,
+                    )
+                )
 
-			if (response != null) {
-				val replies= JSONObject(response).getJSONArray("replies")
+            if (response != null) {
+                val root = JSONObject(response)
+                val array = root.optJSONArray("replies") ?: root.optJSONArray("comments") ?: JSONArray()
 
-				val commentList= parseComment(replies).getOrThrow()
+                val commentList= parseComment(array).getOrThrow()
 
 				_comments.value = commentList
 				Result.success(commentList)
@@ -39,13 +47,16 @@ class CommentRepositoryImpl @Inject constructor() : CommentRepository {
 		}
 	}
 
-	override suspend fun createComment(comment:RequestComment): Result<String> = withContext(Dispatchers.IO) {
-		return@withContext try {
-			val url = ApiEndpoints.Threads.reply(comment.threadId.toString())
-			val body = mapOf(
-				"content" to comment.content,
-			)
-			val response = ApiClient.request(url, method = "POST", body = body)
+    override suspend fun createComment(comment:RequestComment): Result<String> {
+		return try {
+			val response = ApiClient.request(
+                url = ApiEndpoints.Comments.CREATE,
+                method = "POST",
+                body = mapOf(
+                    "threadId" to comment.threadId,
+                    "content" to comment.content,
+                )
+            )
 			if (response != null) {
 				Result.success(response)
 			} else {
@@ -79,15 +90,15 @@ class CommentRepositoryImpl @Inject constructor() : CommentRepository {
                 }
             }
 
-			val comment = Comment(
-                id = obj.optLong("id", 0L),
-                createdAt = obj.optString("created_at", ""),
-                updatedAt = obj.optString("updated_at", ""),
-                userId = obj.optString("user_id", ""),
-                userName = obj.optString("username", ""),
+            val comment = Comment(
+                id = obj.optString("id", obj.optString("comment_id", "")),
+                createdAt = obj.optString("created_at", obj.optString("createdAt", "")),
+                updatedAt = obj.optString("updated_at", obj.optString("updatedAt", "")),
+                userId = obj.optString("user_id", obj.optString("userId", "")),
+                userName = obj.optString("username", obj.optString("userName", "")),
                 coordinate = coordinate,
                 content = obj.optString("content", ""),
-                threadId = obj.optLong("thread_id", 0L),
+                threadId = obj.optString("thread_id", obj.optString("threadId", "")),
                 likeCount = obj.optLong("likeCount", 0),
 				likes = parseLikes(obj.optJSONArray("likes")),
                 image = obj.optString("image", ""),

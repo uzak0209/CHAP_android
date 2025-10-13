@@ -51,13 +51,14 @@ object ApiEndpoints {
         fun edit(id: String) = "$BASE/api/v1/edit/event/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/event/$id"
     }
-    object Social {
-        const val HEATMAP = "$BASE/api/v1/social-sensing/heatmap"
+    object Comments {
+        fun getCommentsByThread(id: String) = "$BASE/api/v1/comments/$id"
+        const val CREATE = "$BASE/api/v1/comments/create"
     }
     object Spots {
         const val LIST = "$BASE/api/v1/spots"
         fun get(id: String) = "$BASE/api/v1/spot/$id"
-        const val CREATE = "$BASE/api/v1/spot/create"
+        const val CREATE = "$BASE/api/v1/spots/create"
         fun update(ts: Long) = "$BASE/api/v1/update/spot/$ts"
         fun edit(id: String) = "$BASE/api/v1/edit/spot/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/spot/$id"

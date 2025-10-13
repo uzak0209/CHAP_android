@@ -107,9 +107,9 @@ fun Navigation(
         }
         composable(
             route = "comment/{threadId}",
-            arguments = listOf(navArgument("threadId") { type = NavType.LongType })
+            arguments = listOf(navArgument("threadId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val threadId = backStackEntry.arguments?.getLong("threadId") ?: return@composable
+            val threadId = backStackEntry.arguments?.getString("threadId") ?: return@composable
             val threadList by threadViewModel.threads.collectAsState()
             val targetThread = threadList.firstOrNull { it.id == threadId }
             targetThread?.let { t ->
@@ -163,11 +163,11 @@ fun Navigation(
             route = "mapFocus/{type}/{id}",
             arguments = listOf(
                 navArgument("type") { type = NavType.StringType },
-                navArgument("id") { type = NavType.LongType }
+                navArgument("id") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type")
-            val id = backStackEntry.arguments?.getLong("id")
+            val id = backStackEntry.arguments?.getString("id")
             MapScreen(
                 onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
                 onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },

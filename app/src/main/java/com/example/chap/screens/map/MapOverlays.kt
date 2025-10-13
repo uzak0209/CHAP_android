@@ -105,6 +105,7 @@ fun MapOverlays(
                         createEvent(
                             state = state,
                             scope = scope,
+                            createKind = state.createKind,
                             locationViewModel = locationViewModel
                         )
                         // 位置確定後は通常画面に戻す
@@ -228,23 +229,41 @@ private fun LoadingIndicator() {
 private fun createEvent(
     state: MapState,
     scope: CoroutineScope,
+    createKind: CreateKind,
     locationViewModel: LocationViewModel
 ) {
     val draft = state.pendingEventDraft
     val coord = state.pendingTapCoordinate
     if (coord != null && draft != null) {
-        val (content, category) = draft
-        val createObject = PostCreateRequest(
-            coordinate = coord,
-            content = content,
-            category = category.toString(),
-            visible = true,
-        )
-        scope.launch {
-            try {
-                locationViewModel.createEvent(createObject)
-            } catch (e: Exception) {
-                e.printStackTrace()
+        if(createKind === CreateKind.EVENT){
+            val (content, category) = draft
+            val createEventObject = PostCreateRequest(
+                coordinate = coord,
+                content = content,
+                category = category,
+                visible = true,
+            )
+            scope.launch {
+                try {
+                    locationViewModel.createEvent(createEventObject)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }else{
+            val (title, description) = draft
+            val createSpotObject = SpotCreateRequest(
+                coordinate = coord,
+                title = title,
+                description = description,
+                image = "",
+            )
+            scope.launch {
+                try {
+                    locationViewModel.createSpot(createSpotObject)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }

@@ -76,7 +76,7 @@ private fun ThreadCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F)),
-        onClick = { onThreadClick(thread.id.toString()) }
+        onClick = { onThreadClick(thread.id) }
     ) {
         Column(Modifier.padding(16.dp)) {
             SubmitHeader(username = thread.userName)

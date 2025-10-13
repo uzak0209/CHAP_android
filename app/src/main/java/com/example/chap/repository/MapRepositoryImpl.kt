@@ -6,10 +6,8 @@ import com.example.chap.api.ApiClient
 import com.example.chap.api.ApiEndpoints
 import com.example.chap.location.LocationProvider
 import com.example.chap.models.Coordinate
-import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Spot
 import com.example.chap.models.SpotCreateRequest
-import com.example.chap.screens.map.LocationViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
@@ -27,11 +25,11 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
         val coordinate = locationProvider.current()
         return try {
             val response = ApiClient.request(
-                url = ApiEndpoints.Posts.LIST,
+                url = ApiEndpoints.Spots.LIST,
                 method = "POST",
                 body = mapOf(
-                    "lat" to (coordinate?.lat?.toString() ?:""),
-                    "lng" to (coordinate?.lng?.toString() ?:"")
+                    "lat" to (coordinate?.lat ?: 0.0),
+                    "lng" to (coordinate?.lng ?: 0.0)
                 )
             )
             // レスポンスをパースしてSpotリストに変換し、_postsにセット
@@ -57,7 +55,7 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
             )
             println("[SpotRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(
-                url = ApiEndpoints.Posts.CREATE,
+                url = ApiEndpoints.Spots.CREATE,
                 method = "POST",
                 body = requestBody
             )
@@ -86,13 +84,20 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
 private fun parseSpots(response: Any?): List<Spot> {
     if (response == null) return emptyList()
     return try {
-        val jsonArray = when (response) {
-            is String -> JSONArray(response)
-            else -> JSONArray(response.toString())
+        val text = response.toString().trim()
+        val jsonArray = if (text.startsWith("{")) {
+            // 形: { "spots": [ ... ] } または混在レスポンス
+            val obj = JSONObject(text)
+            obj.optJSONArray("spots") ?: obj.optJSONArray("items") ?: JSONArray()
+        } else {
+            // 形: [ ... ]
+            JSONArray(text)
         }
-        val all = List(jsonArray.length()) { i -> jsonArray.getJSONObject(i) }
-        all
-            .filter { it.optString("type", "") == "spot" }
+        List(jsonArray.length()) { i ->
+            val obj = jsonArray.getJSONObject(i)
+            obj
+        }
+            .filter { it.optString("type", "spot").lowercase() == "spot" }
             .map { obj -> parseSpotObject(obj) }
     } catch (e: Exception) {
         emptyList()
@@ -129,13 +134,19 @@ private fun parseSpotObject(obj: JSONObject): Spot {
             lng = obj.optDouble("lng", 0.0)
         )
     }
+    val id = obj.optString("id", obj.optString("spot_id", ""))
+    val createdAt = obj.optString("created_at", obj.optString("createdAt", ""))
+    val updatedAt = obj.optString("updated_at", obj.optString("updatedAt", ""))
+    val userId = obj.optString("user_id", obj.optString("userId", ""))
+    val userName = obj.optString("username", obj.optString("userName", ""))
+    val content = obj.optString("description", obj.optString("content", ""))
     return Spot(
-        id = obj.optLong("id", 0L),
-        createdAt = obj.optString("created_at", ""),
-        updatedAt = obj.optString("updated_at", ""),
-        userId = obj.optString("user_id", ""),
-        userName = obj.optString("username", ""),
+        id = id,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        userId = userId,
+        userName = userName,
         coordinate = coordinate,
-        content = obj.optString("content", "")
+        content = content
     )
 }

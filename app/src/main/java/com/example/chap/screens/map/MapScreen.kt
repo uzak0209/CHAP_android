@@ -31,7 +31,7 @@ fun MapScreen(
     onNavigateRecord: () -> Unit = {},
     locationViewModel: LocationViewModel,
     focusType: String? = null,
-    focusId: Long? = null
+    focusId: String? = null
 ) {
     // 状態管理
     val state = rememberMapState()
@@ -146,7 +146,7 @@ fun MapScreen(
                         if (!focusHandled && focusType != null && focusId != null) {
                             when (focusType) {
                                 "post" -> {
-                                    posts.firstOrNull { it.id == focusId }?.let { p ->
+                                    posts.firstOrNull { it.id.toString() == focusId }?.let { p ->
                                         state.selectedPost = p
                                         moveViewPoint(viewportState, scope, p.coordinate)
                                         focusHandled = true
@@ -160,7 +160,7 @@ fun MapScreen(
                                     }
                                 }
                                 "event" -> {
-                                    events.firstOrNull { it.id == focusId }?.let { e ->
+                                    events.firstOrNull { it.id.toString() == focusId }?.let { e ->
                                         state.selectedEvent = e
                                         moveViewPoint(viewportState, scope, e.coordinate)
                                         focusHandled = true
@@ -197,7 +197,7 @@ fun MapScreen(
                         },
                         onLocationClick = {
                             moveViewPoint(viewportState, scope, locationState.location)
-                        }
+                        },
                     )
                 }
             }

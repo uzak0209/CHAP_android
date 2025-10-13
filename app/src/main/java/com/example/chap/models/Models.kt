@@ -66,11 +66,11 @@ data class Post(
 
 // コメント
 data class Comment(
-    val id: Long,
+    val id: String,
     val userId: String,
     val userName: String,
     val image: String,
-    val threadId: Long,
+    val threadId: String,
     val createdAt: String,
     val updatedAt: String,
     val coordinate: Coordinate,
@@ -81,7 +81,7 @@ data class Comment(
 
 // スレッド
 data class Thread(
-    val id: Long,
+    val id: String,
     val userId: String,
     val userImage: String,
     val image: String,
@@ -97,7 +97,7 @@ data class Thread(
 
 // イベント
 data class Event(
-    val id: Long,
+    val id: String,
     val createdAt: String,
     val updatedAt: String,
     val userName: String,
@@ -117,7 +117,7 @@ data class Event(
 ) : Mappable
 
 data class Spot(
-    val id: Long,
+    val id: String,
     val createdAt: String,
     val updatedAt: String,
     val userId: String,
@@ -128,7 +128,7 @@ data class Spot(
 
 data class RequestComment(
     val content:String,
-    val threadId: Long
+    val threadId: String
 )
 enum class Status{
     LOADING,LOADED,ERROR

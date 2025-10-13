@@ -127,7 +127,7 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
             )
         }
         return Event(
-            id = obj.optLong("id", 0L),
+            id = obj.optString("id", obj.optString("event_id", "")),
             createdAt = obj.optString("created_at", obj.optString("createdAt", "")),
             updatedAt = obj.optString("updated_at", obj.optString("updatedAt", "")),
             userName = obj.optString("user_name", obj.optString("username", "")),

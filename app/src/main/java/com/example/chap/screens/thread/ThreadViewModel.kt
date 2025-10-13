@@ -39,10 +39,6 @@ class ThreadViewModel @Inject constructor(
         }
     }
 
-    // Added helper to fetch a thread by id from current cache
-    fun getThreadById(id: Long): Thread? = threadRepository.threads.value.firstOrNull { it.id == id }
-
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 

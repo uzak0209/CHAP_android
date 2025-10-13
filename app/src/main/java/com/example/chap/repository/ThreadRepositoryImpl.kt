@@ -137,7 +137,6 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
 
     private fun parseThreadObject(obj: JSONObject): Thread {
         val idStr = obj.optString("id", "0")
-        val id = idStr.toLongOrNull() ?: idStr.hashCode().toLong()
         val coord = if (obj.has("coordinate")) {
             parseCoordinate(obj.optJSONObject("coordinate"))
         } else {
@@ -147,7 +146,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
             )
         }
         return Thread(
-            id = id,
+            id = idStr,
             userId = obj.optString("userId", obj.optString("user_id", "")),
             userImage = obj.optString("userImage", ""),
             image = obj.optString("image", ""),

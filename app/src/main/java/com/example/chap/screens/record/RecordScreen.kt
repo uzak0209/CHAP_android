@@ -36,7 +36,7 @@ fun RecordScreen(
     recordViewModel: RecordViewModel,
     onNavigateMap: () -> Unit,
     onNavigateComment: (String) -> Unit,
-    onNavigateMapFocus: (String, Long) -> Unit = { _, _ -> },
+    onNavigateMapFocus: (String, String) -> Unit = { _, _ -> },
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Posts", "Threads", "Events", "Spots")
@@ -121,7 +121,7 @@ fun RecordScreen(
                     0 -> items(posts.filter { it.userId == currentUserId }) { post ->
                         PostItem(
                             post = post,
-                            onClick = { p -> onNavigateMapFocus("post", p.id) }
+                            onClick = { p -> onNavigateMapFocus("post", p.id.toString()) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
@@ -136,14 +136,14 @@ fun RecordScreen(
                     2 -> items(events.filter { it.userId == currentUserId }) { event ->
                         EventItem(
                             event = event,
-                            onClick = { e -> onNavigateMapFocus("event", e.id) }
+                            onClick = { e -> onNavigateMapFocus("event", e.id.toString()) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
                     3 -> items(spots.filter { it.userId == currentUserId }) { spot ->
                         SpotItem(
                             spot = spot,
-                            onClick = { s -> onNavigateMapFocus("spot", s.id) }
+                            onClick = { s -> onNavigateMapFocus("spot", s.id.toString()) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
