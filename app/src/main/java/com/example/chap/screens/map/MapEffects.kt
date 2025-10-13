@@ -40,8 +40,8 @@ fun MapEffects(
         hasSelection = state.hasSelection()
     )
     
-    // イベント位置選択リスナー
-    EventLocationPickerEffect(
+    //位置選択リスナー
+    MakeLocationPickerEffect(
         createKind = state.createKind,
         pendingEventDraft = state.pendingEventDraft,
         mapTapPickListener = state.mapTapPickListener,
@@ -120,16 +120,16 @@ private fun GestureControlEffect(
 }
 
 @Composable
-private fun EventLocationPickerEffect(
+private fun MakeLocationPickerEffect(
     createKind: CreateKind,
-    pendingEventDraft: Pair<String, PostCategory>?,
+    pendingEventDraft: Pair<String, String>?,
     mapTapPickListener: OnMapClickListener?,
     onMapTapPickListenerChange: (OnMapClickListener?) -> Unit,
     onCoordinatePicked: (Coordinate) -> Unit
 ) {
     MapEffect(createKind, pendingEventDraft) { mapView ->
         mapTapPickListener?.let { mapView.gestures.removeOnMapClickListener(it) }
-        if (createKind == CreateKind.EVENT && pendingEventDraft != null) {
+        if ((createKind == CreateKind.EVENT || createKind == CreateKind.SPOT) && pendingEventDraft != null) {
             val listener = OnMapClickListener { point ->
                 onCoordinatePicked(Coordinate(lat = point.latitude(), lng = point.longitude()))
                 true

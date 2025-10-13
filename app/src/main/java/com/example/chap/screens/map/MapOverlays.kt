@@ -32,7 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chap.components.CreateDialog
+import com.example.chap.components.CreatePostModal
+import com.example.chap.components.CreateSpotModal
 import com.example.chap.components.SelectPopupOverlay
 import com.example.chap.components.ToggleDimension
 import com.example.chap.components.map.moveViewPoint
@@ -106,23 +107,40 @@ fun MapOverlays(
                             scope = scope,
                             locationViewModel = locationViewModel
                         )
+                        // 位置確定後は通常画面に戻す
+                        state.pendingEventDraft = null
+                        state.pendingTapCoordinate = null
+                        state.showCreate = false
                     }
                 )
             }
         }
 
-        // ダイアログ
-        CreateDialog(
-            isOpen = state.showCreate,
-            onClose = { state.showCreate = false },
-            selectedKind = state.createKind,
-            locationViewModel = locationViewModel,
-            coordinate = if (state.createKind == CreateKind.EVENT) 
-                state.pendingTapCoordinate else locationState.location,
-            onRequestEventLocation = { content, category ->
-                state.pendingEventDraft = Pair(content, category)
-            }
-        )
+        if(state.createKind == CreateKind.SPOT){
+            CreateSpotModal(
+                isOpen = state.showCreate,
+                onClose = { state.showCreate = false },
+                selectedKind = state.createKind,
+                locationViewModel = locationViewModel,
+                coordinate = if (state.createKind == CreateKind.EVENT || state.createKind == CreateKind.SPOT)
+                    state.pendingTapCoordinate else locationState.location,
+                onRequestMakeLocation = { title, description ->
+                    state.pendingEventDraft = Pair(title, description)
+                }
+            )
+        }else{
+            CreatePostModal(
+                isOpen = state.showCreate,
+                onClose = { state.showCreate = false },
+                selectedKind = state.createKind,
+                locationViewModel = locationViewModel,
+                coordinate = if (state.createKind == CreateKind.EVENT || state.createKind == CreateKind.SPOT)
+                    state.pendingTapCoordinate else locationState.location,
+                onRequestMakeLocation = { content, category ->
+                    state.pendingEventDraft = Pair(content, category.toString())
+                }
+            )
+        }
 
         SelectPopupOverlay(
             visible = state.showPopup,

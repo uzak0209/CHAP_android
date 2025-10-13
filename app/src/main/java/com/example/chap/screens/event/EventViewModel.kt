@@ -23,18 +23,6 @@ class EventViewModel @Inject constructor(
     val events: StateFlow<List<Event>> = _events
 
     fun getEvents(): List<Event> = eventRepository.events.value
-
-    fun getAllEvents() {
-        viewModelScope.launch {
-            val result = eventRepository.getAllEvents()
-            result.onSuccess { response ->
-                println("投稿成功: $response")
-            }.onFailure { e ->
-                // エラー処理
-            }
-        }
-    }
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -50,7 +38,5 @@ class EventViewModel @Inject constructor(
             _isLoading.value = false
         }
     }
-
-    fun refresh() = load()
 }
 

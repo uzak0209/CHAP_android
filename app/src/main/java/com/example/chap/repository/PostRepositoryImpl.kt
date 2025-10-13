@@ -31,12 +31,14 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
                 url = ApiEndpoints.Posts.LIST,
                 method = "POST",
                 body = mapOf(
-                    "lat" to (coordinate?.lat?.toString() ?: ""),
-                    "lng" to (coordinate?.lng?.toString() ?: "")
+                    "lat" to (coordinate?.lat ?: 0.0),
+                    "lng" to (coordinate?.lng ?: 0.0),
                 )
             )
             // レスポンスをパースしてPostリストに変換し、_postsにセット
+            println("[PostRepository] getAllPosts raw response: ${response?.toString()?.take(300)}")
             val postList = parsePosts(response)
+            println("[PostRepository] getAllPosts parsed count: ${postList.size}")
             _posts.value = postList
             Result.success(postList)
         } catch (e: Exception) {
@@ -48,9 +50,14 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
     private fun parsePosts(response: Any?): List<Post> {
         if (response == null) return emptyList()
         return try {
-            val jsonArray = when (response) {
-                is String -> JSONArray(response)
-                else -> JSONArray(response.toString())
+            val text = response.toString().trim()
+            val jsonArray = if (text.startsWith("{")) {
+                // 形: { "threads": [ ... ] }
+                val obj = JSONObject(text)
+                obj.optJSONArray("posts") ?: JSONArray()
+            } else {
+                // 形: [ ... ]
+                JSONArray(text)
             }
             List(jsonArray.length()) { i ->
                 val obj = jsonArray.getJSONObject(i)
@@ -60,8 +67,6 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
             emptyList()
         }
     }
-
-
 
     // Coordinateのパース
     private fun parseCoordinate(obj: JSONObject?): Coordinate {
@@ -81,18 +86,16 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun createPost(request: PostCreateRequest): Result<Post> {
         return try {
-            val coordinateMap = mapOf(
-                "lat" to request.coordinate.lat,
-                "lng" to request.coordinate.lng
-            )
             val formatted = getCurrentTimeISO()
             val requestBody = mapOf(
-                "category" to request.category,
                 "content" to request.content,
-                "coordinate" to coordinateMap,
+                // サーバーはトップレベルの lat/lng を期待するためフラットに送る
+                "lat" to request.coordinate.lat,
+                "lng" to request.coordinate.lng,
                 "created_at" to formatted,
                 "type" to "post",
                 "visible" to request.visible,
+                "contentType" to request.category
             )
             println("[PostRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(
@@ -126,18 +129,29 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
     }
 
     private fun parsePostObject(obj: JSONObject): Post {
+        val idStr = obj.optString("id", "0")
+        val id = idStr.toLongOrNull() ?: idStr.hashCode().toLong()
+        val coordinate = if (obj.has("coordinate")) {
+            parseCoordinate(obj.optJSONObject("coordinate"))
+        } else {
+            Coordinate(
+                lat = obj.optDouble("lat", 0.0),
+                lng = obj.optDouble("lng", 0.0)
+            )
+        }
         return Post(
-            id = obj.optLong("id", 0L),
-            userName = obj.optString("username", ""),
-            userId = obj.optString("user_id", ""),
-            userImage = obj.optString("image", ""),
-            createdAt = obj.optString("created_at", ""),
-            updatedAt = obj.optString("updated_at", ""),
-            coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
-            content = obj.optString("content", ""),
+            id = id,
+            userId = obj.optString("userId", obj.optString("user_id", "")),
+            userImage = obj.optString("userImage", ""),
+            image = obj.optString("image", ""),
+            createdAt = obj.optString("createdAt", obj.optString("created_at", "")),
+            updatedAt = obj.optString("updatedAt", obj.optString("updated_at", "")),
+            userName = obj.optString("userName", obj.optString("user_name", obj.optString("username", ""))),
+            coordinate = coordinate,
             category = obj.optString("category", ""),
+            content = obj.optString("content", ""),
+            likeCount = if (obj.has("likeCount")) obj.optLong("likeCount", 0) else obj.optLong("like_count", obj.optLong("like", 0)),
             likes = parseLikes(obj.optJSONArray("likes")),
-            likeCount = obj.optLong("like", 0)
         )
     }
 }

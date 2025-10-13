@@ -5,10 +5,8 @@ package com.example.chap.components
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,13 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,20 +44,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.chap.models.Coordinate
-import com.example.chap.screens.event.EventViewModel
 import kotlinx.coroutines.launch
-import com.example.chap.screens.post.PostViewModel
-import com.example.chap.screens.thread.ThreadViewModel
 import com.example.chap.models.CreateKind
 import com.example.chap.models.PostCategory
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Status
 import com.example.chap.screens.map.LocationViewModel
 import androidx.compose.runtime.collectAsState
+import com.example.chap.models.SpotCreateRequest
 
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
 
@@ -69,19 +62,21 @@ import androidx.compose.runtime.collectAsState
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateDialog(
+fun CreateSpotModal(
     isOpen: Boolean,
     onClose: () -> Unit,
     selectedKind: CreateKind,
     locationViewModel: LocationViewModel,
     coordinate: Coordinate?,
-    onRequestEventLocation: ((content: String, category: PostCategory) -> Unit)? = null
+    onRequestMakeLocation: ((title: String, description: String) -> Unit)? = null
 ) {
 
     if (!isOpen) return
     val scope = rememberCoroutineScope()
     // 未定義だった ViewModel をローカルで取得
-    var content by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var image by remember { mutableStateOf("") }
     var category by remember { mutableStateOf(PostCategory.ENTERTAINMENT) }
     var loading by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -89,7 +84,9 @@ fun CreateDialog(
     var categoryMenuExpanded by remember { mutableStateOf(false) }
 
     fun reset() {
-        content = ""
+        title = ""
+        description = ""
+        image = ""
         category = PostCategory.ENTERTAINMENT
     }
 
@@ -129,15 +126,28 @@ fun CreateDialog(
                     }
                 }
 
+                //タイトル
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = {
+                         title = it
+                    },
+                    label = { Text("タイトル") },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    minLines = 1,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default)
+                )
+
                 Spacer(Modifier.height(12.dp))
 
-                // 投稿内容
+                //登録名
                 OutlinedTextField(
-                    value = content,
+                    value = description,
                     onValueChange = {
-                        if (it.length <= 280) content = it
+                        if (it.length <= 30) description = it
                     },
-                    label = { Text("投稿内容") },
+                    label = { Text("登録名") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 120.dp),
@@ -148,43 +158,9 @@ fun CreateDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    Text("${content.length}/280", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                    Text("${description.length}/280", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
                 }
 
-                Spacer(Modifier.height(16.dp))
-
-                // カテゴリ選択 (ExposedDropdownMenu)
-                ExposedDropdownMenuBox(
-                    expanded = categoryMenuExpanded,
-                    onExpandedChange = { categoryMenuExpanded = !categoryMenuExpanded }
-                ) {
-                    OutlinedTextField(
-                        value = category.name,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("カテゴリ") },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryMenuExpanded)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = categoryMenuExpanded,
-                        onDismissRequest = { categoryMenuExpanded = false }
-                    ) {
-            PostCategory.entries.forEach {
-                            DropdownMenuItem(
-                text = { Text(it.toString()) },
-                                onClick = {
-                                    category = it
-                                    categoryMenuExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
                 Spacer(Modifier.height(16.dp))
 
                 // 位置情報（選択済みの座標を優先して表示）
@@ -225,37 +201,26 @@ fun CreateDialog(
                     }
                     Button(
                         onClick = {
-                            if (selectedKind == CreateKind.EVENT && onRequestEventLocation != null) {
-                                onRequestEventLocation(content.trim(), category)
+                            if (selectedKind == CreateKind.SPOT && onRequestMakeLocation != null) {
+                                onRequestMakeLocation(title.trim(), description.trim())
                                 reset()
                                 onClose()
                                 return@Button
                             }
                             if (locationViewModel.locationState.value.status == Status.LOADED) {
-                                val createObject = PostCreateRequest(
+                                val createSpotObject = SpotCreateRequest(
                                     coordinate = locationViewModel.locationState.value.location!!,
-                                    content = content.trim(),
-                                    category = category.toString(),
-                                    visible = true,
+                                    title = title.trim(),
+                                    description = description.trim(),
+                                    image = "",
                                 )
                                 
                                 scope.launch {
                                     loading = true
                                     try {
-                                        when(selectedKind) {
-                                            CreateKind.POST -> {
-                                                locationViewModel.createPost(createObject)
-                                            }
-                                            CreateKind.EVENT -> {
-                                                locationViewModel.createEvent(createObject)
-                                            }
-                                            CreateKind.THREAD -> {
-                                                locationViewModel.createThread(createObject)
-                                            }
-                                            CreateKind.SPOT -> {
-                                                locationViewModel.createSpot(createObject)
-                                            }
-                                        }
+
+                                        locationViewModel.createSpot(createSpotObject)
+
                                         // 投稿成功時の処理
                                         loading = false
                                         reset()
@@ -263,17 +228,17 @@ fun CreateDialog(
                                     } catch (e: Exception) {
                                         loading = false
                                         e.printStackTrace()
-                                        // エラー時はダイアログを閉じない
+
                                     }
                                 }
                             }
                         },
                         modifier = Modifier.weight(1f),
-                        enabled = content.isNotBlank() &&
+                        enabled = title.isNotBlank() &&
                                 !loading &&
                                 locationViewModel.locationState.collectAsState().value.status == Status.LOADED
                     ) {
-                        Text(if (loading) "投稿中..." else "投稿する")
+                        Text(if (loading) "登録中..." else "登録する")
                     }
                 }
             }

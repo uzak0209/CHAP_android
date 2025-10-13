@@ -12,6 +12,7 @@ import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Spot
 import com.example.chap.models.Status
 import com.example.chap.location.LocationProvider
+import com.example.chap.models.SpotCreateRequest
 import com.example.chap.repository.EventRepositoryImpl
 import com.example.chap.repository.MapRepositoryImpl
 import com.example.chap.repository.PostRepositoryImpl
@@ -92,7 +93,10 @@ class LocationViewModel @Inject constructor(
         viewModelScope.launch {
             val result = threadRepository.createThread(thread)
             result.onSuccess { created ->
-                _threads.value = listOf(created) + _threads.value.filterNot { it.id == created.id }
+                // 作成レスポンスに詳細が含まれないため、一覧を即時再取得してUIを更新
+                threadRepository.getAllThreads().onSuccess { list ->
+                    _threads.value = list.sortedByDescending { it.createdAt }
+                }
             }.onFailure { e ->
                 println("[ThreadViewModel] 作成エラー: ${'$'}{e.message}")
             }
@@ -115,7 +119,7 @@ class LocationViewModel @Inject constructor(
     }
 
 
-    fun createSpot(spot: PostCreateRequest) {
+    fun createSpot(spot: SpotCreateRequest) {
         viewModelScope.launch {
             val result = mapRepository.createSpot(spot)
             result.onSuccess { created ->

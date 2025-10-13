@@ -8,6 +8,7 @@ import com.example.chap.location.LocationProvider
 import com.example.chap.models.Coordinate
 import com.example.chap.models.PostCreateRequest
 import com.example.chap.models.Spot
+import com.example.chap.models.SpotCreateRequest
 import com.example.chap.screens.map.LocationViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,19 +44,16 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun createSpot(request: PostCreateRequest): Result<Spot> {
+    override suspend fun createSpot(request: SpotCreateRequest): Result<Spot> {
         return try {
-            val coordinateMap = mapOf(
-                "lat" to request.coordinate.lat,
-                "lng" to request.coordinate.lng
-            )
             val formatted = getCurrentTimeISO()
             val requestBody = mapOf(
-                "content" to request.content,
-                "coordinate" to coordinateMap,
+                "title" to request.title,
+                "lat" to request.coordinate.lat,
+                "lng" to request.coordinate.lng,
+                "image" to request.image,
                 "created_at" to formatted,
-                "type" to "spot",
-                "visible" to request.visible,
+                "description" to request.description
             )
             println("[SpotRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(
@@ -122,13 +120,22 @@ private fun getCurrentTimeISO(): String {
 }
 
 private fun parseSpotObject(obj: JSONObject): Spot {
+    val coordinateJson = obj.optJSONObject("coordinate")
+    val coordinate = if (coordinateJson != null) {
+        parseCoordinate(coordinateJson)
+    } else {
+        Coordinate(
+            lat = obj.optDouble("lat", 0.0),
+            lng = obj.optDouble("lng", 0.0)
+        )
+    }
     return Spot(
         id = obj.optLong("id", 0L),
         createdAt = obj.optString("created_at", ""),
         updatedAt = obj.optString("updated_at", ""),
         userId = obj.optString("user_id", ""),
         userName = obj.optString("username", ""),
-        coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+        coordinate = coordinate,
         content = obj.optString("content", "")
     )
 }

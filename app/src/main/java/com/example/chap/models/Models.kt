@@ -23,12 +23,12 @@ data class PostCreateRequest(
     val visible: Boolean,
 )
 
-//data class CommentCreateRequest(
-//    val content: String,
-//    val visible: Boolean,
-//    val valid: Boolean,
-//    val thread_id:Long
-//)
+data class SpotCreateRequest(
+    val title: String,
+    val description: String,
+    val coordinate: Coordinate,
+    val image: String,
+)
 enum class PostCategory{
         ENTERTAINMENT,DISASTER,COMMUNITY;
 
@@ -54,6 +54,7 @@ data class Post(
     val userName: String,
     val userId: String,
     val userImage: String,
+    val image: String,
     val createdAt: String,
     val updatedAt: String,
     override val coordinate: Coordinate,
@@ -82,6 +83,8 @@ data class Comment(
 data class Thread(
     val id: Long,
     val userId: String,
+    val userImage: String,
+    val image: String,
     val createdAt: String,
     val updatedAt: String,
     val userName: String,
@@ -104,6 +107,13 @@ data class Event(
     val content: String,
     val likes: List<String>,
     val likeCount: Long,
+    val userImage: String = "",
+    val image: String = "",
+    val deletedAt: String = "",
+    val eventDate: String = "",
+    val contentType: String = "",
+    val title: String = "",
+    val valid: Boolean = true,
 ) : Mappable
 
 data class Spot(

@@ -34,7 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.R
-import com.example.chap.components.CreateDialog
+import com.example.chap.components.CreatePostModal
+import com.example.chap.components.CreateSpotModal
 import com.example.chap.components.ui.AppBottomBar
 import com.example.chap.components.ui.AppHeader
 import com.example.chap.components.ui.BottomDestination

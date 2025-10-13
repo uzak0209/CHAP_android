@@ -13,10 +13,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 // 1. APIエンドポイント定義（TypeScriptのAPI_ENDPOINTS風）
 object ApiEndpoints {
-    const val BASE = "https://api.chap-app.jp"
+    const val BASE = "http://10.248.37.252:8081"
     object Auth {
-        const val LOGIN = "$BASE/api/v1/auth/login"
-        const val REGISTER = "$BASE/api/v1/auth/register"
+        const val LOGIN = "$BASE/api/v1/auth/signin"
+        const val REGISTER = "$BASE/api/v1/auth/signup"
         const val GOOGLE = "$BASE/api/v1/auth/google"
         const val LOGOUT = "$BASE/api/v1/auth/logout"
         const val VERIFY = "$BASE/api/v1/auth/me"
@@ -26,27 +26,27 @@ object ApiEndpoints {
         fun edit(id: String) = "$BASE/api/v1/edit/user/$id"
     }
     object Threads {
-        const val LIST = "$BASE/api/v1/getall/thread"
+        const val LIST = "$BASE/api/v1/threads"
         fun get(id: String) = "$BASE/api/v1/thread/$id"
         fun details(id: String) = "$BASE/api/v1/thread/$id/details"
         fun reply(id: String) = "$BASE/api/v1/thread/$id/reply"
-        const val CREATE = "$BASE/api/v1/create/thread"
+        const val CREATE = "$BASE/api/v1/threads/create"
         fun update(ts: Long) = "$BASE/api/v1/update/thread/$ts"
         fun edit(id: String) = "$BASE/api/v1/edit/thread/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/thread/$id"
     }
     object Posts {
-        const val LIST = "$BASE/api/v1/getall/post"
+        const val LIST = "$BASE/api/v1/posts"
         fun get(id: String) = "$BASE/api/v1/post/$id"
-        const val CREATE = "$BASE/api/v1/create/post"
+        const val CREATE = "$BASE/api/v1/posts/create"
         fun update(ts: Long) = "$BASE/api/v1/update/post/$ts"
         fun edit(id: String) = "$BASE/api/v1/edit/post/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/post/$id"
     }
     object Events {
-        const val LIST = "$BASE/api/v1/getall/event"
+        const val LIST = "$BASE/api/v1/events"
         fun get(id: String) = "$BASE/api/v1/event/$id"
-        const val CREATE = "$BASE/api/v1/create/event"
+        const val CREATE = "$BASE/api/v1/events/create"
         fun update(ts: Long) = "$BASE/api/v1/update/event/$ts"
         fun edit(id: String) = "$BASE/api/v1/edit/event/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/event/$id"
@@ -55,9 +55,9 @@ object ApiEndpoints {
         const val HEATMAP = "$BASE/api/v1/social-sensing/heatmap"
     }
     object Spots {
-        const val LIST = "$BASE/api/v1/getall/spot"
+        const val LIST = "$BASE/api/v1/spots"
         fun get(id: String) = "$BASE/api/v1/spot/$id"
-        const val CREATE = "$BASE/api/v1/create/spot"
+        const val CREATE = "$BASE/api/v1/spot/create"
         fun update(ts: Long) = "$BASE/api/v1/update/spot/$ts"
         fun edit(id: String) = "$BASE/api/v1/edit/spot/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/spot/$id"

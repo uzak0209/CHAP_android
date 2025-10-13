@@ -199,7 +199,6 @@ fun MapScreen(
                             moveViewPoint(viewportState, scope, locationState.location)
                         }
                     )
-
                 }
             }
         }

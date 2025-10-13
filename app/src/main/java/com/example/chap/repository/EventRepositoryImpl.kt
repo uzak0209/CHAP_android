@@ -23,13 +23,14 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
     override suspend fun getAllEvents(): Result<List<Event>> {
         return try {
             val coordinate = locationProvider.current()
+            val payload = mapOf(
+                "lat" to (coordinate?.lat ?: 0.0),
+                "lng" to (coordinate?.lng ?: 0.0),
+            )
             val response = ApiClient.request(
                 url = ApiEndpoints.Events.LIST,
                 method = "POST",
-                body = mapOf(
-                    "lat" to (coordinate?.lat?.toString() ?: ""),
-                    "lng" to (coordinate?.lng?.toString() ?: "")
-                )
+                body = payload
             )
 
             val eventList = parseEvents(response)
@@ -45,9 +46,14 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
     private fun parseEvents(response: Any?): List<Event> {
         if (response == null) return emptyList()
         return try {
-            val jsonArray = when (response) {
-                is String -> JSONArray(response)
-                else -> JSONArray(response.toString())
+            val text = response.toString().trim()
+            val jsonArray = if (text.startsWith("{")) {
+                // 形: { "events": [ ... ] }
+                val obj = JSONObject(text)
+                obj.optJSONArray("events") ?: JSONArray()
+            } else {
+                // 形: [ ... ]
+                JSONArray(text)
             }
             List(jsonArray.length()) { i ->
                 val obj = jsonArray.getJSONObject(i)
@@ -75,18 +81,16 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun createEvent(request: PostCreateRequest): Result<Event> {
         return try {
-            val coordinateMap = mapOf(
-                "lat" to request.coordinate.lat,
-                "lng" to request.coordinate.lng
-            )
+
             val formatted = getCurrentTimeISO()
             val requestBody = mapOf(
-                "category" to request.category,
                 "content" to request.content,
-                "coordinate" to coordinateMap,
+                "title" to request.content, // mirror content as title for now
+                "lat" to request.coordinate.lat,
+                "lng" to request.coordinate.lng,
                 "created_at" to formatted,
-                "type" to "event",
-                "visible" to request.visible,
+                "event_date" to formatted,
+                "content_type" to request.category,
             )
             println("[EventRepository] Creating event with body: $requestBody")
 
@@ -113,17 +117,33 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
     }
     
     private fun parseEventObject(obj: JSONObject): Event {
+        val coordinateJson = obj.optJSONObject("coordinate")
+        val coordinate = if (coordinateJson != null) {
+            parseCoordinate(coordinateJson)
+        } else {
+            Coordinate(
+                lat = obj.optDouble("lat", 0.0),
+                lng = obj.optDouble("lng", 0.0)
+            )
+        }
         return Event(
             id = obj.optLong("id", 0L),
-            createdAt = obj.optString("created_at", ""),
-            updatedAt = obj.optString("updated_at", ""),
-            userName = obj.optString("username", ""),
-            userId = obj.optString("user_id", ""),
-            coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+            createdAt = obj.optString("created_at", obj.optString("createdAt", "")),
+            updatedAt = obj.optString("updated_at", obj.optString("updatedAt", "")),
+            userName = obj.optString("user_name", obj.optString("username", "")),
+            userId = obj.optString("user_id", obj.optString("userId", "")),
+            coordinate = coordinate,
             category = obj.optString("category", ""),
-            content = obj.optString("content", ""),
+            content = obj.optString("content", obj.optString("title", "")),
             likes = parseLikes(obj.optJSONArray("likes")),
-            likeCount = obj.optLong("like", 0)
+            likeCount = obj.optLong("like_count", obj.optLong("like", 0)),
+            userImage = obj.optString("user_image", ""),
+            image = obj.optString("image", ""),
+            deletedAt = obj.optString("deleted_at", ""),
+            eventDate = obj.optString("event_date", ""),
+            contentType = obj.optString("content_type", obj.optString("contentType", "")),
+            title = obj.optString("title", ""),
+            valid = obj.optBoolean("valid", true)
         )
     }
 }

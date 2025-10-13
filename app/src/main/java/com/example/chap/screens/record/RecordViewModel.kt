@@ -61,13 +61,16 @@ class RecordViewModel @Inject constructor(
                     // TODO: error handling (log/report)
                 }
 
-                postRepository.getAllPosts().onSuccess { list ->
+                val coord = locationProvider.current()
+                if (coord != null) {
+                    postRepository.getAllPosts().onSuccess { list ->
                     // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
                     val current = _posts.value.associateBy { it.id }
                     val merged = list + current.values.filter { existing -> list.none { it.id == existing.id } }
                     _posts.value = merged.sortedByDescending { it.createdAt }
                 }.onFailure {
                     // TODO: error handling (log/report)
+                }
                 }
                 threadRepository.getAllThreads().onSuccess { list ->
                     // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）

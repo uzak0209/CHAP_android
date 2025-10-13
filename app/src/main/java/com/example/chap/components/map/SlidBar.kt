@@ -91,24 +91,24 @@ fun SlidBar(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
-        NavigationDrawerItem(
-            label = { Text("ホーム") },
-            selected = false,
-            onClick = onNavigateHome,
-            icon = { Icon(Icons.Default.Home, contentDescription = null) }
-        )
-        NavigationDrawerItem(
-            label = { Text("スレッド") },
-            selected = false,
-            onClick = onNavigateThread,
-            icon = { Icon(Icons.Default.Forum, contentDescription = null) }
-        )
-        NavigationDrawerItem(
-            label = { Text("イベント") },
-            selected = false,
-            onClick = onNavigateEvent,
-            icon = { Icon(Icons.Default.Event, contentDescription = null) }
-        )
+//        NavigationDrawerItem(
+//            label = { Text("ホーム") },
+//            selected = false,
+//            onClick = onNavigateHome,
+//            icon = { Icon(Icons.Default.Home, contentDescription = null) }
+//        )
+//        NavigationDrawerItem(
+//            label = { Text("スレッド") },
+//            selected = false,
+//            onClick = onNavigateThread,
+//            icon = { Icon(Icons.Default.Forum, contentDescription = null) }
+//        )
+//        NavigationDrawerItem(
+//            label = { Text("イベント") },
+//            selected = false,
+//            onClick = onNavigateEvent,
+//            icon = { Icon(Icons.Default.Event, contentDescription = null) }
+//        )
         NavigationDrawerItem(
             label = { Text("履歴") },
             selected = false,

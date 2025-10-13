@@ -23,15 +23,18 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
     override suspend fun getAllThreads(): Result<List<Thread>> {
         return try {
             val coordinate = locationProvider.current()
+            println("[ThreadRepository] getAllThreads url: ${ApiEndpoints.Threads.LIST}")
             val response = ApiClient.request(
                 url = ApiEndpoints.Threads.LIST,
                 method = "POST",
                 body = mapOf(
-                    "lat" to (coordinate?.lat?.toString() ?: ""),
-                    "lng" to (coordinate?.lng?.toString() ?: "")
+                    "lat" to (coordinate?.lat ?: 0.0),
+                    "lng" to (coordinate?.lng ?: 0.0),
                 )
             )
+            println("[ThreadRepository] getAllThreads raw response: ${response?.toString()?.take(300)}")
             val threadList = parseThreads(response)
+            println("[ThreadRepository] getAllThreads parsed count: ${threadList.size}")
             _threads.value = threadList
             Result.success(threadList)
         } catch (e: Exception) {
@@ -43,9 +46,14 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
     private fun parseThreads(response: Any?): List<Thread> {
         if (response == null) return emptyList()
         return try {
-            val jsonArray = when (response) {
-                is String -> JSONArray(response)
-                else -> JSONArray(response.toString())
+            val text = response.toString().trim()
+            val jsonArray = if (text.startsWith("{")) {
+                // 形: { "threads": [ ... ] }
+                val obj = JSONObject(text)
+                obj.optJSONArray("threads") ?: JSONArray()
+            } else {
+                // 形: [ ... ]
+                JSONArray(text)
             }
             List(jsonArray.length()) { i ->
                 val obj = jsonArray.getJSONObject(i)
@@ -74,18 +82,15 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun createThread(thread: PostCreateRequest): Result<Thread> {
         return try {
-            val coordinateMap = mapOf(
-                "lat" to thread.coordinate.lat,
-                "lng" to thread.coordinate.lng
-            )
             val formatted = getCurrentTimeISO()
             val requestBody = mapOf(
-                "category" to thread.category,
                 "content" to thread.content,
-                "coordinate" to coordinateMap,
+                // サーバーがトップレベルの lat/lng を期待する可能性に対応
+                "lat" to thread.coordinate.lat,
+                "lng" to thread.coordinate.lng,
                 "created_at" to formatted,
-                "type" to "thread",
                 "visible" to thread.visible,
+                "contentType" to thread.category,
             )
             println("[ThreadRepository] Creating thread with body: $requestBody")
 
@@ -131,17 +136,29 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
     }
 
     private fun parseThreadObject(obj: JSONObject): Thread {
+        val idStr = obj.optString("id", "0")
+        val id = idStr.toLongOrNull() ?: idStr.hashCode().toLong()
+        val coord = if (obj.has("coordinate")) {
+            parseCoordinate(obj.optJSONObject("coordinate"))
+        } else {
+            Coordinate(
+                lat = obj.optDouble("lat", 0.0),
+                lng = obj.optDouble("lng", 0.0)
+            )
+        }
         return Thread(
-            id = obj.optLong("id", 0L),
-            userId = obj.optString("user_id", ""),
-            createdAt = obj.optString("created_at", ""),
-            updatedAt = obj.optString("updated_at", ""),
-            userName = obj.optString("username", ""),
-            coordinate = parseCoordinate(obj.optJSONObject("coordinate")),
+            id = id,
+            userId = obj.optString("userId", obj.optString("user_id", "")),
+            userImage = obj.optString("userImage", ""),
+            image = obj.optString("image", ""),
+            createdAt = obj.optString("createdAt", obj.optString("created_at", "")),
+            updatedAt = obj.optString("updatedAt", obj.optString("updated_at", "")),
+            userName = obj.optString("userName", obj.optString("user_name", obj.optString("username", ""))),
+            coordinate = coord,
             category = obj.optString("category", ""),
             content = obj.optString("content", ""),
-            likeCount = obj.optLong("like", 0),
-            likes = parseLikes(obj.optJSONArray("likes"))
+            likeCount = if (obj.has("likeCount")) obj.optLong("likeCount", 0) else obj.optLong("like_count", obj.optLong("like", 0)),
+            likes = parseLikes(obj.optJSONArray("likes")),
         )
     }
 }
