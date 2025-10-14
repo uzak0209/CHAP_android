@@ -26,11 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.unit.dp
 import com.example.chap.R
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.AddLocationAlt
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.RadioButton
+import com.example.chap.models.Spot
 import com.example.chap.ui.theme.BrandBlue
 
 @Composable
@@ -39,12 +45,17 @@ fun SlidBar(
     onNavigateHome: () -> Unit,
     onNavigateEvent: () -> Unit,
     onNavigateThread: () -> Unit,
+    onNavigateSetting: () -> Unit,
+    onNavigateRecord: () -> Unit,
+    onNavigateTimeline: () -> Unit,
     isChatChecked: Boolean = true,
     isCommunityChecked: Boolean = false,
     isDisasterChecked: Boolean = false,
     onToggleChat: () -> Unit = {},
     onToggleCommunity: () -> Unit = {},
     onToggleDisaster: () -> Unit = {},
+    spots: List<Spot>,
+    onSpotClick: (Spot) -> Unit = {}
 ) {
     ModalDrawerSheet(modifier = modifier) {
         // Header
@@ -80,28 +91,45 @@ fun SlidBar(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
+//        NavigationDrawerItem(
+//            label = { Text("ホーム") },
+//            selected = false,
+//            onClick = onNavigateHome,
+//            icon = { Icon(Icons.Default.Home, contentDescription = null) }
+//        )
+//        NavigationDrawerItem(
+//            label = { Text("スレッド") },
+//            selected = false,
+//            onClick = onNavigateThread,
+//            icon = { Icon(Icons.Default.Forum, contentDescription = null) }
+//        )
+//        NavigationDrawerItem(
+//            label = { Text("イベント") },
+//            selected = false,
+//            onClick = onNavigateEvent,
+//            icon = { Icon(Icons.Default.Event, contentDescription = null) }
+//        )
         NavigationDrawerItem(
-            label = { Text("ホーム") },
+            label = { Text("履歴") },
             selected = false,
-            onClick = onNavigateHome,
-            icon = { Icon(Icons.Default.Home, contentDescription = null) }
+            onClick = onNavigateRecord,
+            icon = { Icon(Icons.Default.Person, contentDescription = null) }
         )
         NavigationDrawerItem(
-            label = { Text("スレッド") },
+            label = { Text("タイムライン") },
             selected = false,
-            onClick = onNavigateThread,
+            onClick = onNavigateTimeline,
             icon = { Icon(Icons.Default.Forum, contentDescription = null) }
         )
         NavigationDrawerItem(
-            label = { Text("イベント") },
+            label = { Text("設定") },
             selected = false,
-            onClick = onNavigateEvent,
-            icon = { Icon(Icons.Default.Event, contentDescription = null) }
+            onClick = onNavigateSetting,
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) }
         )
 
         Divider(modifier = Modifier.padding(top = 8.dp))
 
-        // Category section
         Text(
             text = "投稿カテゴリ",
             style = MaterialTheme.typography.labelMedium,
@@ -138,6 +166,24 @@ fun SlidBar(
                 RadioButton(selected = isDisasterChecked, onClick = { onToggleDisaster() })
                 Spacer(modifier = Modifier.size(8.dp))
                 Text("災害情報")
+            }
+        }
+        Text(
+            text = "地点登録",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        )
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(spots){spot ->
+                NavigationDrawerItem(
+                    label =  {Text(spot.content)},
+                    selected = false,
+                    onClick = { onSpotClick(spot) },
+                    icon = { Icon(Icons.Default.AddLocationAlt, contentDescription = null) }
+                )
             }
         }
     }

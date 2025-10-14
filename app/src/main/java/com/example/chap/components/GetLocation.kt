@@ -51,8 +51,3 @@ fun requestFreshLocationIfNeeded(
         Log.e(tag, "fresh location security exception: ${se.message}")
     }
 }
-
-/** 位置ログ出力 */
-fun logCurrentLocation(tag: String, loc: Location) {
-    Log.i(tag, "CURRENT_LOCATION lat=${loc.latitude} lon=${loc.longitude} acc=${loc.accuracy} provider=${loc.provider} time=${loc.time}")
-}

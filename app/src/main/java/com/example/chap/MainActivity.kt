@@ -11,21 +11,24 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.chap.API.EventViewModel
-import com.example.chap.API.EventViewModelFactory
-import com.example.chap.API.PostViewModel
-import com.example.chap.API.PostViewModelFactory
-import com.example.chap.API.ThreadViewModel
-import com.example.chap.API.ThreadViewModelFactory
-import com.example.chap.API.CommentViewModel
-import com.example.chap.API.CommentViewModelFactory
-import com.example.chap.domain.repository.CommentRepositoryImpl
-import com.example.chap.domain.repository.EventRepositoryImpl
-import com.example.chap.domain.repository.PostRepositoryImpl
-import com.example.chap.domain.repository.ThreadRepositoryImpl
-import com.example.chap.libs.GetLocation
-import com.example.chap.libs.LOCATION_PERMISSION_REQUEST_CODE
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.chap.screens.event.EventViewModel
+import com.example.chap.screens.post.PostViewModel
+import com.example.chap.screens.thread.ThreadViewModel
+import com.example.chap.screens.comment.CommentViewModel
+import com.example.chap.repository.CommentRepositoryImpl
+import com.example.chap.repository.EventRepositoryImpl
+import com.example.chap.repository.PostRepositoryImpl
+import com.example.chap.repository.ThreadRepositoryImpl
+import com.example.chap.location.DefaultLocationProvider
+import com.example.chap.location.LOCATION_PERMISSION_REQUEST_CODE
+import com.example.chap.screens.login.LoginViewModel
+import com.example.chap.screens.map.LocationViewModel
+import com.example.chap.screens.record.RecordViewModel
+import com.example.chap.screens.setting.SettingViewModel
+import com.example.chap.screens.timeline.TimelineViewModel
 import com.example.chap.ui.theme.CHAPTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 object AppContextHolder {
     lateinit var appContext: Context
@@ -34,38 +37,42 @@ object AppContextHolder {
     }
 }
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val postViewModel: PostViewModel by viewModels {
-        PostViewModelFactory(PostRepositoryImpl())
-    }
-    private val threadViewModel: ThreadViewModel by viewModels {
-        ThreadViewModelFactory(ThreadRepositoryImpl())
-    }
-    private val eventViewModel: EventViewModel by viewModels {
-        EventViewModelFactory(EventRepositoryImpl())
-    }
-    private val commentViewModel: CommentViewModel by viewModels {
-        CommentViewModelFactory(CommentRepositoryImpl())
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        GetLocation(this, LOCATION_PERMISSION_REQUEST_CODE)
         enableEdgeToEdge()
         AppContextHolder.init(this)
-        postViewModel.getAllPosts()
-        threadViewModel.getAllThreads()
-        eventViewModel.getAllEvents()
         setContent {
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            val postViewModel: PostViewModel = hiltViewModel()
+            val threadViewModel: ThreadViewModel = hiltViewModel()
+            val eventViewModel: EventViewModel = hiltViewModel()
+            val commentViewModel: CommentViewModel = hiltViewModel()
+            val locationViewModel: LocationViewModel = hiltViewModel()
+            val settingViewModel: SettingViewModel = hiltViewModel()
+            val timelineViewModel: TimelineViewModel = hiltViewModel()
+            val recordViewModel : RecordViewModel = hiltViewModel()
             CHAPTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                postViewModel.load()
+                threadViewModel.load()
+                eventViewModel.load()
+                locationViewModel.load()
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Navigation(
                         postViewModel = postViewModel,
                         threadViewModel = threadViewModel,
                         eventViewModel = eventViewModel,
-                        commentViewModel = commentViewModel
+                        commentViewModel = commentViewModel,
+                        locationViewModel = locationViewModel,
+                        loginViewModel = loginViewModel,
+                        settingViewModel = settingViewModel,
+                        timelineViewModel = timelineViewModel,
+                        recordViewModel = recordViewModel,
                     )
                 }
             }

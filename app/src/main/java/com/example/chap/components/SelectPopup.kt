@@ -31,11 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chap.R
-
-// 状態種別
-enum class LoadStatus { IDLE, LOADING, LOADED, ERROR }
-data class LocationState(val lat: LoadStatus, val lng: Double, val status: LoadStatus)
-
 private data class FabAction(
     val label: String,
     val iconRes: Int,
@@ -90,29 +85,6 @@ private fun AnimatedActionButton(
     }
 }
 
-@Composable
-private fun SimpleModal(
-    title: String,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("ここに入力UIを配置してください。")
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) { Text("作成") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("閉じる") }
-        }
-    )
-}
-
 /**
  * 既存画面側の FAB クリックで呼び出して即座にアクション候補を表示したい場合に使うオーバーレイ。
  * visible=true の間だけ下端右寄せで 3 つのアクション + 必要なモーダルを表示。
@@ -125,7 +97,8 @@ fun SelectPopupOverlay(
     onReloadEvents: (lat: Double, lng: Double) -> Unit = { _, _ -> },
     onPostCreated: () -> Unit = {},
     onThreadCreated: () -> Unit = {},
-    onEventCreated: () -> Unit = {}
+    onEventCreated: () -> Unit = {},
+    registerLocation: () -> Unit = {}
 ) {
     if (!visible) return
 
@@ -144,7 +117,13 @@ fun SelectPopupOverlay(
             label = "イベント作成",
             iconRes = R.drawable.outline_calendar_today_24,
             containerColor = Color(0xFFF97316)
-        ) { onDismiss();onEventCreated() }
+        ) { onDismiss();onEventCreated() },
+        FabAction(
+            label = "地点登録",
+            iconRes = R.drawable.location_on_24px,
+            containerColor = Color(0xFFF91616)
+        ) { onDismiss();registerLocation() }
+
     )
 
     Box(

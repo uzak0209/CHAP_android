@@ -2,7 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    alias(libs.plugins.kotlin.serialization)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -43,8 +45,6 @@ android {
 dependencies {
     // AndroidX
     implementation("com.mapbox.maps:android:11.14.2")
-
-
     implementation("com.mapbox.extension:maps-compose:11.14.2")
 
 
@@ -89,6 +89,13 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.material3)
 
+    // AppCompat (for AppCompatResources)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    //Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
     // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -99,4 +106,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.mapbox.maps:android:11.14.2")
     implementation("com.mapbox.extension:maps-compose:11.14.2")
+    androidTestImplementation(libs.hilt.testing)
+    kaptAndroidTest(libs.hilt.compiler)
+}
+
+kapt {
+    correctErrorTypes = true
 }

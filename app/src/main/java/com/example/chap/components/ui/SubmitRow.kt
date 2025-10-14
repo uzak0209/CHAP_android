@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.chap.Models.Event
-import com.example.chap.Models.Post
-import com.example.chap.Models.Thread
+import com.example.chap.models.Event
+import com.example.chap.models.Post
+import com.example.chap.models.Thread
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -56,12 +56,12 @@ private fun PostCard(
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F))
     ) {
         Column(Modifier.padding(16.dp)) {
-            SubmitHeader(username = post?.username ?:" username" )
-            SubmitContent(content = post?.content ?: "Content", images = emptyList())
+            SubmitHeader(username = post.userName)
+            SubmitContent(content = post.content, images = emptyList())
             if (post?.category?.isNotBlank() == true && post.category != "entertainment") {
                 SubmitCategoryDisplay(category = post.category)
             }
-            SubmitFooter(createdAt = post?.created_at ?: "created_at")
+            SubmitFooter(createdAt = post.createdAt)
         }
     }
 }
@@ -76,15 +76,15 @@ private fun ThreadCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F)),
-        onClick = { onThreadClick(thread.id.toString()) }
+        onClick = { onThreadClick(thread.id) }
     ) {
         Column(Modifier.padding(16.dp)) {
-            SubmitHeader(username = thread?.username ?:" username" )
-            SubmitContent(content = thread?.content ?: "Content", images = emptyList())
-            if (thread?.category?.isNotBlank() == true && thread.category != "entertainment") {
+            SubmitHeader(username = thread.userName)
+            SubmitContent(content = thread.content, images = emptyList())
+            if (thread.category.isNotBlank() && thread.category != "entertainment") {
                 SubmitCategoryDisplay(category = thread.category)
             }
-            SubmitFooter(createdAt = thread?.created_at ?: "created_at")
+            SubmitFooter(createdAt = thread.createdAt)
         }
     }
 }
@@ -100,12 +100,12 @@ private fun EventCard(
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2F2F2F))
     ) {
         Column(Modifier.padding(16.dp)) {
-            SubmitHeader(username = event?.username ?:" username" )
-            SubmitContent(content = event?.content ?: "Content", images = emptyList())
-            if (event?.category?.isNotBlank() == true && event.category != "entertainment") {
+            SubmitHeader(username = event.userName)
+            SubmitContent(content = event.content, images = emptyList())
+            if (event.category.isNotBlank() && event.category != "entertainment") {
                 SubmitCategoryDisplay(category = event.category)
             }
-            SubmitFooter(createdAt = event?.created_at ?: "created_at")
+            SubmitFooter(createdAt = event.createdAt)
         }
     }
 }
