@@ -40,11 +40,16 @@ enum class PostCategory{
 data class User(
     val id: String,
     val name: String,
+    val description: String,
     val image: String?,
     val email: String, //データベースにメールがない？
     val createdAt: String,
     val password: String,
     val updatedAt: String,
+    val followerCount: Long,
+    val followingCount: Long,
+    val followers: List<String>,
+    val followings: List<String>
 )
 
 // 投稿

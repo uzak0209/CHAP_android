@@ -55,7 +55,7 @@ class RecordViewModel @Inject constructor(
                 // load current user info first
                 runCatching { userRepository.getCurrentUser() }.onSuccess { user ->
                     _currentUser.value = user
-                    _currentUserId.value = user?.id?.toString()
+                    _currentUserId.value = user?.id
                 }
                 mapRepository.getAllSpots().onSuccess { list ->
                     // 既存のローカル追加分とマージ（新規投稿が API 反映前でも残す）
@@ -101,7 +101,7 @@ class RecordViewModel @Inject constructor(
             viewModelScope.launch {
                 runCatching { userRepository.getCurrentUser() }.onSuccess { user ->
                     _currentUser.value = user
-                    _currentUserId.value = user?.id?.toString()
+                    _currentUserId.value = user?.id
                 }
             }
         }
