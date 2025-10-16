@@ -50,7 +50,7 @@ class MapRepositoryImpl  @Inject constructor(private val locationProvider: Locat
                 "lat" to request.coordinate.lat,
                 "lng" to request.coordinate.lng,
                 "image" to request.image,
-                "created_at" to formatted,
+                "createdAt" to formatted,
                 "description" to request.description
             )
             println("[SpotRepository] Creating post with body: $requestBody")
@@ -134,18 +134,18 @@ private fun parseSpotObject(obj: JSONObject): Spot {
             lng = obj.optDouble("lng", 0.0)
         )
     }
-    val id = obj.optString("id", obj.optString("spot_id", ""))
-    val createdAt = obj.optString("created_at", obj.optString("createdAt", ""))
-    val updatedAt = obj.optString("updated_at", obj.optString("updatedAt", ""))
-    val userId = obj.optString("user_id", obj.optString("userId", ""))
-    val userName = obj.optString("username", obj.optString("userName", ""))
-    val content = obj.optString("description", obj.optString("content", ""))
+    val id = obj.optString("id", "")
+    val createdAt = obj.optString("createdAt", "")
+    val updatedAt = obj.optString("updatedAt", "")
+    val userId = obj.optString("userId",  "")
+    val title = obj.optString("title", "")
+    val content = obj.optString("description",  "")
     return Spot(
         id = id,
         createdAt = createdAt,
         updatedAt = updatedAt,
         userId = userId,
-        userName = userName,
+        title = title,
         coordinate = coordinate,
         content = content
     )

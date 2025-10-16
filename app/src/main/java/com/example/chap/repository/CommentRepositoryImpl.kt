@@ -91,14 +91,14 @@ class CommentRepositoryImpl @Inject constructor(private val locationProvider: Lo
             }
 
             val comment = Comment(
-                id = obj.optString("id", obj.optString("comment_id", "")),
-                createdAt = obj.optString("created_at", obj.optString("createdAt", "")),
-                updatedAt = obj.optString("updated_at", obj.optString("updatedAt", "")),
-                userId = obj.optString("user_id", obj.optString("userId", "")),
-                userName = obj.optString("username", obj.optString("userName", "")),
+                id = obj.optString("id",  ""),
+                createdAt = obj.optString("createdAt", ""),
+                updatedAt = obj.optString("updatedAt",  ""),
+                userId = obj.optString("userId", ""),
+                userName = obj.optString("userName", ""),
                 coordinate = coordinate,
                 content = obj.optString("content", ""),
-                threadId = obj.optString("thread_id", obj.optString("threadId", "")),
+                threadId = obj.optString("threadId",  ""),
                 likeCount = obj.optLong("likeCount", 0),
 				likes = parseLikes(obj.optJSONArray("likes")),
                 image = obj.optString("image", ""),

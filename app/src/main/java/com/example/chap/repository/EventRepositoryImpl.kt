@@ -88,9 +88,8 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
                 "title" to request.content, // mirror content as title for now
                 "lat" to request.coordinate.lat,
                 "lng" to request.coordinate.lng,
-                "created_at" to formatted,
-                "event_date" to formatted,
-                "content_type" to request.category,
+                "eventDate" to formatted,
+                "contentType" to request.category,
             )
             println("[EventRepository] Creating event with body: $requestBody")
 
@@ -127,23 +126,21 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
             )
         }
         return Event(
-            id = obj.optString("id", obj.optString("event_id", "")),
-            createdAt = obj.optString("created_at", obj.optString("createdAt", "")),
-            updatedAt = obj.optString("updated_at", obj.optString("updatedAt", "")),
-            userName = obj.optString("user_name", obj.optString("username", "")),
-            userId = obj.optString("user_id", obj.optString("userId", "")),
+            id = obj.optString("id", ""),
+            createdAt = obj.optString("createdAt", ""),
+            updatedAt = obj.optString("updatedAt", ""),
+            userName = obj.optString("userName", ""),
+            userId = obj.optString("userId", ""),
             coordinate = coordinate,
             category = obj.optString("category", ""),
-            content = obj.optString("content", obj.optString("title", "")),
+            content = obj.optString("content", ""),
             likes = parseLikes(obj.optJSONArray("likes")),
-            likeCount = obj.optLong("like_count", obj.optLong("like", 0)),
-            userImage = obj.optString("user_image", ""),
+            likeCount = obj.optLong("like_count", 0),
+            userImage = obj.optString("userImage", ""),
             image = obj.optString("image", ""),
-            deletedAt = obj.optString("deleted_at", ""),
-            eventDate = obj.optString("event_date", ""),
-            contentType = obj.optString("content_type", obj.optString("contentType", "")),
+            eventDate = obj.optString("eventDate", ""),
+            contentType = obj.optString("contentType", ""),
             title = obj.optString("title", ""),
-            valid = obj.optBoolean("valid", true)
         )
     }
 }

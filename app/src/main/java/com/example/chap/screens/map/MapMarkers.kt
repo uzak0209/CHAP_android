@@ -1,5 +1,7 @@
 package com.example.chap.screens.map
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import com.example.chap.components.AnnotationMarkers
 import com.example.chap.components.map.MappableItemPopup
@@ -118,6 +120,7 @@ fun TempEventMarker(
 /**
  * すべてのポップアップをまとめて表示
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AllMapPopups(
     selectedPost: Post?,

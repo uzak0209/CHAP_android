@@ -88,7 +88,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
                 // サーバーがトップレベルの lat/lng を期待する可能性に対応
                 "lat" to thread.coordinate.lat,
                 "lng" to thread.coordinate.lng,
-                "created_at" to formatted,
+                "createdAt" to formatted,
                 "visible" to thread.visible,
                 "contentType" to thread.category,
             )
@@ -147,16 +147,16 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
         }
         return Thread(
             id = idStr,
-            userId = obj.optString("userId", obj.optString("user_id", "")),
+            userId = obj.optString("userId",  ""),
             userImage = obj.optString("userImage", ""),
             image = obj.optString("image", ""),
-            createdAt = obj.optString("createdAt", obj.optString("created_at", "")),
-            updatedAt = obj.optString("updatedAt", obj.optString("updated_at", "")),
-            userName = obj.optString("userName", obj.optString("user_name", obj.optString("username", ""))),
+            createdAt = obj.optString("createdAt", ""),
+            updatedAt = obj.optString("updatedAt", ""),
+            userName = obj.optString("userName",  ""),
             coordinate = coord,
             category = obj.optString("category", ""),
             content = obj.optString("content", ""),
-            likeCount = if (obj.has("likeCount")) obj.optLong("likeCount", 0) else obj.optLong("like_count", obj.optLong("like", 0)),
+            likeCount = obj.optLong("likeCount", 0),
             likes = parseLikes(obj.optJSONArray("likes")),
         )
     }

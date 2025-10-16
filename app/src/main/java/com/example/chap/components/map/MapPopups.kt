@@ -200,7 +200,7 @@ fun SpotPopup(
     onDismiss: () -> Unit
 ) {
     PopupCardCommon(
-        userName = spot.userName,
+        userName = spot.title,
         createdAt = spot.createdAt,
         contentText = spot.content,
         onDismiss = onDismiss

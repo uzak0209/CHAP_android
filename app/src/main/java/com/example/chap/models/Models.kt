@@ -118,7 +118,6 @@ data class Event(
     val eventDate: String = "",
     val contentType: String = "",
     val title: String = "",
-    val valid: Boolean = true,
 ) : Mappable
 
 data class Spot(
@@ -126,7 +125,7 @@ data class Spot(
     val createdAt: String,
     val updatedAt: String,
     val userId: String,
-    val userName: String,
+    val title: String,
     override val coordinate: Coordinate,
     val content: String,
 ) : Mappable

@@ -92,7 +92,7 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
                 // サーバーはトップレベルの lat/lng を期待するためフラットに送る
                 "lat" to request.coordinate.lat,
                 "lng" to request.coordinate.lng,
-                "created_at" to formatted,
+                "createdAt" to formatted,
                 "type" to "post",
                 "visible" to request.visible,
                 "contentType" to request.category
@@ -140,16 +140,16 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
         }
         return Post(
             id = idStr,
-            userId = obj.optString("userId", obj.optString("user_id", "")),
+            userId = obj.optString("userId", ""),
             userImage = obj.optString("userImage", ""),
             image = obj.optString("image", ""),
-            createdAt = obj.optString("createdAt", obj.optString("created_at", "")),
-            updatedAt = obj.optString("updatedAt", obj.optString("updated_at", "")),
-            userName = obj.optString("userName", obj.optString("user_name", obj.optString("username", ""))),
+            createdAt = obj.optString("createdAt",  ""),
+            updatedAt = obj.optString("updatedAt", ""),
+            userName = obj.optString("userName", ""),
             coordinate = coordinate,
             category = obj.optString("category", ""),
             content = obj.optString("content", ""),
-            likeCount = if (obj.has("likeCount")) obj.optLong("likeCount", 0) else obj.optLong("like_count", obj.optLong("like", 0)),
+            likeCount = obj.optLong("likeCount", 0),
             likes = parseLikes(obj.optJSONArray("likes")),
         )
     }

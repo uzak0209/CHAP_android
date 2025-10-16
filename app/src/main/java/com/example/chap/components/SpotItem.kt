@@ -64,7 +64,7 @@ fun SpotItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = spot.userName,
+                        text = spot.title,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black

@@ -13,13 +13,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 // 1. APIエンドポイント定義（TypeScriptのAPI_ENDPOINTS風）
 object ApiEndpoints {
-    const val BASE = "https://api.chap-app.jp"
+    const val BASE = "http://10.248.37.252:8081"
     object Auth {
         const val LOGIN = "$BASE/api/v1/auth/signin"
         const val REGISTER = "$BASE/api/v1/auth/signup"
         const val GOOGLE = "$BASE/api/v1/auth/google"
         const val LOGOUT = "$BASE/api/v1/auth/logout"
-        const val VERIFY = "$BASE/api/v1/auth/me"
+        const val VERIFY = "$BASE/api/v1/users/me"
     }
     object Users {
         fun get(id: String) = "$BASE/api/v1/user/$id"
