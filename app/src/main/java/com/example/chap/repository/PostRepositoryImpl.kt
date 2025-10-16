@@ -130,7 +130,6 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
 
     private fun parsePostObject(obj: JSONObject): Post {
         val idStr = obj.optString("id", "0")
-        val id = idStr.toLongOrNull() ?: idStr.hashCode().toLong()
         val coordinate = if (obj.has("coordinate")) {
             parseCoordinate(obj.optJSONObject("coordinate"))
         } else {
@@ -140,7 +139,7 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
             )
         }
         return Post(
-            id = id,
+            id = idStr,
             userId = obj.optString("userId", obj.optString("user_id", "")),
             userImage = obj.optString("userImage", ""),
             image = obj.optString("image", ""),

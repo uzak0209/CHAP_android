@@ -38,7 +38,7 @@ enum class PostCategory{
 }
 // ユーザー
 data class User(
-    val id: Long,
+    val id: String,
     val name: String,
     val image: String?,
     val email: String, //データベースにメールがない？
@@ -50,7 +50,7 @@ data class User(
 // 投稿
 
 data class Post(
-    val id: Long,
+    val id: String,
     val userName: String,
     val userId: String,
     val userImage: String,

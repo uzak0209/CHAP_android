@@ -1,6 +1,7 @@
 package com.example.chap.screens.record
 
 import android.util.Base64
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +48,10 @@ fun RecordScreen(
     val spots by recordViewModel.spots.collectAsState()
 
     val currentUserId by recordViewModel.currentUserId.collectAsState()
+    val currentUser by recordViewModel.currentUser.collectAsState()
+
+    Log.i("名前", currentUser?.name?: "なにもない")
+    Log.i("id", currentUser?.id?: "なにもない")
 
 
     LaunchedEffect(recordViewModel) {
@@ -80,7 +85,7 @@ fun RecordScreen(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Stas Neprokin",
+                    text = currentUser?.name ?: "",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -118,14 +123,14 @@ fun RecordScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 when (selectedTab) {
-                    0 -> items(posts.filter { it.userId == currentUserId }) { post ->
+                    0 -> items(posts.filter { it.userId == currentUserId.orEmpty() }) { post ->
                         PostItem(
                             post = post,
                             onClick = { p -> onNavigateMapFocus("post", p.id.toString()) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
-                    1 -> items(threads.filter { it.userId == currentUserId }) { thread ->
+                    1 -> items(threads.filter { it.userId == currentUserId.orEmpty() }) { thread ->
                         ThreadItem(
                             thread = thread,
                             onClick = { t -> onNavigateMapFocus("thread", t.id) },
@@ -133,14 +138,14 @@ fun RecordScreen(
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
-                    2 -> items(events.filter { it.userId == currentUserId }) { event ->
+                    2 -> items(events.filter { it.userId == currentUserId.orEmpty() }) { event ->
                         EventItem(
                             event = event,
                             onClick = { e -> onNavigateMapFocus("event", e.id.toString()) }
                         )
                         Divider(color = Color(0xFFE0E0E0), thickness = 0.5.dp)
                     }
-                    3 -> items(spots.filter { it.userId == currentUserId }) { spot ->
+                    3 -> items(spots.filter { it.userId == currentUserId.orEmpty() }) { spot ->
                         SpotItem(
                             spot = spot,
                             onClick = { s -> onNavigateMapFocus("spot", s.id.toString()) }

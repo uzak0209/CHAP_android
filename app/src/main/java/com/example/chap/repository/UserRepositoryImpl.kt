@@ -30,7 +30,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         val userObj = if (root.has("user")) root.getJSONObject("user") else root
 
         return User(
-            id = userObj.optLong("id", userId),
+            id = userObj.optString("id", ""),
             name = userObj.optString("name", ""),
             image = if (userObj.isNull("image")) null else userObj.optString("image", null),
             email = userObj.optString("email", ""),
@@ -50,7 +50,7 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         val userObj = if (root.has("user")) root.getJSONObject("user") else root
 
         return User(
-            id = userObj.optLong("id", 0L),
+            id = userObj.optString("id", ""),
             name = userObj.optString("name", ""),
             image = if (userObj.isNull("image")) null else userObj.optString("image", null),
             email = userObj.optString("email", ""),
