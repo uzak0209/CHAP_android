@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.chap"
+    namespace = "com.back.chap"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.chap"
+        applicationId = "com.back.chap"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
