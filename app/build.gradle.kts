@@ -21,8 +21,18 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:\\Users\\backa\\chap_android_key")
+            storePassword = "a5p5p5l5e"
+            keyAlias = "key0"
+            keyPassword = "a5p5p5l5e"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -44,8 +54,8 @@ android {
 
 dependencies {
     // AndroidX
-    implementation("com.mapbox.maps:android:11.14.2")
-    implementation("com.mapbox.extension:maps-compose:11.14.2")
+//    implementation("com.mapbox.maps:android:11.14.2")
+//    implementation("com.mapbox.extension:maps-compose:11.14.2")
 
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
@@ -101,8 +111,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation("com.mapbox.maps:android:11.14.2")
-    implementation("com.mapbox.extension:maps-compose:11.14.2")
     androidTestImplementation(libs.hilt.testing)
     kaptAndroidTest(libs.hilt.compiler)
 }

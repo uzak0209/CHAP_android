@@ -4,7 +4,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">CHAP</string>
-    <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">MapBoxKey</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiYmFjazM3MCIsImEiOiJjbWd1ZWpnNmwwZXcxMnJwdDk3M3QzZXE3In0.s7rw5p-4Hpb8SzqwvEzNpw</string>
 
 
 </resources>
