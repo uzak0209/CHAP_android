@@ -25,7 +25,7 @@
         <!-- Mapbox アクセストークン -->
         <meta-data
             android:name="MAPBOX_ACCESS_TOKEN"
-            android:value=/>
+            android:value="@string/mapbox_access_token" />
 
         <activity
             android:name=".MainActivity"
