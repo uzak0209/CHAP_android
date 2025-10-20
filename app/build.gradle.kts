@@ -103,6 +103,11 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
+    // Coil for Compose (image loading)
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    // Image Cropper
+    implementation(libs.image.cropper)
+
     // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -14,6 +14,7 @@ foundation = "1.9.0"
 composeMaterial = "1.5.0"
 material3 = "1.3.2"
 hilt = "2.54"
+imageCropper = "4.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,7 +40,8 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
 hilt-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
-# Removed wear compose material (minSdk 25) to keep app minSdk 24
+image-cropper = { group = "com.vanniktech", name = "android-image-cropper", version.ref = "imageCropper" }
+
 # androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
 
 [plugins]
