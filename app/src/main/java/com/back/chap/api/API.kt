@@ -13,7 +13,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 // 1. APIエンドポイント定義（TypeScriptのAPI_ENDPOINTS風）
 object ApiEndpoints {
-    const val BASE = "https://api.chap-app.jp"
+    const val BASE = "http://10.62.20.252:8081"
+//    const val BASE = "https://api.chap-app.jp"
     object Auth {
         const val LOGIN = "$BASE/api/v1/auth/signin"
         const val REGISTER = "$BASE/api/v1/auth/signup"
@@ -62,6 +63,10 @@ object ApiEndpoints {
         fun update(ts: Long) = "$BASE/api/v1/update/spot/$ts"
         fun edit(id: String) = "$BASE/api/v1/edit/spot/$id"
         fun delete(id: String) = "$BASE/api/v1/delete/spot/$id"
+    }
+    object Image{
+        const val COMPRESSION = "image.chap-app.jp/stage/compression"
+        const val GETUPLOADURL = "$BASE/api/v1/images/upload"
     }
 }
 

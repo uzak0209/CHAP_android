@@ -1,12 +1,6 @@
 package com.back.chap.screens.record
 
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageContractOptions
-import com.canhub.cropper.CropImageOptions
-import com.canhub.cropper.CropImageView
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,19 +29,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.back.chap.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.back.chap.components.EventItem
 import com.back.chap.components.PostItem
 import com.back.chap.components.SpotItem
 import com.back.chap.components.ThreadItem
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 
 
 @Composable
@@ -77,17 +68,6 @@ fun RecordScreen(
 
     LaunchedEffect(recordViewModel) {
         recordViewModel.load()
-    }
-
-    // 画像クロッパー用のランチャー
-    val imageCropperLauncher = rememberLauncherForActivityResult(
-        contract = CropImageContract()
-    ) { result ->
-        if (result.isSuccessful) {
-            result.uriContent?.let { uri ->
-                recordViewModel.uploadProfileImage(uri, context)
-            }
-        }
     }
 
     Scaffold{ padding ->

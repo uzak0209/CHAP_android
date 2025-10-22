@@ -4,8 +4,8 @@ package com.back.chap.components
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,15 +13,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -34,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,20 +45,27 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.back.chap.models.Coordinate
-import kotlinx.coroutines.launch
 import com.back.chap.models.CreateKind
 import com.back.chap.models.PostCategory
 import com.back.chap.models.PostCreateRequest
+import com.back.chap.models.SpotCreateRequest
 import com.back.chap.models.Status
 import com.back.chap.screens.map.LocationViewModel
-import androidx.compose.runtime.collectAsState
-import com.back.chap.models.SpotCreateRequest
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
+import kotlinx.coroutines.launch
 
 // TS由来の未変換要素を Kotlin モデルへ差し替え済み
 
@@ -146,6 +157,68 @@ fun CreatePostModal(
 
                 Spacer(Modifier.height(16.dp))
 
+                Box(
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(ownerPhotoUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                    )
+
+                    if (isUploadingImage) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .align(Alignment.Center),
+                            color = Color(0xFF446E36)
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        // 画像クロッパーを起動（円形クロップ設定）
+                        val cropOptions = CropImageContractOptions(
+                            uri = null,
+                            cropImageOptions = CropImageOptions(
+                                guidelines = CropImageView.Guidelines.ON,
+                                cropShape = CropImageView.CropShape.OVAL, // 円形クロップ
+                                aspectRatioX = 1, // 1:1のアスペクト比
+                                aspectRatioY = 1,
+                                fixAspectRatio = true, // アスペクト比を固定
+                                allowRotation = true, // 回転を許可
+                                allowFlipping = true, // 反転を許可
+                                imageSourceIncludeGallery = true,
+                                imageSourceIncludeCamera = true
+                            )
+                        )
+                        imageCropperLauncher.launch(cropOptions)
+                    },
+                    enabled = !isUploadingImage,
+                    modifier = Modifier
+                        .width(180.dp)
+                        .height(40.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF48B3D3),
+                        disabledContainerColor = Color(0xFFCCCCCC)
+                    )
+                ){
+                    Text(
+                        text = if (isUploadingImage) "アップロード中..." else "画像をアップロード",
+                        fontSize = 14.sp,
+                        color = if (isUploadingImage) Color.Gray else Color.White,
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+
                 // カテゴリ選択 (ExposedDropdownMenu)
                 ExposedDropdownMenuBox(
                     expanded = categoryMenuExpanded,
@@ -178,26 +251,26 @@ fun CreatePostModal(
                         }
                     }
                 }
-                Spacer(Modifier.height(16.dp))
-
-                // 位置情報（選択済みの座標を優先して表示）
-                if (coordinate != null || locationViewModel.locationState.collectAsState().value.status == Status.LOADED) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                            .padding(8.dp)
-                    ) {
-                        Icon(Icons.Default.Place, contentDescription = null, tint = Color(0xFF666666))
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            "現在地: ${"%.4f".format(coordinate?.lat)}, ${"%.4f".format(coordinate?.lng)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF555555)
-                        )
-                    }
-                }
+//                Spacer(Modifier.height(16.dp))
+//
+//                // 位置情報（選択済みの座標を優先して表示）
+//                if (coordinate != null || locationViewModel.locationState.collectAsState().value.status == Status.LOADED) {
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+//                            .padding(8.dp)
+//                    ) {
+//                        Icon(Icons.Default.Place, contentDescription = null, tint = Color(0xFF666666))
+//                        Spacer(Modifier.width(6.dp))
+//                        Text(
+//                            "現在地: ${"%.4f".format(coordinate?.lat)}, ${"%.4f".format(coordinate?.lng)}",
+//                            style = MaterialTheme.typography.bodySmall,
+//                            color = Color(0xFF555555)
+//                        )
+//                    }
+//                }
 
                 Spacer(Modifier.height(24.dp))
 
