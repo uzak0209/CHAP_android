@@ -38,5 +38,10 @@
             </intent-filter>
         </activity>
 
+        <!-- CropImageActivity用のテーマ設定 -->
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Theme.AppCompat.CropImage" />
+
     </application>
 </manifest>

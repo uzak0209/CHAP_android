@@ -2,4 +2,13 @@
 <resources>
 
     <style name="Theme.CHAP" parent="android:Theme.Material.Light.NoActionBar" />
+    
+    <!-- CropImageActivity用のAppCompatテーマ（アクションバーあり） -->
+    <style name="Theme.AppCompat.CropImage" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#48B3D3</item>
+        <item name="colorPrimaryDark">#3A8FA8</item>
+        <item name="colorAccent">#48B3D3</item>
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+    </style>
 </resources>
