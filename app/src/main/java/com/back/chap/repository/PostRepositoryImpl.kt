@@ -95,7 +95,8 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
                 "createdAt" to formatted,
                 "type" to "post",
                 "visible" to request.visible,
-                "contentType" to request.category
+                "contentType" to request.category,
+                "image" to request.image
             )
             println("[PostRepository] Creating post with body: $requestBody")
             val response = ApiClient.request(

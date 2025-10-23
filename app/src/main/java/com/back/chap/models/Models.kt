@@ -21,6 +21,7 @@ data class PostCreateRequest(
     val category: String,
     val coordinate: Coordinate,
     val visible: Boolean,
+    val image: String = "",
 )
 
 data class SpotCreateRequest(

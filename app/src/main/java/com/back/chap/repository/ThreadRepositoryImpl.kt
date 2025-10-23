@@ -91,6 +91,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
                 "createdAt" to formatted,
                 "visible" to thread.visible,
                 "contentType" to thread.category,
+                "image" to thread.image
             )
             println("[ThreadRepository] Creating thread with body: $requestBody")
 

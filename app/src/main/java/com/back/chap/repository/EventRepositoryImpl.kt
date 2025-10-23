@@ -90,6 +90,7 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
                 "lng" to request.coordinate.lng,
                 "eventDate" to formatted,
                 "contentType" to request.category,
+                "image" to request.image
             )
             println("[EventRepository] Creating event with body: $requestBody")
 

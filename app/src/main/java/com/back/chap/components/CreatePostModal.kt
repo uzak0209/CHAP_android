@@ -186,6 +186,7 @@ fun CreatePostModal(
     fun reset() {
         content = ""
         category = PostCategory.ENTERTAINMENT
+        ownerPhotoUrl = null
     }
 
     Dialog(onDismissRequest = {
@@ -379,6 +380,7 @@ fun CreatePostModal(
                                     content = content.trim(),
                                     category = category.toString(),
                                     visible = true,
+                                    image = ownerPhotoUrl ?: "",
                                 )
                                 val createSpotObject = SpotCreateRequest(
                                     coordinate = locationViewModel.locationState.value.location!!,
