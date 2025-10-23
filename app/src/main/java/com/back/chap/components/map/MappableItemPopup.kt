@@ -19,6 +19,7 @@ fun <T : Mappable> MappableItemPopup(
             options = viewAnnotationOptions {
                 geometry(Point.fromLngLat(it.coordinate.lng, it.coordinate.lat))
                 allowOverlap(true)
+                allowOverlapWithPuck(true)
             }
         ) {
             SpeechBubble(bubbleColor = Color.White, lift = 0.dp) {

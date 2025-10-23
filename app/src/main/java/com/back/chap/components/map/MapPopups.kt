@@ -1,40 +1,54 @@
 package com.back.chap.components.map
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.back.chap.R
+import com.back.chap.models.Event
 import com.back.chap.models.Post
 import com.back.chap.models.Spot
 import com.back.chap.models.Thread
-import com.back.chap.models.Event
 import com.back.chap.ui.theme.BrandBlue
 import com.back.chap.ui.theme.BrandPurple
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.time.Duration
-import com.back.chap.R
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,6 +60,7 @@ fun PostPopup(
         userName = post.userName,
         createdAt = post.createdAt,
         contentText = post.content,
+        imageUrl = post.image,
         onDismiss = onDismiss
     )
 }
@@ -75,11 +90,13 @@ private fun relativeTimeJa(iso: String): String {
     }.getOrElse { fallback }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun PopupCardCommon(
     userName: String,
     createdAt: String,
     contentText: String,
+    imageUrl: String,
     onDismiss: () -> Unit
 ) {
     Box {
@@ -104,7 +121,7 @@ private fun PopupCardCommon(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = userName.ifBlank { "Back" },
+                        text = userName.ifBlank { "Unknown" },
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -127,6 +144,20 @@ private fun PopupCardCommon(
                     color = Color.Black,
                     lineHeight = 22.sp
                 )
+                if(imageUrl != ""){
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(imageUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                    )
+                }else{
+                    Log.i("画像がありません", "画像がありません")
+                }
             }
         }
         Image(
@@ -162,6 +193,7 @@ fun SpeechBubble(
 /**
  * スレッドの詳細ポップアップ
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ThreadPopup(
     thread: Thread,
@@ -171,6 +203,7 @@ fun ThreadPopup(
         userName = thread.userName,
         createdAt = thread.createdAt,
         contentText = thread.content,
+        imageUrl = thread.image,
         onDismiss = onDismiss
     )
 }
@@ -178,6 +211,7 @@ fun ThreadPopup(
 /**
  * イベントの詳細ポップアップ
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EventPopup(
     event: Event,
@@ -187,10 +221,12 @@ fun EventPopup(
         userName = event.userName,
         createdAt = event.createdAt,
         contentText = event.content,
+        imageUrl = event.image,
         onDismiss = onDismiss
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SpotPopup(
     spot: Spot,
@@ -200,6 +236,7 @@ fun SpotPopup(
         userName = spot.title,
         createdAt = spot.createdAt,
         contentText = spot.content,
+        imageUrl = "",
         onDismiss = onDismiss
     )
 }

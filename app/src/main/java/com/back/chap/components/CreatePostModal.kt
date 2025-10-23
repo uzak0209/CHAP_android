@@ -204,7 +204,9 @@ fun CreatePostModal(
             Column(
                 modifier = Modifier
                     .padding(20.dp)
-                    .verticalScroll(scrollState)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally,
+
             ) {
                 // ヘッダー
                 Row(
@@ -258,7 +260,8 @@ fun CreatePostModal(
                             .build(),
                         contentDescription = "Avatar",
                         modifier = Modifier
-                            .size(100.dp)
+                            .fillMaxWidth()
+                            .height(100.dp)
                             .clip(CircleShape)
                     )
 
@@ -272,6 +275,8 @@ fun CreatePostModal(
                     }
                 }
 
+                Spacer(Modifier.height(16.dp))
+
                 Button(
                     onClick = {
                         // 画像クロッパーを起動（円形クロップ設定）
@@ -280,7 +285,6 @@ fun CreatePostModal(
                             uri = null,
                             cropImageOptions = CropImageOptions(
                                 guidelines = CropImageView.Guidelines.ON,
-                                cropShape = CropImageView.CropShape.OVAL, // 四角クロップ
                                 aspectRatioX = 1, // 1:1のアスペクト比
                                 aspectRatioY = 1,
                                 fixAspectRatio = true, // アスペクト比を固定
