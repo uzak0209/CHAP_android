@@ -100,11 +100,16 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
                 method = "POST",
                 body = requestBody
             )
+            println("[ThreadRepository] Create thread response: ${response?.toString()?.take(500)}")
             val json = when (response) {
                 is String -> JSONObject(response)
                 else -> JSONObject(response.toString())
             }
-            val created = parseThreadObject(json)
+            // API might return the created thread directly or wrap it in { "thread": { ... } }
+            val threadObj = if (json.has("thread")) json.getJSONObject("thread") else json
+            println("[ThreadRepository] Thread object for parsing: ${threadObj.toString().take(500)}")
+            val created = parseThreadObject(threadObj)
+            println("[ThreadRepository] Parsed thread - id: ${created.id}, image: '${created.image}'")
             Result.success(created)
         } catch (e: Exception) {
             Result.failure(e)

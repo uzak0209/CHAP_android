@@ -1,10 +1,11 @@
 package com.back.chap.di
 
 import android.content.Context
+import com.back.chap.location.DefaultLocationProvider
+import com.back.chap.location.LocationProvider
 import com.back.chap.repository.AuthRepository
 import com.back.chap.repository.AuthRepositoryImpl
-import com.back.chap.location.LocationProvider
-import com.back.chap.location.DefaultLocationProvider
+import com.back.chap.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +19,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideAuthRepository(): AuthRepository {
-        return AuthRepositoryImpl()
+    fun provideAuthRepository(userRepository: UserRepository): AuthRepository {
+        return AuthRepositoryImpl(userRepository)
     }
 
     @Singleton

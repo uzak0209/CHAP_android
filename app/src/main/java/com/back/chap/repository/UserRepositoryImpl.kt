@@ -168,4 +168,20 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         if (array == null) return emptyList()
         return List(array.length()) { i -> array.optString(i, "") }
     }
+
+    override suspend fun updateUserImage(userId: String, imageUrl: String): Result<String> {
+        return try {
+            val response = ApiClient.request(
+                url = ApiEndpoints.Users.EDIT,
+                method = "PUT",
+                body = mapOf(
+                    "userId" to userId,
+                    "image" to imageUrl
+                )
+            )
+            Result.success(response ?: "")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

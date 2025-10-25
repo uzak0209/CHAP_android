@@ -1,7 +1,6 @@
 package com.back.chap.components.map
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.back.chap.models.Mappable
 import com.mapbox.geojson.Point
@@ -22,7 +21,7 @@ fun <T : Mappable> MappableItemPopup(
                 allowOverlapWithPuck(true)
             }
         ) {
-            SpeechBubble(bubbleColor = Color.White, lift = 0.dp) {
+            SpeechBubble(lift = 0.dp) {
                 content(it)
             }
         }

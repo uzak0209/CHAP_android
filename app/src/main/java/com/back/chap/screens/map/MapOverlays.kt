@@ -122,8 +122,8 @@ fun MapOverlays(
                 locationViewModel = locationViewModel,
                 coordinate = if (state.createKind == CreateKind.EVENT || state.createKind == CreateKind.SPOT)
                     state.pendingTapCoordinate else locationState.location,
-                onRequestMakeLocation = { title, description ->
-                    state.pendingEventDraft = Pair(title, description)
+                onRequestMakeLocation = { title, description, imageUrl ->
+                    state.pendingEventDraft = Triple(title, description, imageUrl)
                 }
             )
         }else{
@@ -134,8 +134,8 @@ fun MapOverlays(
                 locationViewModel = locationViewModel,
                 coordinate = if (state.createKind == CreateKind.EVENT || state.createKind == CreateKind.SPOT)
                     state.pendingTapCoordinate else locationState.location,
-                onRequestMakeLocation = { content, category ->
-                    state.pendingEventDraft = Pair(content, category.toString())
+                onRequestMakeLocation = { content, category, imageUrl ->
+                    state.pendingEventDraft = Triple(content, category.toString(), imageUrl)
                 }
             )
         }
@@ -233,12 +233,13 @@ private fun createEvent(
     val coord = state.pendingTapCoordinate
     if (coord != null && draft != null) {
         if(createKind === CreateKind.EVENT){
-            val (content, category) = draft
+            val (content, category, imageUrl) = draft
             val createEventObject = PostCreateRequest(
                 coordinate = coord,
                 content = content,
                 category = category,
                 visible = true,
+                image = imageUrl,
             )
             scope.launch {
                 try {
@@ -248,12 +249,12 @@ private fun createEvent(
                 }
             }
         }else{
-            val (title, description) = draft
+            val (title, description, imageUrl) = draft
             val createSpotObject = SpotCreateRequest(
                 coordinate = coord,
                 title = title,
                 description = description,
-                image = "",
+                image = imageUrl,
             )
             scope.launch {
                 try {

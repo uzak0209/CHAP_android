@@ -88,7 +88,7 @@ fun CreatePostModal(
     selectedKind: CreateKind,
     locationViewModel: LocationViewModel,
     coordinate: Coordinate?,
-    onRequestMakeLocation: ((content: String, category: PostCategory) -> Unit)? = null
+    onRequestMakeLocation: ((content: String, category: PostCategory, imageUrl: String) -> Unit)? = null
 ) {
 
     if (!isOpen) return
@@ -369,8 +369,9 @@ fun CreatePostModal(
                     Button(
                         onClick = {
                             if ((selectedKind == CreateKind.EVENT || selectedKind == CreateKind.SPOT) && onRequestMakeLocation != null) {
-                                onRequestMakeLocation(content.trim(), category)
-                                reset()
+                                // 画像URLを保持したまま位置選択モードへ
+                                onRequestMakeLocation(content.trim(), category, ownerPhotoUrl ?: "")
+                                // resetは呼ばない - 位置選択後に再度このモーダルで投稿する
                                 onClose()
                                 return@Button
                             }

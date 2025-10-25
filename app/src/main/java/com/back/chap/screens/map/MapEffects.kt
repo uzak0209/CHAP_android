@@ -120,7 +120,7 @@ private fun GestureControlEffect(
 @Composable
 private fun MakeLocationPickerEffect(
     createKind: CreateKind,
-    pendingEventDraft: Pair<String, String>?,
+    pendingEventDraft: Triple<String, String, String>?,
     mapTapPickListener: OnMapClickListener?,
     onMapTapPickListenerChange: (OnMapClickListener?) -> Unit,
     onCoordinatePicked: (Coordinate) -> Unit

@@ -7,14 +7,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.back.chap.repository.AuthRepositoryImpl
+import com.back.chap.repository.UserRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(): ViewModel() {
-    private val authRepository = AuthRepositoryImpl()
-
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepositoryImpl,
+    private val userRepository: UserRepositoryImpl,
+): ViewModel() {
     fun login(
         email: String,
         password: String,
@@ -52,6 +54,15 @@ class LoginViewModel @Inject constructor(): ViewModel() {
                 Log.e("LoginViewModel", "新規登録エラー", e)
                 onError?.invoke(e)
             }
+        }
+    }
+
+    fun updateUserToDatabase(
+        userId: Long,
+        updates: Map<String, Any?>
+    ){
+        viewModelScope.launch {
+            userRepository.updateUserToDatabase(userId, updates)
         }
     }
 }

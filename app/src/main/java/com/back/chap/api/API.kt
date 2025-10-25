@@ -25,6 +25,7 @@ object ApiEndpoints {
     object Users {
         fun get(id: String) = "$BASE/api/v1/user/$id"
         fun edit(id: String) = "$BASE/api/v1/edit/user/$id"
+        const val EDIT = "$BASE/api/v1/users/edit"
     }
     object Threads {
         const val LIST = "$BASE/api/v1/threads"

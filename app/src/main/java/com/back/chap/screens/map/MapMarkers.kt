@@ -1,6 +1,7 @@
 package com.back.chap.screens.map
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import com.back.chap.components.AnnotationMarkers
@@ -144,7 +145,9 @@ fun AllMapPopups(
     }
 
     selectedThread?.let { thread ->
+        Log.d("ThreadPopup", "Thread image URL: '${thread.image}'")
         MappableItemPopup(thread) {
+            Log.d("ThreadPopup", "Thread image URL: '${thread.image}'")
             ThreadPopup(thread = thread, onDismiss = onThreadDismiss)
         }
     }

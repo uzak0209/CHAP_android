@@ -25,6 +25,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -42,13 +49,25 @@ import com.back.chap.models.Event
 import com.back.chap.models.Post
 import com.back.chap.models.Spot
 import com.back.chap.models.Thread
+import com.back.chap.repository.UserRepository
 import com.back.chap.ui.theme.BrandBlue
 import com.back.chap.ui.theme.BrandPurple
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface MapPopupEntryPoint {
+    fun userRepository(): UserRepository
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -99,6 +118,30 @@ private fun PopupCardCommon(
     imageUrl: String,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var userAvatarUrl by remember { mutableStateOf<String?>(null) }
+
+    // UserRepositoryからユーザー画像を取得
+    LaunchedEffect(Unit) {
+        try {
+            val hiltEntryPoint = EntryPointAccessors.fromApplication(
+                context.applicationContext,
+                MapPopupEntryPoint::class.java
+            )
+            val userRepository = hiltEntryPoint.userRepository()
+
+            scope.launch {
+                val user = userRepository.getCurrentUser()
+                user?.let {
+                    userAvatarUrl = it.image?.takeIf { it.isNotBlank() }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("MapPopup", "Failed to get user image", e)
+        }
+    }
+    
     Box {
         Card(
             modifier = Modifier
@@ -150,7 +193,7 @@ private fun PopupCardCommon(
                             .data(imageUrl)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Avatar",
+                        contentDescription = "Content Image",
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(100.dp)
@@ -160,26 +203,41 @@ private fun PopupCardCommon(
                 }
             }
         }
-        Image(
-            painter = painterResource(id = R.drawable.chap_android),
-            contentDescription = "user avatar",
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 30.dp)
-                .size(50.dp)
-                .border(1.dp, BrandPurple, CircleShape)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop,
-        )
+        // ユーザーアバター（ログイン時の画像 or デフォルト）
+        if (userAvatarUrl != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(userAvatarUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "User avatar",
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 30.dp)
+                    .size(50.dp)
+                    .border(1.dp, BrandPurple, CircleShape)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.chap_android),
+                contentDescription = "Default user avatar",
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 30.dp)
+                    .size(50.dp)
+                    .border(1.dp, BrandPurple, CircleShape)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+            )
+        }
     }
 }
 
 @Composable
 fun SpeechBubble(
-    bubbleColor: Color = Color.White,
-    arrowWidth: androidx.compose.ui.unit.Dp = 12.dp,
-    arrowHeight: androidx.compose.ui.unit.Dp = 8.dp,
-    lift: androidx.compose.ui.unit.Dp = 50.dp,
+    lift: Dp = 50.dp,
     content: @Composable () -> Unit
 ) {
     Column(
@@ -199,6 +257,7 @@ fun ThreadPopup(
     thread: Thread,
     onDismiss: () -> Unit
 ) {
+    Log.d("ThreadPopup", "Thread image URL: '${thread.image}'")
     PopupCardCommon(
         userName = thread.userName,
         createdAt = thread.createdAt,
@@ -217,6 +276,7 @@ fun EventPopup(
     event: Event,
     onDismiss: () -> Unit
 ) {
+    Log.d("EventPopup", "Event image URL: '${event.image}'")
     PopupCardCommon(
         userName = event.userName,
         createdAt = event.createdAt,

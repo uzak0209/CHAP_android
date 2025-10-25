@@ -64,7 +64,7 @@ fun CreateSpotModal(
     selectedKind: CreateKind,
     locationViewModel: LocationViewModel,
     coordinate: Coordinate?,
-    onRequestMakeLocation: ((title: String, description: String) -> Unit)? = null
+    onRequestMakeLocation: ((title: String, description: String, imageUrl: String) -> Unit)? = null
 ) {
 
     if (!isOpen) return
@@ -198,7 +198,7 @@ fun CreateSpotModal(
                     Button(
                         onClick = {
                             if (selectedKind == CreateKind.SPOT && onRequestMakeLocation != null) {
-                                onRequestMakeLocation(title.trim(), description.trim())
+                                onRequestMakeLocation(title.trim(), description.trim(), "")
                                 reset()
                                 onClose()
                                 return@Button

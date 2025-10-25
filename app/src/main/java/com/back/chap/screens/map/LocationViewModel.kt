@@ -91,12 +91,19 @@ class LocationViewModel @Inject constructor(
         viewModelScope.launch {
             val result = threadRepository.createThread(thread)
             result.onSuccess { created ->
-                // 作成レスポンスに詳細が含まれないため、一覧を即時再取得してUIを更新
-                threadRepository.getAllThreads().onSuccess { list ->
-                    _threads.value = list.sortedByDescending { it.createdAt }
+                println("[LocationViewModel] Created thread received - id: ${created.id}, image: '${created.image}'")
+                // If the server returned the created thread (including image), use it immediately
+                _threads.value = listOf(created) + _threads.value.filterNot { it.id == created.id }
+                println("[LocationViewModel] Added thread to state. Total threads: ${_threads.value.size}")
+                // Also refresh the list asynchronously to sync with server state
+                launch {
+                    threadRepository.getAllThreads().onSuccess { list ->
+                        println("[LocationViewModel] Refreshed thread list from server. Count: ${list.size}")
+                        _threads.value = list.sortedByDescending { it.createdAt }
+                    }
                 }
             }.onFailure { e ->
-                println("[ThreadViewModel] 作成エラー: ${'$'}{e.message}")
+                println("[ThreadViewModel] 作成エラー: ${e.message}")
             }
         }
     }
