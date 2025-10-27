@@ -24,29 +24,34 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         )
     }
 
-    override suspend fun getUserById(userId: Long): User? {
-        val response = ApiClient.request(
-            url = ApiEndpoints.Users.get(userId.toString()),
-            method = "GET"
-        ) ?: return null
+    override suspend fun getUserById(userId: String): User? {
+        return try {
+            val response = ApiClient.request(
+                url = ApiEndpoints.Users.get(userId),
+                method = "GET"
+            ) ?: return null
 
-        val root = JSONObject(response)
-        val userObj = if (root.has("user")) root.getJSONObject("user") else root
+            val root = JSONObject(response)
+            val userObj = if (root.has("user")) root.getJSONObject("user") else root
 
-        return User(
-            id = userObj.optString("id", ""),
-            name = userObj.optString("name", ""),
-            image = if (userObj.isNull("image")) null else userObj.optString("image", null),
-            email = userObj.optString("email", ""),
-            createdAt = userObj.optString("created_at", ""),
-            password = userObj.optString("password", ""),
-            updatedAt = userObj.optString("updated_at", ""),
-            description = userObj.optString("description", ""),
-            followerCount = userObj.optLong("followerCount", 0),
-            followingCount = userObj.optLong("followingCount", 0),
-            followers = parsefollow(userObj.optJSONArray("followers")),
-            followings = parsefollow(userObj.optJSONArray("followings")),
-        )
+            User(
+                id = userObj.optString("id", ""),
+                name = userObj.optString("name", ""),
+                image = if (userObj.isNull("image")) null else userObj.optString("image", null),
+                email = userObj.optString("email", ""),
+                createdAt = userObj.optString("created_at", ""),
+                password = userObj.optString("password", ""),
+                updatedAt = userObj.optString("updated_at", ""),
+                description = userObj.optString("description", ""),
+                followerCount = userObj.optLong("followerCount", 0),
+                followingCount = userObj.optLong("followingCount", 0),
+                followers = parsefollow(userObj.optJSONArray("followers")),
+                followings = parsefollow(userObj.optJSONArray("followings")),
+            )
+        } catch (e: Exception) {
+            println("[UserRepository] Failed to get user by id $userId: ${e.message}")
+            null
+        }
     }
 
     override suspend fun getCurrentUser(): User? {
@@ -62,27 +67,21 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             val root = JSONObject(response)
             val userObj = findUserObject(root)
 
-            val id = extractId(userObj)
-            val name = extractName(userObj)
+            return User(
+                id = userObj.optString("id", ""),
+                name = userObj.optString("name", ""),
+                image = if (userObj.isNull("image")) null else userObj.optString("image", null),
+                email = userObj.optString("email", ""),
+                createdAt = userObj.optString("created_at", ""),
+                password = userObj.optString("password", ""),
+                updatedAt = userObj.optString("updated_at", ""),
+                description = userObj.optString("description", ""),
+                followerCount = userObj.optLong("followerCount", 0),
+                followingCount = userObj.optLong("followingCount", 0),
+                followers = parsefollow(userObj.optJSONArray("followers")),
+                followings = parsefollow(userObj.optJSONArray("followings")),
+            )
 
-            println("[UserRepository] /auth/me parsed id=$id name=$name")
-
-            if (id.isNotBlank() || name.isNotBlank()) {
-                return User(
-                    id = id,
-                    name = name,
-                    image = if (userObj.isNull("image")) null else userObj.optString("image", null),
-                    email = userObj.optString("email", ""),
-                    createdAt = userObj.optString("created_at", ""),
-                    password = userObj.optString("password", ""),
-                    updatedAt = userObj.optString("updated_at", ""),
-                    description = userObj.optString("description", ""),
-                    followerCount = userObj.optLong("followerCount", 0),
-                    followingCount = userObj.optLong("followingCount", 0),
-                    followers = parsefollow(userObj.optJSONArray("followers")),
-                    followings = parsefollow(userObj.optJSONArray("followings")),
-                )
-            }
         }
 
         // Fallback: decode JWT payload if API failed or missing fields
@@ -169,18 +168,28 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         return List(array.length()) { i -> array.optString(i, "") }
     }
 
-    override suspend fun updateUserImage(userId: String, imageUrl: String): Result<String> {
+    override suspend fun updateUserImage(userId: String, imageUrl: String, name: String): Result<String> {
         return try {
+            val body = mapOf(
+                "userId" to userId,
+                "image" to imageUrl,
+                "name" to name
+            )
+            
+            println("[UserRepository] Updating user image for userId=$userId")
+            println("[UserRepository] Request URL: ${ApiEndpoints.Users.EDIT}")
+            println("[UserRepository] Request body: $body")
+            
             val response = ApiClient.request(
                 url = ApiEndpoints.Users.EDIT,
                 method = "PUT",
-                body = mapOf(
-                    "userId" to userId,
-                    "image" to imageUrl
-                )
+                body = body
             )
+            println("[UserRepository] Update successful: $response")
             Result.success(response ?: "")
         } catch (e: Exception) {
+            println("[UserRepository] Failed to update user image: ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }

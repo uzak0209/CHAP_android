@@ -19,6 +19,7 @@ private suspend fun fetchCompressAndUploadImage(remoteUrl: String): String? {
         val client = OkHttpClient()
 
         // 1) Download the image bytes
+        println("[AuthRepository] Step 1: Downloading image from $remoteUrl")
         val getReq = Request.Builder().url(remoteUrl).get().build()
         val getResp = withContext(Dispatchers.IO) { client.newCall(getReq).execute() }
         if (!getResp.isSuccessful) {
@@ -28,8 +29,10 @@ private suspend fun fetchCompressAndUploadImage(remoteUrl: String): String? {
         val originalMime = getResp.header("Content-Type") ?: "image/jpeg"
         val originalBytes = withContext(Dispatchers.IO) { getResp.body?.bytes() }
         if (originalBytes == null) return null
+        println("[AuthRepository] Downloaded ${originalBytes.size} bytes")
 
         // 2) Compress via lambda
+        println("[AuthRepository] Step 2: Compressing image via lambda")
         val compressionUrl = "https://${ApiEndpoints.Image.COMPRESSION}"
         val compressionRequest = Request.Builder()
             .url(compressionUrl)
@@ -45,8 +48,10 @@ private suspend fun fetchCompressAndUploadImage(remoteUrl: String): String? {
         val compressedBytes = withContext(Dispatchers.IO) { compressionResp.body?.bytes() }
         val compressedMime = compressionResp.header("Content-Type") ?: originalMime
         if (compressedBytes == null) return null
+        println("[AuthRepository] Compressed to ${compressedBytes.size} bytes")
 
         // 3) Request upload URL from backend
+        println("[AuthRepository] Step 3: Requesting upload URL from backend")
         val filename = "login_${System.currentTimeMillis()}.jpg"
         val getUrlResponse = ApiClient.request(
             url = ApiEndpoints.Image.GETUPLOADURL,
@@ -56,9 +61,14 @@ private suspend fun fetchCompressAndUploadImage(remoteUrl: String): String? {
 
         val json = JSONObject(getUrlResponse)
         val uploadUrl = json.optString("imageUrl", json.optString("uploadUrl", json.optString("url", "")))
-        if (uploadUrl.isBlank()) return null
+        if (uploadUrl.isBlank()) {
+            println("[AuthRepository] No upload URL in response")
+            return null
+        }
+        println("[AuthRepository] Got upload URL: $uploadUrl")
 
         // 4) PUT compressed bytes to obtained URL
+        println("[AuthRepository] Step 4: Uploading to R2")
         val uploadRequest = Request.Builder()
             .url(uploadUrl)
             .put(compressedBytes.toRequestBody(compressedMime.toMediaTypeOrNull()))
@@ -69,11 +79,13 @@ private suspend fun fetchCompressAndUploadImage(remoteUrl: String): String? {
             println("[AuthRepository] Upload failed: ${uploadResp.code}")
             return null
         }
+        println("[AuthRepository] Upload successful: ${uploadResp.code}")
 
         // 5) Construct public URL from path
         val urlObj = java.net.URL(uploadUrl)
         val pathname = urlObj.path
         val publicImageUrl = "https://r2.chap-app.jp$pathname"
+        println("[AuthRepository] Public image URL: $publicImageUrl")
         publicImageUrl
     } catch (e: Exception) {
         e.printStackTrace()
@@ -94,7 +106,6 @@ class AuthRepositoryImpl @Inject constructor(
             )
             val json = JSONObject(response ?: "")
             val token = json.optString("token", "")
-            val userId = json.optString("userId", json.optString("id", ""))
             
             if (token.isNotBlank()) {
                 TokenManager(context).saveToken(token)
@@ -103,20 +114,32 @@ class AuthRepositoryImpl @Inject constructor(
                 // After successful login, optionally fetch an initial image from a URL,
                 // compress/upload it and save the resulting public URL locally.
                 try {
+                    println("[AuthRepository] Starting login image upload flow")
+
+                    // Get userId from UserRepository
+                    val currentUser = userRepository.getCurrentUser()
+                    val userId = currentUser?.id
+                    val userName = currentUser?.name?: "blank"
+                    println("[AuthRepository] Got userId from getCurrentUser: $userId")
+
                     val remoteImageUrl = "https://picsum.photos/200/300"
                     val publicImageUrl = fetchCompressAndUploadImage(remoteImageUrl)
-                    if (publicImageUrl != null && userId.isNotBlank()) {
+                    if (publicImageUrl != null && userId != null) {
+                        println("[AuthRepository] Step 5: Updating user profile with image URL")
                         // Save to backend user profile via UserRepository
-                        userRepository.updateUserImage(userId, publicImageUrl)
+                        userRepository.updateUserImage(userId, publicImageUrl,userName)
                             .onSuccess { response ->
                                 println("[AuthRepository] Updated user image on server: $response")
                             }
                             .onFailure { e ->
                                 println("[AuthRepository] Failed to update user image: ${e.message}")
                             }
+                    } else {
+                        println("[AuthRepository] Image upload failed or userId is blank. publicImageUrl=$publicImageUrl, userId=$userId")
                     }
                 } catch (ie: Exception) {
                     // Non-fatal: image upload failure should not block login
+                    println("[AuthRepository] Exception during image upload: ${ie.message}")
                     ie.printStackTrace()
                 }
             }
@@ -144,6 +167,38 @@ class AuthRepositoryImpl @Inject constructor(
             if (token.isNotBlank()) {
                 TokenManager(context).saveToken(token)
                 ApiClient.token = token // 即時反映
+
+                // After successful login, optionally fetch an initial image from a URL,
+                // compress/upload it and save the resulting public URL locally.
+                try {
+                    println("[AuthRepository] Starting login image upload flow")
+
+                    // Get userId from UserRepository
+                    val currentUser = userRepository.getCurrentUser()
+                    val userId = currentUser?.id
+                    val userName = currentUser?.name?: "blank"
+                    println("[AuthRepository] Got userId from getCurrentUser: $userId")
+
+                    val remoteImageUrl = "https://picsum.photos/200/300"
+                    val publicImageUrl = fetchCompressAndUploadImage(remoteImageUrl)
+                    if (publicImageUrl != null && userId != null) {
+                        println("[AuthRepository] Step 5: Updating user profile with image URL")
+                        // Save to backend user profile via UserRepository
+                        userRepository.updateUserImage(userId, publicImageUrl, userName)
+                            .onSuccess { response ->
+                                println("[AuthRepository] Updated user image on server: $response")
+                            }
+                            .onFailure { e ->
+                                println("[AuthRepository] Failed to update user image: ${e.message}")
+                            }
+                    } else {
+                        println("[AuthRepository] Image upload failed or userId is blank. publicImageUrl=$publicImageUrl, userId=$userId")
+                    }
+                } catch (ie: Exception) {
+                    // Non-fatal: image upload failure should not block login
+                    println("[AuthRepository] Exception during image upload: ${ie.message}")
+                    ie.printStackTrace()
+                }
             }
             Result.success(response ?: "")
         } catch (e: Exception) {

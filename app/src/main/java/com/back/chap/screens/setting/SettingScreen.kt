@@ -6,13 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -60,7 +60,7 @@ fun SettingScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var userName by remember { mutableStateOf("遠藤裕人") }
+    var userName by remember { mutableStateOf("Back") }
     var userImageUrl by remember { mutableStateOf<String?>(null) }
     var showNameDialog by remember { mutableStateOf(false) }
 
@@ -73,12 +73,15 @@ fun SettingScreen(
             )
             val userRepository = hiltEntryPoint.userRepository()
             
-            scope.launch {
-                val user = userRepository.getCurrentUser()
-                user?.let {
-                    userImageUrl = it.image?.takeIf { it.isNotBlank() }
-                    userName = it.name ?: "遠藤裕人"
-                }
+            android.util.Log.d("SettingScreen", "Fetching user data...")
+            val user = userRepository.getCurrentUser()
+            android.util.Log.d("SettingScreen", "User data: $user")
+            user?.let {
+                android.util.Log.d("SettingScreen", "User name: ${it.name}, image: ${it.image}")
+                userImageUrl = it.image?.takeIf { img -> img.isNotBlank() }
+                userName = it.name.takeIf { name -> name.isNotBlank() } ?: "Unknown"
+            } ?: run {
+                android.util.Log.e("SettingScreen", "User is null")
             }
         } catch (e: Exception) {
             android.util.Log.e("SettingScreen", "Failed to get user data", e)
@@ -116,7 +119,7 @@ fun SettingScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 40.dp),
+                            .padding(top = 60.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
@@ -145,74 +148,34 @@ fun SettingScreen(
                                 contentScale = ContentScale.Crop
                             )
                         }
-                        
-                        Spacer(modifier = Modifier.height(24.dp))
-                        
-                        // 画像をアップロードボタン
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        Text(
+                            text = userName,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        // 名前の変更ボタン
                         Button(
-                            onClick = { /* TODO: 画像アップロード処理 */ },
+                            onClick = { showNameDialog = true },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFFE0E0E0),
                                 contentColor = Color.Black
                             ),
                             shape = RoundedCornerShape(24.dp),
                             modifier = Modifier
-                                .padding(horizontal = 32.dp)
                                 .height(48.dp)
                         ) {
                             Text(
-                                text = "画像をアップロード",
+                                text = "名前の変更",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium
                             )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(32.dp))
-                        
-                        // 名前表示と変更ボタン
-                        Row(
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            // 名前表示ボタン
-                            Button(
-                                onClick = { },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFE0E0E0),
-                                    contentColor = Color.Black
-                                ),
-                                shape = RoundedCornerShape(24.dp),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                            ) {
-                                Text(
-                                    text = userName,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                            
-                            // 名前の変更ボタン
-                            Button(
-                                onClick = { showNameDialog = true },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFE0E0E0),
-                                    contentColor = Color.Black
-                                ),
-                                shape = RoundedCornerShape(24.dp),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                            ) {
-                                Text(
-                                    text = "名前の変更",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
+
                         }
                     }
                 }
@@ -234,18 +197,19 @@ fun SettingScreen(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE0E0E0),
-                            contentColor = Color.Black
+                            containerColor = Color.Transparent,
+                            contentColor = Color.Red
                         ),
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .width(200.dp)
                             .height(56.dp)
                     ) {
                         Text(
                             text = "ログアウト",
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red
                         )
                     }
                 }

@@ -76,7 +76,9 @@ fun PostPopup(
     onDismiss: () -> Unit
 ) {
     PopupCardCommon(
+        userId = post.userId,
         userName = post.userName,
+        userImage = post.userImage,
         createdAt = post.createdAt,
         contentText = post.content,
         imageUrl = post.image,
@@ -112,35 +114,15 @@ private fun relativeTimeJa(iso: String): String {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun PopupCardCommon(
+    userId: String,
     userName: String,
+    userImage: String?,
     createdAt: String,
     contentText: String,
     imageUrl: String,
     onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var userAvatarUrl by remember { mutableStateOf<String?>(null) }
-
-    // UserRepositoryからユーザー画像を取得
-    LaunchedEffect(Unit) {
-        try {
-            val hiltEntryPoint = EntryPointAccessors.fromApplication(
-                context.applicationContext,
-                MapPopupEntryPoint::class.java
-            )
-            val userRepository = hiltEntryPoint.userRepository()
-
-            scope.launch {
-                val user = userRepository.getCurrentUser()
-                user?.let {
-                    userAvatarUrl = it.image?.takeIf { it.isNotBlank() }
-                }
-            }
-        } catch (e: Exception) {
-            android.util.Log.e("MapPopup", "Failed to get user image", e)
-        }
-    }
+    val userAvatarUrl = userImage?.takeIf { it.isNotBlank() }
     
     Box {
         Card(
@@ -259,7 +241,9 @@ fun ThreadPopup(
 ) {
     Log.d("ThreadPopup", "Thread image URL: '${thread.image}'")
     PopupCardCommon(
+        userId = thread.userId,
         userName = thread.userName,
+        userImage = thread.userImage,
         createdAt = thread.createdAt,
         contentText = thread.content,
         imageUrl = thread.image,
@@ -278,7 +262,9 @@ fun EventPopup(
 ) {
     Log.d("EventPopup", "Event image URL: '${event.image}'")
     PopupCardCommon(
+        userId = event.userId,
         userName = event.userName,
+        userImage = event.userImage,
         createdAt = event.createdAt,
         contentText = event.content,
         imageUrl = event.image,
@@ -293,7 +279,9 @@ fun SpotPopup(
     onDismiss: () -> Unit
 ) {
     PopupCardCommon(
+        userId = spot.userId,
         userName = spot.title,
+        userImage = null,
         createdAt = spot.createdAt,
         contentText = spot.content,
         imageUrl = "",
