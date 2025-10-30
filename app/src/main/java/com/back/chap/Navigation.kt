@@ -2,38 +2,37 @@ package com.back.chap
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.back.chap.auth.TokenManager
 import com.back.chap.screens.comment.CommentScreen
 import com.back.chap.screens.comment.CommentViewModel
-import com.back.chap.screens.event.EventViewModel
-import com.back.chap.screens.post.PostViewModel
-import com.back.chap.screens.thread.ThreadViewModel
 import com.back.chap.screens.event.EventScreen
+import com.back.chap.screens.event.EventViewModel
 import com.back.chap.screens.login.LoginScreen
 import com.back.chap.screens.login.LoginViewModel
 import com.back.chap.screens.map.LocationViewModel
 import com.back.chap.screens.map.MapScreen
 import com.back.chap.screens.post.PostTimelineTemplate
+import com.back.chap.screens.post.PostViewModel
 import com.back.chap.screens.record.RecordScreen
 import com.back.chap.screens.record.RecordViewModel
 import com.back.chap.screens.setting.SettingScreen
 import com.back.chap.screens.setting.SettingViewModel
 import com.back.chap.screens.thread.ThreadScreen
-import com.back.chap.screens.timeline.TimelineViewModel
+import com.back.chap.screens.thread.ThreadViewModel
 import com.back.chap.screens.timeline.TimelineScreen
-
+import com.back.chap.screens.timeline.TimelineViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -79,9 +78,6 @@ fun Navigation(
         }
         composable("map") {
             MapScreen(
-                onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
-                onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
-                onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
                 onNavigateSetting = { navController.navigate("setting"){ launchSingleTop = true } },
                 onNavigateTimeline = { navController.navigate("timeline"){ launchSingleTop = true } },
                 onNavigateRecord = { navController.navigate("record"){ launchSingleTop = true } },
@@ -169,9 +165,6 @@ fun Navigation(
             val type = backStackEntry.arguments?.getString("type")
             val id = backStackEntry.arguments?.getString("id")
             MapScreen(
-                onNavigateHome = { navController.navigate("home") { launchSingleTop = true } },
-                onNavigateEvent = { navController.navigate("event") { launchSingleTop = true } },
-                onNavigateThread = { navController.navigate("thread") { launchSingleTop = true } },
                 onNavigateSetting = { navController.navigate("setting"){ launchSingleTop = true } },
                 onNavigateTimeline = { navController.navigate("timeline"){ launchSingleTop = true } },
                 onNavigateRecord = { navController.navigate("record"){ launchSingleTop = true } },

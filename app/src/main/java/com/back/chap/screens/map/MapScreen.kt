@@ -2,13 +2,26 @@ package com.back.chap.screens.map
 
 import android.Manifest
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.back.chap.components.ToggleDimension
@@ -26,9 +39,6 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MapScreen(
-    onNavigateHome: () -> Unit,
-    onNavigateEvent: () -> Unit,
-    onNavigateThread: () -> Unit,
     onNavigateSetting: () -> Unit,
     onNavigateTimeline: () -> Unit = {},
     onNavigateRecord: () -> Unit = {},
@@ -45,6 +55,10 @@ fun MapScreen(
     val events by locationViewModel.events.collectAsState()
     val spots by locationViewModel.spots.collectAsState()
     val locationState by locationViewModel.locationState.collectAsState()
+
+    val showedPosts = remember { mutableStateOf(posts) }
+    val showedThreads = remember { mutableStateOf(threads) }
+    val showedEvents = remember { mutableStateOf(events) }
 
     // 位置情報パーミッション要求と初期ロード
     var permissionRequested by remember { mutableStateOf(false) }
@@ -85,12 +99,24 @@ fun MapScreen(
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             SlidBar(
-                onNavigateHome = onNavigateHome,
-                onNavigateEvent = onNavigateEvent,
-                onNavigateThread = onNavigateThread,
                 onNavigateSetting = onNavigateSetting,
                 onNavigateRecord = onNavigateRecord,
                 onNavigateTimeline = onNavigateTimeline,
+                onToggleChat = {
+                    showedPosts.value = posts.filter { it.category == "ENTERTAINMENT" }
+                    showedThreads.value = threads.filter { it.category == "ENTERTAINMENT" }
+                    showedEvents.value = events.filter { it.category == "ENTERTAINMENT" }
+                },
+                onToggleCommunity = {
+                    showedPosts.value = posts.filter { it.category == "COMMUNITY" }
+                    showedThreads.value = threads.filter { it.category == "COMMUNITY" }
+                    showedEvents.value = events.filter { it.category == "COMMUNITY" }
+                },
+                onToggleDisaster = {
+                    showedPosts.value = posts.filter { it.category == "DISASTER" }
+                    showedThreads.value = threads.filter { it.category == "DISASTER" }
+                    showedEvents.value = events.filter { it.category == "DISASTER" }
+                },
                 spots = spots,
                 onSpotClick = { spot ->
                     moveViewPoint(viewportState, scope, spot.coordinate)

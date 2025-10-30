@@ -170,13 +170,12 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
 
     override suspend fun updateUserImage(userId: String, imageUrl: String, name: String): Result<String> {
         return try {
-            val body = mapOf(
+            val body = mutableMapOf(
                 "userId" to userId,
                 "image" to imageUrl,
                 "name" to name
             )
-            
-            println("[UserRepository] Updating user image for userId=$userId")
+
             println("[UserRepository] Request URL: ${ApiEndpoints.Users.EDIT}")
             println("[UserRepository] Request body: $body")
             
