@@ -8,13 +8,13 @@ import com.back.chap.location.LocationProvider
 import com.back.chap.models.Coordinate
 import com.back.chap.models.PostCreateRequest
 import com.back.chap.models.Thread
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
 class ThreadRepositoryImpl @Inject constructor(private val locationProvider: LocationProvider) : ThreadRepository {
     private val _threads = MutableStateFlow<List<Thread>>(emptyList())
@@ -160,7 +160,7 @@ class ThreadRepositoryImpl @Inject constructor(private val locationProvider: Loc
             updatedAt = obj.optString("updatedAt", ""),
             userName = obj.optString("userName",  ""),
             coordinate = coord,
-            category = obj.optString("category", ""),
+            category = obj.optString("contentType", ""),
             content = obj.optString("content", ""),
             likeCount = obj.optLong("likeCount", 0),
             likes = parseLikes(obj.optJSONArray("likes")),

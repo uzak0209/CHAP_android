@@ -8,13 +8,13 @@ import com.back.chap.location.LocationProvider
 import com.back.chap.models.Coordinate
 import com.back.chap.models.Event
 import com.back.chap.models.PostCreateRequest
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(private val locationProvider: LocationProvider) : EventRepository {
     private val _events = MutableStateFlow<List<Event>>(emptyList())
@@ -133,14 +133,13 @@ class EventRepositoryImpl @Inject constructor(private val locationProvider: Loca
             userName = obj.optString("userName", ""),
             userId = obj.optString("userId", ""),
             coordinate = coordinate,
-            category = obj.optString("category", ""),
+            category = obj.optString("contentType", ""),
             content = obj.optString("content", ""),
             likes = parseLikes(obj.optJSONArray("likes")),
             likeCount = obj.optLong("like_count", 0),
             userImage = obj.optString("userImage", ""),
             image = obj.optString("image", ""),
             eventDate = obj.optString("eventDate", ""),
-            contentType = obj.optString("contentType", ""),
             title = obj.optString("title", ""),
         )
     }

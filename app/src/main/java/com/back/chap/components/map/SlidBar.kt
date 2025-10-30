@@ -42,7 +42,7 @@ fun SlidBar(
     onNavigateSetting: () -> Unit,
     onNavigateRecord: () -> Unit,
     onNavigateTimeline: () -> Unit,
-    isChatChecked: Boolean = true,
+    isChatChecked: Boolean = false,
     isCommunityChecked: Boolean = false,
     isDisasterChecked: Boolean = false,
     onToggleChat: () -> Unit = {},

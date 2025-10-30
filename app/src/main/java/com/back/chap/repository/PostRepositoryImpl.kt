@@ -8,16 +8,15 @@ import com.back.chap.api.ApiClient
 import com.back.chap.api.ApiEndpoints
 import com.back.chap.location.LocationProvider
 import com.back.chap.models.Coordinate
-import com.back.chap.models.PostCreateRequest
 import com.back.chap.models.Post
-import javax.inject.Inject
+import com.back.chap.models.PostCreateRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-
+import javax.inject.Inject
 
 
 class PostRepositoryImpl @Inject constructor(private val locationProvider: LocationProvider) : PostRepository {
@@ -148,7 +147,7 @@ class PostRepositoryImpl @Inject constructor(private val locationProvider: Locat
             updatedAt = obj.optString("updatedAt", ""),
             userName = obj.optString("userName", ""),
             coordinate = coordinate,
-            category = obj.optString("category", ""),
+            category = obj.optString("contentType", ""),
             content = obj.optString("content", ""),
             likeCount = obj.optLong("likeCount", 0),
             likes = parseLikes(obj.optJSONArray("likes")),

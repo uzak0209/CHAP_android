@@ -56,9 +56,36 @@ fun MapScreen(
     val spots by locationViewModel.spots.collectAsState()
     val locationState by locationViewModel.locationState.collectAsState()
 
-    val showedPosts = remember { mutableStateOf(posts) }
-    val showedThreads = remember { mutableStateOf(threads) }
-    val showedEvents = remember { mutableStateOf(events) }
+    // ラジオボタンの選択状態
+    var isChatChecked by remember { mutableStateOf(true) }
+    var isCommunityChecked by remember { mutableStateOf(false) }
+    var isDisasterChecked by remember { mutableStateOf(false) }
+
+    // フィルタリングされた投稿データ
+    val showedPosts = remember(posts, isChatChecked, isCommunityChecked, isDisasterChecked) {
+        when {
+            isChatChecked -> posts.filter { it.category == "entertainment" }
+            isCommunityChecked -> posts.filter { it.category == "community" }
+            isDisasterChecked -> posts.filter { it.category == "disaster" }
+            else -> posts
+        }
+    }
+    val showedThreads = remember(threads, isChatChecked, isCommunityChecked, isDisasterChecked) {
+        when {
+            isChatChecked -> threads.filter { it.category == "entertainment" }
+            isCommunityChecked -> threads.filter { it.category == "community" }
+            isDisasterChecked -> threads.filter { it.category == "disaster" }
+            else -> threads
+        }
+    }
+    val showedEvents = remember(events, isChatChecked, isCommunityChecked, isDisasterChecked) {
+        when {
+            isChatChecked -> events.filter { it.category == "entertainment" }
+            isCommunityChecked -> events.filter { it.category == "community" }
+            isDisasterChecked -> events.filter { it.category == "disaster" }
+            else -> events
+        }
+    }
 
     // 位置情報パーミッション要求と初期ロード
     var permissionRequested by remember { mutableStateOf(false) }
@@ -102,20 +129,23 @@ fun MapScreen(
                 onNavigateSetting = onNavigateSetting,
                 onNavigateRecord = onNavigateRecord,
                 onNavigateTimeline = onNavigateTimeline,
+                isChatChecked = isChatChecked,
+                isCommunityChecked = isCommunityChecked,
+                isDisasterChecked = isDisasterChecked,
                 onToggleChat = {
-                    showedPosts.value = posts.filter { it.category == "ENTERTAINMENT" }
-                    showedThreads.value = threads.filter { it.category == "ENTERTAINMENT" }
-                    showedEvents.value = events.filter { it.category == "ENTERTAINMENT" }
+                    isChatChecked = true
+                    isCommunityChecked = false
+                    isDisasterChecked = false
                 },
                 onToggleCommunity = {
-                    showedPosts.value = posts.filter { it.category == "COMMUNITY" }
-                    showedThreads.value = threads.filter { it.category == "COMMUNITY" }
-                    showedEvents.value = events.filter { it.category == "COMMUNITY" }
+                    isChatChecked = false
+                    isCommunityChecked = true
+                    isDisasterChecked = false
                 },
                 onToggleDisaster = {
-                    showedPosts.value = posts.filter { it.category == "DISASTER" }
-                    showedThreads.value = threads.filter { it.category == "DISASTER" }
-                    showedEvents.value = events.filter { it.category == "DISASTER" }
+                    isChatChecked = false
+                    isCommunityChecked = false
+                    isDisasterChecked = true
                 },
                 spots = spots,
                 onSpotClick = { spot ->
@@ -149,9 +179,9 @@ fun MapScreen(
 
                         // マーカー表示
                         AllMapMarkers(
-                            posts = posts,
-                            threads = threads,
-                            events = events,
+                            posts = showedPosts,
+                            threads = showedThreads,
+                            events = showedEvents,
                             spots = spots,
                             styleLoaded = state.styleLoaded,
                             onPostClick = { state.selectedPost = it },
